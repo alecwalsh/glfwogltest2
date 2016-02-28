@@ -7,6 +7,8 @@
 //#include <thread>
 #include <chrono>
 
+#include "Object.h"
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 
@@ -56,20 +58,6 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-
-
-	// Create Vertex Array Object
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	// Create a Vertex Buffer Object and copy the vertex data to it
-	GLuint vbo;
-	GLuint ebo;
-
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
-
 	GLuint elements[] = {
 		0, 1, 2,
 		1, 2, 3
@@ -82,11 +70,6 @@ int main(int argc, char** argv) {
 		0.5f, 0.5f, 1.0f, 1.0f, 1.0f
 	};
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
 	// Create and compile the vertex shader
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -104,32 +87,22 @@ int main(int argc, char** argv) {
 	glAttachShader(shaderProgram, fragmentShader);
 	glBindFragDataLocation(shaderProgram, 0, "outColor");
 	glLinkProgram(shaderProgram);
-	glUseProgram(shaderProgram);
 
-	// Specify the layout of the vertex data
-	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
-		5 * sizeof(float), 0);
-
-	GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
-	glEnableVertexAttribArray(colAttrib);
-	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
-		5 * sizeof(float), (void*)(2 * sizeof(float)));
-
-
+	auto& object1 = Object(vertices, 4, elements, 6, shaderProgram);
+	auto& object2 = Object(vertices, 4, elements, 3, shaderProgram);
 
 	//main loop
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
+
 		// Clear the screen to black
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Draw a triangle from the 3 vertices
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		object1.Draw();
+		object2.Draw();
 
 		//Swap buffers
 		glfwSwapBuffers(window);
@@ -141,10 +114,6 @@ int main(int argc, char** argv) {
 	glDeleteShader(fragmentShader);
 	glDeleteShader(vertexShader);
 
-	glDeleteBuffers(1, &vbo);
-	glDeleteBuffers(1, &ebo);
-
-	glDeleteVertexArrays(1, &vao);
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	std::cout << "hi";
