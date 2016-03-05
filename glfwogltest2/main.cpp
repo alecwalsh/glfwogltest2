@@ -123,11 +123,19 @@ int main(int argc, char** argv) {
 		float time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
 
 		glm::mat4 model;
-		model = glm::rotate(
-			model,
+		glm::mat4 rotation;
+		glm::mat4 translation;
+		glm::mat4 scaling;
+
+		rotation = glm::rotate(
+			rotation,
 			time * glm::radians(180.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f)
+			glm::vec3(0.0f, 0.0f, 1.0f) //z-axis
 			);
+		translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
+		scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
+
+		model = translation * rotation * scaling;
 		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 		bool ascending = ((int)time / 5) % 2 == 0;
