@@ -5,7 +5,8 @@ void Object::Draw() {
 	// Bind vertex array object
 	glBindVertexArray(vao);
 
-	glDrawElements(GL_TRIANGLES, numElements, GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, numElements, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 void Object::SetupTextures() {
@@ -77,18 +78,18 @@ Object::Object(float* vertices, int numVertices, GLuint* elements, int numElemen
 	// Specify the layout of the vertex data
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
-		7 * sizeof(float), 0);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE,
+		8 * sizeof(float), 0);
 
 	GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
 	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
-		7 * sizeof(float), (void*)(2 * sizeof(float)));
+		8 * sizeof(float), (void*)(3 * sizeof(float)));
 
 	GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
-		7 * sizeof(float), (void*)(5 * sizeof(float)));
+		8 * sizeof(float), (void*)(6 * sizeof(float)));
 
 
 	SetupTextures();

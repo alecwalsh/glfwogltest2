@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#define VERTEX_SIZE 7
+#define VERTEX_SIZE 8
 
 class Object {
 	float *vertices;
