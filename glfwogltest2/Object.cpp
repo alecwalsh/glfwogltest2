@@ -1,4 +1,5 @@
 #include "Object.h"
+#include <SOIL.h>
 
 void Object::Draw() {
 	// Bind vertex array object
@@ -7,11 +8,55 @@ void Object::Draw() {
 	glDrawElements(GL_TRIANGLES, numElements, GL_UNSIGNED_INT, 0);
 }
 
+void Object::SetupTextures() {
+	//texture setup
+
+	GLuint textures[2];
+	glGenTextures(2, textures);
+
+	//Load textures from file
+
+	int width, height;
+	unsigned char* image;
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+	image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+		GL_UNSIGNED_BYTE, image);
+	SOIL_free_image_data(image);
+	glUniform1i(glGetUniformLocation(shaderProgram, "texKitten"), 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+	image = SOIL_load_image("sample2.png", &width, &height, 0, SOIL_LOAD_RGB);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+		GL_UNSIGNED_BYTE, image);
+	SOIL_free_image_data(image);
+	glUniform1i(glGetUniformLocation(shaderProgram, "texPuppy"), 1);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
 Object::Object(float* vertices, int numVertices, GLuint* elements, int numElements, GLuint shaderProgram) : vertices(vertices), elements(elements), numElements(numElements), shaderProgram(shaderProgram) {
 	// Create Vertex Array Object
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
+
+	glUseProgram(shaderProgram);
 
 	// Create a Vertex Buffer Object and copy the vertex data to it
 	GLuint vbo;
@@ -33,14 +78,20 @@ Object::Object(float* vertices, int numVertices, GLuint* elements, int numElemen
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 	glEnableVertexAttribArray(posAttrib);
 	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
-		5 * sizeof(float), 0);
+		7 * sizeof(float), 0);
 
 	GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
 	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
-		5 * sizeof(float), (void*)(2 * sizeof(float)));
+		7 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	glUseProgram(shaderProgram);
+	GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+	glEnableVertexAttribArray(texAttrib);
+	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
+		7 * sizeof(float), (void*)(5 * sizeof(float)));
+
+
+	SetupTextures();
 
 	glBindVertexArray(0);
 

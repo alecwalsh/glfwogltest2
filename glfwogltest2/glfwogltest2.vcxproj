@@ -70,12 +70,12 @@
     <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\include;C:\Users\Alec\Code\opengl_libs\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\lib\Debug\x64;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\src\Debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\include;C:\Users\Alec\Code\opengl_libs\glm;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\lib\Release\x64;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\src\Release;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\projects\VC9\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\include;C:\Users\Alec\Code\opengl_libs\glm;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\include;C:\Users\Alec\Code\opengl_libs\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\lib\Debug\x64;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\src\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\include;C:\Users\Alec\Code\opengl_libs\glm;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\src;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\lib\Debug\x64;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\src\Debug;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\projects\VC9\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -95,7 +95,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32sd.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,7 +125,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

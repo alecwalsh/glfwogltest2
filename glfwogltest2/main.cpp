@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 //#include <glm/glm.hpp>
+#include <SOIL.h>
 
 #include <iostream>
 //#include <thread>
@@ -20,21 +21,30 @@ const GLchar* vertexSource =
 "#version 150 core\n"
 "in vec2 position;"
 "in vec3 color;"
+"in vec2 texcoord;"
 "out vec3 Color;"
+"out vec2 Texcoord;"
 "void main() {"
 "	Color = color;"
-"   gl_Position = vec4(position, 0.0, 1.0);"
+"	Texcoord = texcoord;"
+"	gl_Position = vec4(position, 0.0, 1.0);"
 "}";
 
 const GLchar* fragmentSource =
 "#version 150 core\n"
 "in vec3 Color;"
+"in vec2 Texcoord;"
 "out vec4 outColor;"
+"uniform sampler2D texKitten;"
+"uniform sampler2D texPuppy;"
+"uniform float time;"
 "void main() {"
-"   outColor = vec4(Color, 1.0);"
+"   outColor = mix(texture(texKitten, Texcoord), texture(texPuppy, Texcoord), time);"
 "}";
 
 int main(int argc, char** argv) {
+	auto t_start = std::chrono::high_resolution_clock::now();
+	
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -58,16 +68,21 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
+
+
+
+
 	GLuint elements[] = {
 		0, 1, 2,
 		1, 2, 3
 	};
 
 	float vertices[] = {
-		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-		0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
-		0.5f, 0.5f, 1.0f, 1.0f, 1.0f
+		//Position    Color             Texcoords
+		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		-0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+		0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f
 	};
 
 
@@ -89,7 +104,9 @@ int main(int argc, char** argv) {
 	glLinkProgram(shaderProgram);
 
 	auto& object1 = Object(vertices, 4, elements, 6, shaderProgram);
-	auto& object2 = Object(vertices, 4, elements, 3, shaderProgram);
+	//auto& object2 = Object(vertices, 4, elements, 3, shaderProgram);
+
+	GLint uniTime = glGetUniformLocation(shaderProgram, "time");
 
 	//main loop
 	while (!glfwWindowShouldClose(window))
@@ -97,12 +114,26 @@ int main(int argc, char** argv) {
 		glfwPollEvents();
 
 
+		auto t_now = std::chrono::high_resolution_clock::now();
+		float time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
+
+		bool ascending = ((int)time / 5) % 2 == 0;
+
+		time = time / 5;
+		if (ascending){
+			glUniform1f(uniTime, time - floor(time));
+		}
+		else {
+			glUniform1f(uniTime, 1 - (time - floor(time)));
+		}
+		
+
 		// Clear the screen to black
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		object1.Draw();
-		object2.Draw();
+		//object2.Draw();
 
 		//Swap buffers
 		glfwSwapBuffers(window);
