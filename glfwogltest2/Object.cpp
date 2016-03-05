@@ -93,6 +93,20 @@ Object::Object(float* vertices, int numVertices, GLuint* elements, int numElemen
 
 	SetupTextures();
 
+	// Set up view and projection matrices
+	glm::mat4 view = glm::lookAt(
+		glm::vec3(1.2f, 1.2f, 1.2f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
+		);
+	GLint uniView = glGetUniformLocation(shaderProgram, "view");
+	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+
+	glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
+	GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+
+
 	glBindVertexArray(0);
 
 	this->vao = vao;

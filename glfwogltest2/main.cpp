@@ -1,7 +1,11 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-//#include <glm/glm.hpp>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <SOIL.h>
 
 #include <iostream>
@@ -24,10 +28,13 @@ const GLchar* vertexSource =
 "in vec2 texcoord;"
 "out vec3 Color;"
 "out vec2 Texcoord;"
+"uniform mat4 model;"
+"uniform mat4 view;"
+"uniform mat4 proj;"
 "void main() {"
 "	Color = color;"
 "	Texcoord = texcoord;"
-"	gl_Position = vec4(position, 0.0, 1.0);"
+"	gl_Position = proj * view * model * vec4(position, 0.0, 1.0);"
 "}";
 
 const GLchar* fragmentSource =
@@ -69,9 +76,6 @@ int main(int argc, char** argv) {
 	}
 
 
-
-
-
 	GLuint elements[] = {
 		0, 1, 2,
 		1, 2, 3
@@ -108,14 +112,23 @@ int main(int argc, char** argv) {
 
 	GLint uniTime = glGetUniformLocation(shaderProgram, "time");
 
+	GLint uniModel = glGetUniformLocation(shaderProgram, "model");
+
 	//main loop
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
-
 		auto t_now = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
+
+		glm::mat4 model;
+		model = glm::rotate(
+			model,
+			time * glm::radians(180.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f)
+			);
+		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 		bool ascending = ((int)time / 5) % 2 == 0;
 
