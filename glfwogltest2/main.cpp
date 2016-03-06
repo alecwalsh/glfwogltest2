@@ -13,41 +13,12 @@
 #include <chrono>
 
 #include "Object.h"
+#include "ShaderProgram.h"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
-
-// Shader sources
-const GLchar* vertexSource =
-"#version 150 core\n"
-"in vec3 position;"
-"in vec3 color;"
-"in vec2 texcoord;"
-"out vec3 Color;"
-"out vec2 Texcoord;"
-"uniform mat4 model;"
-"uniform mat4 view;"
-"uniform mat4 proj;"
-"void main() {"
-"	Color = color;"
-"	Texcoord = texcoord;"
-"	gl_Position = proj * view * model * vec4(position, 1.0);"
-"}";
-
-const GLchar* fragmentSource =
-"#version 150 core\n"
-"in vec3 Color;"
-"in vec2 Texcoord;"
-"out vec4 outColor;"
-"uniform sampler2D texKitten;"
-"uniform sampler2D texPuppy;"
-"uniform float time;"
-"void main() {"
-"   outColor = mix(texture(texKitten, Texcoord), texture(texPuppy, Texcoord), time);"
-"}";
 
 int main(int argc, char** argv) {
 	auto t_start = std::chrono::high_resolution_clock::now();
@@ -77,6 +48,10 @@ int main(int argc, char** argv) {
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
+	//compile and link shaders
+	auto sp = ShaderProgram("shaders/vert1.glsl", "shaders/frag1.glsl");
+	GLuint shaderProgram = sp.shaderProgram;
 
 
 	GLuint elements[] = {
@@ -136,24 +111,6 @@ int main(int argc, char** argv) {
 		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f
 	};
 
-
-	// Create and compile the vertex shader
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	glCompileShader(vertexShader);
-
-	// Create and compile the fragment shader
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	glCompileShader(fragmentShader);
-
-	// Link the vertex and fragment shader into a shader program
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glBindFragDataLocation(shaderProgram, 0, "outColor");
-	glLinkProgram(shaderProgram);
-
 	auto& object1 = Object(vertices, 36, elements, 36, shaderProgram);
 	//auto& object2 = Object(vertices, 4, elements, 3, shaderProgram);
 
@@ -206,12 +163,6 @@ int main(int argc, char** argv) {
 		//Swap buffers
 		glfwSwapBuffers(window);
 	}
-
-
-	// Properly de-allocate all resources once they've outlived their purpose
-	glDeleteProgram(shaderProgram);
-	glDeleteShader(fragmentShader);
-	glDeleteShader(vertexShader);
 
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(500));
