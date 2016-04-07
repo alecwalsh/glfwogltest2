@@ -13,7 +13,7 @@
 #include <vector>
 #include <chrono>
 
-#include "Object.h"
+#include "RenderObject.h"
 #include "ShaderProgram.h"
 #include "GameObject.h"
 
@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
 	//	0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f
 	//};
 
+	//TODO: Read vertices from file
 	std::vector<GLfloat> vertices({
 		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
@@ -115,11 +116,18 @@ int main(int argc, char** argv) {
 		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f
 	});
 
-	auto mesh = Mesh(vertices);
-	auto go = GameObject(mesh, sp, glm::mat4());
 
-	auto& object1 = Object(vertices.data(), 36, elements, 36, shaderProgram);
-	//auto& object2 = Object(vertices, 4, elements, 3, shaderProgram);
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	auto mesh = Mesh(vertices);
+
+	glm::mat4 transform;
+	GameObject go = GameObject(mesh, sp, transform);
+
+	//go.Tick();
+
 
 	//TODO: Move all uniform stuff into GameObject
 	//TODO: Add global way to get time / elapsed time / delta time
@@ -135,21 +143,7 @@ int main(int argc, char** argv) {
 		auto t_now = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
 
-		glm::mat4 model;
-		glm::mat4 rotation;
-		glm::mat4 translation;
-		glm::mat4 scaling;
 
-		rotation = glm::rotate(
-			rotation,
-			time * glm::radians(180.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f)
-			);
-		translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
-		scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
-
-		model = translation * rotation * scaling;
-		glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
 
 		bool ascending = ((int)time / 5) % 2 == 0;
 
@@ -166,8 +160,9 @@ int main(int argc, char** argv) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		object1.Draw();
-		//object2.Draw();
+		glBindVertexArray(vao);
+		go.Draw();
+		//object1.Draw();
 
 		//Swap buffers
 		glfwSwapBuffers(window);
@@ -175,7 +170,7 @@ int main(int argc, char** argv) {
 
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	std::cout << "hi";
+	std::cout << "bye\n";
 
 	glfwTerminate();
 

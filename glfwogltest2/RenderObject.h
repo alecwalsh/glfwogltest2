@@ -7,7 +7,7 @@
 
 #define VERTEX_SIZE 8
 
-class Object {
+class RenderObject {
 	float *vertices;
 	GLuint* elements;
 	int numElements;
@@ -24,6 +24,6 @@ public:
 
 	void Draw();
 	void SetupTextures();
-	Object(float* vertices, int numVertices, GLuint* elements, int numElements, GLuint shaderProgram);
-	~Object();
+	RenderObject(float* vertices, int numVertices, GLuint* elements, int numElements, GLuint shaderProgram);
+	~RenderObject();
 };

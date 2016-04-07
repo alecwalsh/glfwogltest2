@@ -1,7 +1,7 @@
-#include "Object.h"
+#include "RenderObject.h"
 #include <SOIL.h>
 
-void Object::Draw() {
+void RenderObject::Draw() {
 	// Bind vertex array object
 	glBindVertexArray(vao);
 
@@ -9,7 +9,7 @@ void Object::Draw() {
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void Object::SetupTextures() {
+void RenderObject::SetupTextures() {
 	//texture setup
 
 	GLuint textures[2];
@@ -51,7 +51,7 @@ void Object::SetupTextures() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-Object::Object(float* vertices, int numVertices, GLuint* elements, int numElements, GLuint shaderProgram) : vertices(vertices), elements(elements), numElements(numElements), shaderProgram(shaderProgram) {
+RenderObject::RenderObject(float* vertices, int numVertices, GLuint* elements, int numElements, GLuint shaderProgram) : vertices(vertices), elements(elements), numElements(numElements), shaderProgram(shaderProgram) {
 	// Create Vertex Array Object
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -91,9 +91,6 @@ Object::Object(float* vertices, int numVertices, GLuint* elements, int numElemen
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
 		8 * sizeof(float), (void*)(6 * sizeof(float)));
 
-
-	SetupTextures();
-
 	// Set up view and projection matrices
 	glm::mat4 view = glm::lookAt(
 		glm::vec3(0.0f, 0.0f, 2.0f),
@@ -107,14 +104,15 @@ Object::Object(float* vertices, int numVertices, GLuint* elements, int numElemen
 	GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 
-
+	SetupTextures();
+	
 	glBindVertexArray(0);
 
 	this->vao = vao;
 
 }
 
-Object::~Object() {
+RenderObject::~RenderObject() {
 	glDeleteBuffers(1, &buffers.vbo);
 	glDeleteBuffers(1, &buffers.ebo);
 	glDeleteVertexArrays(1, &vao);
