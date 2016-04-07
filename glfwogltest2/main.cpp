@@ -10,10 +10,14 @@
 
 #include <iostream>
 //#include <thread>
+#include <vector>
 #include <chrono>
 
 #include "Object.h"
 #include "ShaderProgram.h"
+#include "GameObject.h"
+
+//TODO: clean up duplicate includes
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
@@ -67,7 +71,7 @@ int main(int argc, char** argv) {
 	//	0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f
 	//};
 
-	GLfloat vertices[] = {
+	std::vector<GLfloat> vertices({
 		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
 		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
@@ -109,11 +113,16 @@ int main(int argc, char** argv) {
 		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
 		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f
-	};
+	});
 
-	auto& object1 = Object(vertices, 36, elements, 36, shaderProgram);
+	auto mesh = Mesh(vertices);
+	auto go = GameObject(mesh, sp, glm::mat4());
+
+	auto& object1 = Object(vertices.data(), 36, elements, 36, shaderProgram);
 	//auto& object2 = Object(vertices, 4, elements, 3, shaderProgram);
 
+	//TODO: Move all uniform stuff into GameObject
+	//TODO: Add global way to get time / elapsed time / delta time
 	GLint uniTime = glGetUniformLocation(shaderProgram, "time");
 
 	GLint uniModel = glGetUniformLocation(shaderProgram, "model");
