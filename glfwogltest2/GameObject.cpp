@@ -7,6 +7,10 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);
+	if (mesh.usesElementArray)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers.ebo);
+	}
 	
 	glUseProgram(shaderProgram.shaderProgram);
 
@@ -71,7 +75,14 @@ void GameObject::Draw()
 
 	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(transform));
 
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	if (mesh.usesElementArray)
+	{
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	}
+	else
+	{
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
 }
 
 
