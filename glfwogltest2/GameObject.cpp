@@ -5,21 +5,22 @@
 GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform) : mesh(_mesh), shaderProgram(_shaderProgram), transform(_transform)
 {
 	glUseProgram(shaderProgram.shaderProgram);
+
 	// Specify the layout of the vertex data
 	GLint posAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "position");
 	glEnableVertexAttribArray(posAttrib);
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE,
-		8 * sizeof(float), 0);
+		VERTEX_SIZE * sizeof(float), 0);
 
 	GLint colAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "color");
 	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
-		8 * sizeof(float), (void*)(3 * sizeof(float)));
+		VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
 
 	GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "texcoord");
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
-		8 * sizeof(float), (void*)(6 * sizeof(float)));
+		VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
 	// Set up view and projection matrices
 	glm::mat4 view = glm::lookAt(
@@ -52,25 +53,21 @@ GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rh
 }
 
 // Runs every frame
-void GameObject::Tick()
+void GameObject::Tick(float elapsedTime)
 {
-	std::cout << "Gameobject tick\n";
+	std::cout << "Elapsed time:" << elapsedTime << std::endl;
+	Draw();
 }
 
 
 // Renders the object
 void GameObject::Draw()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers.ebo);
-
 	glUseProgram(shaderProgram.shaderProgram);
 	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
 
 	glm::mat4 model;
-	glm::mat4 rotation;
-	glm::mat4 translation;
-	glm::mat4 scaling;
+	glm::mat4 rotation, translation, scaling;
 
 	rotation = glm::rotate(
 		rotation,

@@ -18,7 +18,7 @@ public:
 	GameObject::GameObject(const GameObject& go);
 
 	// Runs every frame
-	void Tick();
+	void Tick(float elapsedTime);
 	// Renders the object
 	void Draw();
 	void SetupTextures();

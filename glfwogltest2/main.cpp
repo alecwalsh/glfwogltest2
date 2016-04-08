@@ -26,6 +26,7 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 
 int main(int argc, char** argv) {
 	auto t_start = std::chrono::high_resolution_clock::now();
+	float elapsed_time;
 	
 	glfwInit();
 
@@ -117,6 +118,7 @@ int main(int argc, char** argv) {
 	});
 
 
+	//TODO: move vao into GameObject
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -125,8 +127,6 @@ int main(int argc, char** argv) {
 
 	glm::mat4 transform;
 	GameObject go = GameObject(mesh, sp, transform);
-
-	//go.Tick();
 
 
 	//TODO: Move all uniform stuff into GameObject
@@ -141,9 +141,9 @@ int main(int argc, char** argv) {
 		glfwPollEvents();
 
 		auto t_now = std::chrono::high_resolution_clock::now();
-		float time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
+		elapsed_time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
 
-
+		float time = elapsed_time;
 
 		bool ascending = ((int)time / 5) % 2 == 0;
 
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glBindVertexArray(vao);
-		go.Draw();
+		go.Tick(elapsed_time);
 		//object1.Draw();
 
 		//Swap buffers
