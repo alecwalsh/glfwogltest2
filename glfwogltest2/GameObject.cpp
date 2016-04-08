@@ -4,6 +4,10 @@
 
 GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform) : mesh(_mesh), shaderProgram(_shaderProgram), transform(_transform)
 {
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);
+	
 	glUseProgram(shaderProgram.shaderProgram);
 
 	// Specify the layout of the vertex data
@@ -53,9 +57,8 @@ GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rh
 }
 
 // Runs every frame
-void GameObject::Tick(float elapsedTime)
+void GameObject::Tick()
 {
-	std::cout << "Elapsed time:" << elapsedTime << std::endl;
 	Draw();
 }
 
@@ -66,20 +69,7 @@ void GameObject::Draw()
 	glUseProgram(shaderProgram.shaderProgram);
 	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
 
-	glm::mat4 model;
-	glm::mat4 rotation, translation, scaling;
-
-	rotation = glm::rotate(
-		rotation,
-		0.0f * glm::radians(180.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f)
-	);
-	translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
-	scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
-
-	model = translation * rotation * scaling;
-
-	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(transform));
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
@@ -125,4 +115,9 @@ void GameObject::SetupTextures() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+void GameObject::SetTransform(glm::mat4 _transform)
+{
+	transform = _transform;
 }
