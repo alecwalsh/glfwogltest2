@@ -13,7 +13,6 @@
 #include <vector>
 #include <chrono>
 
-#include "RenderObject.h"
 #include "ShaderProgram.h"
 #include "GameObject.h"
 
