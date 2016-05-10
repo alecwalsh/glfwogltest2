@@ -35,7 +35,6 @@ GLuint ShaderProgram::ShaderProgramFromFiles(char* vertShaderFile, char* fragSha
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
-	glBindFragDataLocation(shaderProgram, 0, "outColor");
 	glLinkProgram(shaderProgram);
 
 	this->fragShader = fragmentShader;

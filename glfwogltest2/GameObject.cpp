@@ -86,6 +86,7 @@ void GameObject::Draw()
 }
 
 
+//TODO: Move texture setup outside of class
 void GameObject::SetupTextures() {
 	//texture setup
 
