@@ -22,7 +22,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
 	auto t_start = std::chrono::high_resolution_clock::now();
 	float elapsedTime = 0.0f;
 	

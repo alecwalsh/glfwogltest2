@@ -17,7 +17,7 @@ class GameObject
 public:
 	GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform);
 	virtual ~GameObject();
-	GameObject::GameObject(const GameObject& go);
+	GameObject(const GameObject& go);
 
 	// Runs every frame
 	void Tick();

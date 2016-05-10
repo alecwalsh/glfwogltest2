@@ -1,16 +1,16 @@
 #pragma once
 
-#include <gl\glew.h>
+#include <GL/glew.h>
 
 class ShaderProgram
 {
 	GLuint fragShader;
 	GLuint vertShader;
 
-	GLuint ShaderProgramFromFiles(char* vertShaderFile, char* fragShaderFile);
+	GLuint ShaderProgramFromFiles(char const* vertShaderFile, char const* fragShaderFile);
 public:
 	GLuint shaderProgram;
-	ShaderProgram(char* vertShader, char* fragShader);
+	ShaderProgram(char const* vertShader, char const* fragShader);
 	~ShaderProgram();
 };
 
