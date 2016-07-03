@@ -2,7 +2,7 @@
 #include <SOIL.h>
 
 
-GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform) : mesh(_mesh), shaderProgram(_shaderProgram), transform(_transform)
+GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime) : mesh(_mesh), shaderProgram(_shaderProgram), transform(_transform), elapsedTime(_elapsedTime)
 {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -34,7 +34,7 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	glm::mat4 view = glm::lookAt(
 		glm::vec3(0.0f, 0.0f, 2.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f)//y-axis is up
+		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
 	);
 	GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
 	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
@@ -55,7 +55,7 @@ GameObject::~GameObject()
 }
 
 
-GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rhs.shaderProgram), transform(rhs.transform)
+GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rhs.shaderProgram), transform(rhs.transform), elapsedTime(rhs.elapsedTime)
 {
 	std::cout << "GameObject copy constructor\n";
 }
@@ -63,6 +63,35 @@ GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rh
 // Runs every frame
 void GameObject::Tick()
 {
+	GLint uniTime = glGetUniformLocation(shaderProgram.shaderProgram, "time");
+
+	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
+
+	float time = elapsedTime;
+
+	bool ascending = ((int)time / 5) % 2 == 0;
+
+	time = time / 5;
+	if (ascending) {
+		glUniform1f(uniTime, time - floor(time));
+	}
+	else {
+		glUniform1f(uniTime, 1 - (time - floor(time)));
+	}
+
+	glm::mat4 rotation, translation, scaling;
+
+	rotation = glm::rotate(
+		rotation,
+		elapsedTime * glm::radians(180.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f)
+	);
+	translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
+	scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
+
+	this->SetTransform(translation * rotation * scaling);
+
+	std::cout << "Elapsed time:" << elapsedTime << std::endl;
 	Draw();
 }
 

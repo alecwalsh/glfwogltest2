@@ -14,8 +14,9 @@ class GameObject
 	ShaderProgram& shaderProgram;
 	glm::mat4 transform;
 	GLuint vao;
+	float& elapsedTime;
 public:
-	GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform);
+	GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime);
 	virtual ~GameObject();
 	GameObject(const GameObject& go);
 
