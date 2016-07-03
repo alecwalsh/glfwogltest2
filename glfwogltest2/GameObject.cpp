@@ -2,7 +2,7 @@
 #include <SOIL.h>
 
 
-GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime) : mesh(_mesh), shaderProgram(_shaderProgram), transform(_transform), elapsedTime(_elapsedTime)
+GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : mesh(_mesh), shaderProgram(_shaderProgram), transform(_transform), elapsedTime(_elapsedTime), deltaTime(_deltaTime)
 {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -55,7 +55,7 @@ GameObject::~GameObject()
 }
 
 
-GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rhs.shaderProgram), transform(rhs.transform), elapsedTime(rhs.elapsedTime)
+GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rhs.shaderProgram), transform(rhs.transform), elapsedTime(rhs.elapsedTime), deltaTime(rhs.deltaTime)
 {
 	std::cout << "GameObject copy constructor\n";
 }
@@ -64,7 +64,6 @@ GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rh
 void GameObject::Tick()
 {
 	GLint uniTime = glGetUniformLocation(shaderProgram.shaderProgram, "time");
-
 	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
 
 	float time = elapsedTime;
@@ -83,13 +82,13 @@ void GameObject::Tick()
 
 	rotation = glm::rotate(
 		rotation,
-		elapsedTime * glm::radians(180.0f),
+		deltaTime * glm::radians(180.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f)
 	);
 	translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
 	scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
 
-	this->SetTransform(translation * rotation * scaling);
+	this->ModTransform(translation * rotation * scaling);
 
 	std::cout << "Elapsed time:" << elapsedTime << std::endl;
 	Draw();
@@ -158,7 +157,14 @@ void GameObject::SetupTextures() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
+//Sets the transform
 void GameObject::SetTransform(glm::mat4 _transform)
 {
 	transform = _transform;
+}
+
+//Modifies the transform
+void GameObject::ModTransform(glm::mat4 _transform)
+{
+	transform *= _transform;
 }

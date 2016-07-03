@@ -15,8 +15,9 @@ class GameObject
 	glm::mat4 transform;
 	GLuint vao;
 	float& elapsedTime;
+	float& deltaTime;
 public:
-	GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime);
+	GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime);
 	virtual ~GameObject();
 	GameObject(const GameObject& go);
 
@@ -27,5 +28,6 @@ public:
 	void SetupTextures();
 
 	void SetTransform(glm::mat4 _transform);
+	void ModTransform(glm::mat4 _transform);
 };
 

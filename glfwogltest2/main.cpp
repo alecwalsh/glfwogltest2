@@ -24,7 +24,9 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 
 int main(int argc, char* argv[]) {
 	auto t_start = std::chrono::high_resolution_clock::now();
+	auto t_prev = t_start;
 	float elapsedTime = 0.0f;
+	float deltaTime = 0.0f;
 	
 	glfwInit();
 
@@ -102,7 +104,8 @@ int main(int argc, char* argv[]) {
 	auto mesh = Mesh(vertices, elements);
 
 	glm::mat4 transform;
-	GameObject go = GameObject(mesh, sp, transform, elapsedTime);
+	transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1, 0, 0));
+	GameObject go = GameObject(mesh, sp, transform, elapsedTime, deltaTime);
 
 
 	//main loop
@@ -110,8 +113,11 @@ int main(int argc, char* argv[]) {
 	{
 		glfwPollEvents();
 
-		//TODO: add delta time variable
 		auto t_now = std::chrono::high_resolution_clock::now();
+
+		deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_prev).count();
+		t_prev = t_now;
+
 		elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
 
 
