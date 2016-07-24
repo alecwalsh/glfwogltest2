@@ -15,6 +15,7 @@
 
 #include "ShaderProgram.h"
 #include "GameObject.h"
+#include "CubeObject.h"
 //TODO: clean up duplicate includes
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -105,7 +106,7 @@ int main(int argc, char* argv[]) {
 
 	glm::mat4 transform;
 	transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1, 0, 0));
-	GameObject go = GameObject(mesh, sp, transform, elapsedTime, deltaTime);
+	GameObject* go = new CubeObject(mesh, sp, transform, elapsedTime, deltaTime);
 
 
 	//main loop
@@ -125,7 +126,7 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		go.Tick();
+		go->Tick();
 
 		//Swap buffers
 		glfwSwapBuffers(window);
@@ -142,7 +143,21 @@ int main(int argc, char* argv[]) {
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+	bool keys[1024];
+
+	if (action == GLFW_PRESS)
+	{
+		keys[key] = true;
+	}
+	else if (action == GLFW_RELEASE)
+	{
+		keys[key] = false;
+	}
+
+
 	// When a user presses the escape key, we set the WindowShouldClose property to true, closing the application
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	if (keys[GLFW_KEY_ESCAPE])
+	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
 }

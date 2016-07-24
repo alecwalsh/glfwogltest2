@@ -10,6 +10,7 @@
 
 class GameObject
 {
+protected:
 	Mesh& mesh;
 	ShaderProgram& shaderProgram;
 	glm::mat4 transform;
@@ -22,7 +23,7 @@ public:
 	GameObject(const GameObject& go);
 
 	// Runs every frame
-	void Tick();
+	virtual void Tick() = 0;
 	// Renders the object
 	void Draw();
 	void SetupTextures();
