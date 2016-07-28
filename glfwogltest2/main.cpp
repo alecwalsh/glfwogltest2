@@ -154,6 +154,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		keys[key] = false;
 	}
 
+	//TODO: add movement keys
 
 	// When a user presses the escape key, we set the WindowShouldClose property to true, closing the application
 	if (keys[GLFW_KEY_ESCAPE])

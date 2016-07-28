@@ -7,6 +7,7 @@
 
 #include "ShaderProgram.h"
 #include "Mesh.h"
+#include "Camera.h"
 
 class GameObject
 {

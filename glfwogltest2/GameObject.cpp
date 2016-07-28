@@ -30,12 +30,14 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
-	// Set up view and projection matrices
-	glm::mat4 view = glm::lookAt(
+	auto camera = Camera(
 		glm::vec3(0.0f, 0.0f, 2.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
 	);
+
+	// Set up view and projection matrices
+	glm::mat4 view = camera.viewMat;
 	GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
 	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
 
