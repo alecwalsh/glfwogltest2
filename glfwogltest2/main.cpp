@@ -16,12 +16,16 @@
 #include "ShaderProgram.h"
 #include "GameObject.h"
 #include "CubeObject.h"
+#include "Camera.h"
 //TODO: clean up duplicate includes
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void handle_movement(Camera& camera, float deltaTime);
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
+
+bool keys[1024];
 
 int main(int argc, char* argv[]) {
 	auto t_start = std::chrono::high_resolution_clock::now();
@@ -104,16 +108,20 @@ int main(int argc, char* argv[]) {
 
 	auto mesh = Mesh(vertices, elements);
 
+	auto camera = Camera(
+		glm::vec3(0.0f, 0.0f, 2.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
+	);
+
 	glm::mat4 transform;
 	transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1, 0, 0));
-	GameObject* go = new CubeObject(mesh, sp, transform, elapsedTime, deltaTime);
+	CubeObject* go = new CubeObject(mesh, sp, transform, elapsedTime, deltaTime);
 
 
 	//main loop
 	while (!glfwWindowShouldClose(window))
 	{
-		glfwPollEvents();
-
 		auto t_now = std::chrono::high_resolution_clock::now();
 
 		deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_prev).count();
@@ -121,12 +129,16 @@ int main(int argc, char* argv[]) {
 
 		elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
 
+		glfwPollEvents();
+		handle_movement(camera, deltaTime);
+
 
 		// Clear the screen to black
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		go->Tick();
+		go->Draw(camera);
 
 		//Swap buffers
 		glfwSwapBuffers(window);
@@ -143,8 +155,6 @@ int main(int argc, char* argv[]) {
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-	bool keys[1024];
-
 	if (action == GLFW_PRESS)
 	{
 		keys[key] = true;
@@ -160,5 +170,34 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (keys[GLFW_KEY_ESCAPE])
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+}
+
+
+//TODO: handle mouse movement, use to rotate
+void handle_movement(Camera& camera, float deltaTime)
+{
+	glm::mat4 translation;
+
+
+	//TODO: Add cameraFront and cameraUp values to Camera class instead of using hardcoded values
+	glm::vec3 leftVector = glm::vec3(-1.0f, 0.0f, 0.0f);
+	glm::vec3 rightVector = glm::vec3(1.0f, 0.0f, 0.0f);
+
+	float velocity = 0.5f;
+
+
+
+	//Bug: When pressing right and left at the same time, left wins out
+	//TODO: Add more keys
+	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
+	{
+		translation = glm::translate(translation, velocity * deltaTime * leftVector);
+		camera.ModTransform(translation);
+	}
+	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
+	{
+		translation = glm::translate(translation, velocity * deltaTime * rightVector);
+		camera.ModTransform(translation);
 	}
 }

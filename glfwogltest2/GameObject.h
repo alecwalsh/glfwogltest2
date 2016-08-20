@@ -9,6 +9,8 @@
 #include "Mesh.h"
 #include "Camera.h"
 
+
+//TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject
 class GameObject
 {
 protected:
@@ -26,7 +28,7 @@ public:
 	// Runs every frame
 	virtual void Tick() = 0;
 	// Renders the object
-	void Draw();
+	void Draw(Camera camera);
 	void SetupTextures();
 
 	void SetTransform(glm::mat4 _transform);

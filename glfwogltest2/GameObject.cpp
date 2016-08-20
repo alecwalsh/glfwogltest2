@@ -30,16 +30,8 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
-	auto camera = Camera(
-		glm::vec3(0.0f, 0.0f, 2.0f),
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
-	);
 
-	// Set up view and projection matrices
-	glm::mat4 view = camera.viewMat;
-	GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
-	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+	// Set up projection matrix
 
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
 	GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
@@ -56,7 +48,7 @@ GameObject::~GameObject()
 	std::cout << "GameObject destructor\n";
 }
 
-
+//Copy constructor
 GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rhs.shaderProgram), transform(rhs.transform), elapsedTime(rhs.elapsedTime), deltaTime(rhs.deltaTime)
 {
 	std::cout << "GameObject copy constructor\n";
@@ -64,12 +56,16 @@ GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rh
 
 
 // Renders the object
-void GameObject::Draw()
+void GameObject::Draw(Camera camera)
 {
 	glUseProgram(shaderProgram.shaderProgram);
 	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
 
 	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(transform));
+
+	auto view = camera.viewMat;
+	GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
+	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
 
 	if (mesh.usesElementArray)
 	{
