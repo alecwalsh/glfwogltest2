@@ -28,7 +28,7 @@ void CubeObject::Tick()
 	translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
 	scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
 
-	this->ModTransform(translation * rotation * scaling);
+	//this->ModTransform(translation * rotation * scaling);
 
 	std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }

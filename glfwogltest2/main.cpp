@@ -109,13 +109,13 @@ int main(int argc, char* argv[]) {
 	auto mesh = Mesh(vertices, elements);
 
 	auto camera = Camera(
-		glm::vec3(0.0f, 0.0f, 2.0f),
+		glm::vec3(2.0f, 4.0f, 2.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
 	);
 
 	glm::mat4 transform;
-	transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1, 0, 0));
+	transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1, 0, 0));
 	CubeObject* go = new CubeObject(mesh, sp, transform, elapsedTime, deltaTime);
 
 
@@ -180,24 +180,52 @@ void handle_movement(Camera& camera, float deltaTime)
 	glm::mat4 translation;
 
 
-	//TODO: Add cameraFront and cameraUp values to Camera class instead of using hardcoded values
-	glm::vec3 leftVector = glm::vec3(-1.0f, 0.0f, 0.0f);
-	glm::vec3 rightVector = glm::vec3(1.0f, 0.0f, 0.0f);
+	//Calculates vectors from the perspective of the camera
+	//This allows the camera to work no matter how it is moved and rotated
+	glm::vec3 rightVector = glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp));
+	glm::vec3 leftVector = -rightVector;
+	glm::vec3 frontVector = camera.cameraFront;
+	glm::vec3 backVector = -frontVector;
+	glm::vec3 upVector = camera.cameraUp;
+	glm::vec3 downVector = -upVector;
 
 	float velocity = 0.5f;
 
-
-
 	//Bug: When pressing right and left at the same time, left wins out
-	//TODO: Add more keys
+	//TODO: Get key bindings from files
+	//TODO: Figure out how to use control key
+
+	//Changes the cameras location in response to keypresses
 	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * leftVector);
-		camera.ModTransform(translation);
+		camera.Transform(translation);
 	}
 	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * rightVector);
-		camera.ModTransform(translation);
+		camera.Transform(translation);
+	}
+	
+	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
+	{
+		translation = glm::translate(translation, velocity * deltaTime * frontVector);
+		camera.Transform(translation);
+	}
+	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])
+	{
+		translation = glm::translate(translation, velocity * deltaTime * backVector);
+		camera.Transform(translation);
+	}
+
+	if (keys[GLFW_KEY_SPACE])
+	{
+		translation = glm::translate(translation, velocity * deltaTime * upVector);
+		camera.Transform(translation);
+	}
+	if (keys[GLFW_KEY_C])
+	{
+		translation = glm::translate(translation, velocity * deltaTime * downVector);
+		camera.Transform(translation);
 	}
 }
