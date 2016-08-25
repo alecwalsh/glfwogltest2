@@ -19,7 +19,9 @@
 #include "Camera.h"
 //TODO: clean up duplicate includes
 
+//Prototypes for input handling callbacks
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void handle_movement(Camera& camera, float deltaTime);
 
 // Window dimensions
@@ -46,7 +48,7 @@ int main(int argc, char* argv[]) {
 	glfwMakeContextCurrent(window);
 
 	glfwSetKeyCallback(window, key_callback);
-
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
@@ -109,7 +111,7 @@ int main(int argc, char* argv[]) {
 	auto mesh = Mesh(vertices, elements);
 
 	auto camera = Camera(
-		glm::vec3(2.0f, 4.0f, 2.0f),
+		glm::vec3(0.0f, 2.0f, 2.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
 	);
@@ -164,8 +166,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		keys[key] = false;
 	}
 
-	//TODO: add movement keys
-
 	// When a user presses the escape key, we set the WindowShouldClose property to true, closing the application
 	if (keys[GLFW_KEY_ESCAPE])
 	{
@@ -173,6 +173,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 }
 
+//TODO: implement this
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+
+}
 
 //TODO: handle mouse movement, use to rotate
 void handle_movement(Camera& camera, float deltaTime)
@@ -191,7 +196,7 @@ void handle_movement(Camera& camera, float deltaTime)
 
 	float velocity = 0.5f;
 
-	//Bug: When pressing right and left at the same time, left wins out
+	//Bug: When pressing two opposite keys at the same time, the one listed first in the if statements below wins out(for example left beats right)
 	//TODO: Get key bindings from files
 	//TODO: Figure out how to use control key
 
