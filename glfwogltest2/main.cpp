@@ -196,7 +196,6 @@ void handle_movement(Camera& camera, float deltaTime)
 
 	float velocity = 0.5f;
 
-	//Bug: When pressing two opposite keys at the same time, the one listed first in the if statements below wins out(for example left beats right)
 	//TODO: Get key bindings from files
 	//TODO: Figure out how to use control key
 
@@ -204,33 +203,29 @@ void handle_movement(Camera& camera, float deltaTime)
 	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * leftVector);
-		camera.Transform(translation);
 	}
 	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * rightVector);
-		camera.Transform(translation);
 	}
 	
 	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * frontVector);
-		camera.Transform(translation);
 	}
 	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * backVector);
-		camera.Transform(translation);
 	}
 
 	if (keys[GLFW_KEY_SPACE])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * upVector);
-		camera.Transform(translation);
 	}
 	if (keys[GLFW_KEY_C])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * downVector);
-		camera.Transform(translation);
 	}
+
+	camera.Transform(translation);
 }
