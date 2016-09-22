@@ -58,3 +58,28 @@ void Camera::UpdateViewMatrix()
 {
 	viewMat = glm::lookAt(position, target, up);
 }
+
+void Camera::Rotate(float angle) {
+	//auto yaw = 30.0f;
+	//auto pitch = 30.0f;
+	//
+	//auto mag = 2;
+
+	target -= position;
+	
+	auto s = sin(glm::radians(angle));
+	auto c = cos(glm::radians(angle));
+
+	auto tmpx = target.x * c - target.z * s;
+	auto tmpz = target.x * s + target.z * c;
+
+	target = glm::vec3(tmpx, target.y, tmpz);
+
+	target += position;
+
+	cameraFront = glm::normalize(target - position);
+	cameraUp = glm::normalize(glm::cross(cameraFront, glm::cross(up, cameraFront)));
+
+	UpdateViewMatrix();
+
+}

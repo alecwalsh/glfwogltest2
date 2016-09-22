@@ -27,6 +27,11 @@ void handle_movement(Camera& camera, float deltaTime);
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
+float lastX = WIDTH / 2.0;
+float lastY = HEIGHT / 2.0;
+
+double rotAngle;
+
 bool keys[1024];
 
 int main(int argc, char* argv[]) {
@@ -111,7 +116,7 @@ int main(int argc, char* argv[]) {
 	auto mesh = Mesh(vertices, elements);
 
 	auto camera = Camera(
-		glm::vec3(0.0f, 2.0f, 2.0f),
+		glm::vec3(0.0f, 0.0f, 2.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
 	);
@@ -173,10 +178,28 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 }
 
+
+bool firstMouse = true;
 //TODO: implement this
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
 
+
+	float xSensitivity = 0.01f;
+	float ySensitivity = 0.01f;
+	auto deltaX = lastX - xpos;
+	auto deltaY = lastY - ypos;
+
+	lastX = xpos;
+	lastY = ypos;
+
+	rotAngle = (deltaX / WIDTH) * 180 * xSensitivity;
 }
 
 //TODO: handle mouse movement, use to rotate
@@ -226,6 +249,15 @@ void handle_movement(Camera& camera, float deltaTime)
 	{
 		translation = glm::translate(translation, velocity * deltaTime * downVector);
 	}
+	if (keys[GLFW_KEY_Q])
+	{
+		camera.Rotate(-deltaTime * 180.0f);
+	}
+	if (keys[GLFW_KEY_E])
+	{
+		camera.Rotate(deltaTime * 180.0f);
+	}
 
+	camera.Rotate(rotAngle);
 	camera.Transform(translation);
 }

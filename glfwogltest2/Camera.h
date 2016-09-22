@@ -22,6 +22,8 @@ public:
 
 	void Transform(glm::mat4 _transform);
 
+	void Rotate(float angle);
+
 	glm::mat4 viewMat;
 	glm::vec3 cameraFront;
 	glm::vec3 cameraUp; //Up vector for the camera
