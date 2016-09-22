@@ -10,6 +10,7 @@ class Camera {
 	glm::vec3 target;
 	glm::vec3 up; //Up vector for the whole scene
 
+	//TODO: add UpdateCamera() method to update cameraFront and cameraUp
 	void UpdateViewMatrix();
 public:
 	Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up);
@@ -22,7 +23,8 @@ public:
 
 	void Transform(glm::mat4 _transform);
 
-	void Rotate(float angle);
+	void RotateYaw(float angle);
+	void RotatePitch(float angle);
 
 	glm::mat4 viewMat;
 	glm::vec3 cameraFront;

@@ -24,13 +24,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void handle_movement(Camera& camera, float deltaTime);
 
+//TODO: avoid globals
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
 float lastX = WIDTH / 2.0;
 float lastY = HEIGHT / 2.0;
 
-double rotAngle;
+double yaw;
+double pitch;
 
 bool keys[1024];
 
@@ -54,6 +56,8 @@ int main(int argc, char* argv[]) {
 
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
@@ -179,10 +183,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
+bool mouseMoved = false;
 bool firstMouse = true;
 //TODO: implement this
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+	mouseMoved = true;
 	if (firstMouse)
 	{
 		lastX = xpos;
@@ -191,15 +197,24 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	}
 
 
-	float xSensitivity = 0.01f;
-	float ySensitivity = 0.01f;
+	float xSensitivity = 0.2f;
+	float ySensitivity = 0.2f;
 	auto deltaX = lastX - xpos;
 	auto deltaY = lastY - ypos;
 
 	lastX = xpos;
 	lastY = ypos;
 
-	rotAngle = (deltaX / WIDTH) * 180 * xSensitivity;
+	//You should rotate 180 degrees for every WIDTH pixels, assuming the sensitivity is 1
+	yaw = -(deltaX / WIDTH) * 180.0f * xSensitivity;
+	pitch = (deltaY / HEIGHT) * 180.0f * ySensitivity;
+
+	//if (pitch > 89.0f) {
+	//	pitch = 89.0f;
+	//}
+	//if (pitch < -89.0f) {
+	//	pitch = -89.0f;
+	//}
 }
 
 //TODO: handle mouse movement, use to rotate
@@ -217,7 +232,7 @@ void handle_movement(Camera& camera, float deltaTime)
 	glm::vec3 upVector = camera.cameraUp;
 	glm::vec3 downVector = -upVector;
 
-	float velocity = 0.5f;
+	float velocity = 2.5f;
 
 	//TODO: Get key bindings from files
 	//TODO: Figure out how to use control key
@@ -251,13 +266,19 @@ void handle_movement(Camera& camera, float deltaTime)
 	}
 	if (keys[GLFW_KEY_Q])
 	{
-		camera.Rotate(-deltaTime * 180.0f);
+		camera.RotateYaw(-deltaTime * 180.0f);
 	}
 	if (keys[GLFW_KEY_E])
 	{
-		camera.Rotate(deltaTime * 180.0f);
+		camera.RotateYaw(deltaTime * 180.0f);
 	}
 
-	camera.Rotate(rotAngle);
+	if (mouseMoved)
+	{
+		mouseMoved = false;
+		camera.RotateYaw(yaw);
+		camera.RotatePitch(pitch);
+	}
+
 	camera.Transform(translation);
 }
