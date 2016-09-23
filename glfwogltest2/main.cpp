@@ -31,8 +31,8 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 float lastX = WIDTH / 2.0;
 float lastY = HEIGHT / 2.0;
 
-double yaw;
-double pitch;
+double yaw = -90.0f;
+double pitch = 0.0f;
 
 bool keys[1024];
 
@@ -185,7 +185,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 bool mouseMoved = false;
 bool firstMouse = true;
-//TODO: implement this
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	mouseMoved = true;
@@ -196,32 +195,30 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		firstMouse = false;
 	}
 
-
 	float xSensitivity = 0.2f;
 	float ySensitivity = 0.2f;
+
 	auto deltaX = lastX - xpos;
 	auto deltaY = lastY - ypos;
 
 	lastX = xpos;
 	lastY = ypos;
 
-	//You should rotate 180 degrees for every WIDTH pixels, assuming the sensitivity is 1
-	yaw = -(deltaX / WIDTH) * 180.0f * xSensitivity;
-	pitch = (deltaY / HEIGHT) * 180.0f * ySensitivity;
+	
+	yaw -= deltaX * xSensitivity;
+	pitch += deltaY *  ySensitivity;
 
-	//if (pitch > 89.0f) {
-	//	pitch = 89.0f;
-	//}
-	//if (pitch < -89.0f) {
-	//	pitch = -89.0f;
-	//}
+	if (pitch > 89.0f) {
+		pitch = 89.0f;
+	}
+	if (pitch < -89.0f) {
+		pitch = -89.0f;
+	}
 }
 
-//TODO: handle mouse movement, use to rotate
 void handle_movement(Camera& camera, float deltaTime)
 {
 	glm::mat4 translation;
-
 
 	//Calculates vectors from the perspective of the camera
 	//This allows the camera to work no matter how it is moved and rotated
@@ -229,7 +226,9 @@ void handle_movement(Camera& camera, float deltaTime)
 	glm::vec3 leftVector = -rightVector;
 	glm::vec3 frontVector = camera.cameraFront;
 	glm::vec3 backVector = -frontVector;
-	glm::vec3 upVector = camera.cameraUp;
+	//Uses the scene's up vector instead of the camera's
+	//This means that the camera's rotation doesn't affect moving up and down
+	glm::vec3 upVector = camera.up;
 	glm::vec3 downVector = -upVector;
 
 	float velocity = 2.5f;
@@ -264,20 +263,11 @@ void handle_movement(Camera& camera, float deltaTime)
 	{
 		translation = glm::translate(translation, velocity * deltaTime * downVector);
 	}
-	if (keys[GLFW_KEY_Q])
-	{
-		camera.RotateYaw(-deltaTime * 180.0f);
-	}
-	if (keys[GLFW_KEY_E])
-	{
-		camera.RotateYaw(deltaTime * 180.0f);
-	}
 
 	if (mouseMoved)
 	{
 		mouseMoved = false;
-		camera.RotateYaw(yaw);
-		camera.RotatePitch(pitch);
+		camera.Rotate(pitch, yaw);
 	}
 
 	camera.Transform(translation);

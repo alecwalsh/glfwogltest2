@@ -6,11 +6,8 @@
 
 //TODO: Make Camera a subclass of GameObject;  see TODO at top of GameObject.h
 class Camera {
-	glm::vec3 position;
-	glm::vec3 target;
-	glm::vec3 up; //Up vector for the whole scene
-
 	//TODO: add UpdateCamera() method to update cameraFront and cameraUp
+	void UpdateCamera();
 	void UpdateViewMatrix();
 public:
 	Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up);
@@ -22,9 +19,11 @@ public:
 	void ModTarget(glm::mat4 _transform);
 
 	void Transform(glm::mat4 _transform);
+	void Rotate(float pitch, float yaw);
 
-	void RotateYaw(float angle);
-	void RotatePitch(float angle);
+	glm::vec3 position;
+	glm::vec3 target;
+	glm::vec3 up; //Up vector for the whole scene
 
 	glm::mat4 viewMat;
 	glm::vec3 cameraFront;

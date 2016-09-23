@@ -53,46 +53,27 @@ void Camera::Transform(glm::mat4 _transform)
 	UpdateViewMatrix();
 }
 
+void Camera::UpdateCamera()
+{
+	//viewMat = glm::lookAt(position, target, up);
+	//viewMat = glm::lookAt(position, position + cameraFront, cameraUp);
+}
+
 
 void Camera::UpdateViewMatrix()
 {
-	viewMat = glm::lookAt(position, target, up);
+	//viewMat = glm::lookAt(position, target, up);
+	viewMat = glm::lookAt(position, position + cameraFront, cameraUp);
 }
 
-void Camera::RotateYaw(float angle) {
-	target -= position;
+void Camera::Rotate(float pitch, float yaw) {
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	
-	auto s = sin(glm::radians(angle));
-	auto c = cos(glm::radians(angle));
+	cameraFront = glm::normalize(front);
 
-	auto tmpx = target.x * c - target.z * s;
-	auto tmpz = target.x * s + target.z * c;
-
-	target = glm::vec3(tmpx, target.y, tmpz);
-
-	target += position;
-
-	cameraFront = glm::normalize(target - position);
-	cameraUp = glm::normalize(glm::cross(cameraFront, glm::cross(up, cameraFront)));
-
-	UpdateViewMatrix();
-
-}
-
-void Camera::RotatePitch(float angle) {
-	target -= position;
-
-	auto s = sin(glm::radians(angle));
-	auto c = cos(glm::radians(angle));
-
-	auto tmpy = target.y * c - target.z * s;
-	auto tmpz = target.y * s + target.z * c;
-
-	target = glm::vec3(target.x, tmpy, tmpz);
-
-	target += position;
-
-	cameraFront = glm::normalize(target - position);
 	cameraUp = glm::normalize(glm::cross(cameraFront, glm::cross(up, cameraFront)));
 
 	UpdateViewMatrix();
