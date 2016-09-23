@@ -222,12 +222,10 @@ void handle_movement(Camera& camera, float deltaTime)
 
 	//Calculates vectors from the perspective of the camera
 	//This allows the camera to work no matter how it is moved and rotated
-	glm::vec3 rightVector = glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp));
+	glm::vec3 rightVector = glm::normalize(glm::cross(camera.cameraFront, camera.up));
 	glm::vec3 leftVector = -rightVector;
 	glm::vec3 frontVector = camera.cameraFront;
 	glm::vec3 backVector = -frontVector;
-	//Uses the scene's up vector instead of the camera's
-	//This means that the camera's rotation doesn't affect moving up and down
 	glm::vec3 upVector = camera.up;
 	glm::vec3 downVector = -upVector;
 
@@ -270,5 +268,5 @@ void handle_movement(Camera& camera, float deltaTime)
 		camera.Rotate(pitch, yaw);
 	}
 
-	camera.Transform(translation);
+	camera.Translate(translation);
 }
