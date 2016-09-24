@@ -3,8 +3,15 @@
 // Runs every frame
 void CubeObject::Tick()
 {
+	//TODO: move glGetUniformLocation calls outside of tick function; they only need to be called once per shader
 	GLint uniTime = glGetUniformLocation(shaderProgram.shaderProgram, "time");
-	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
+	
+	//TODO: display light source as a white cube
+	glm::vec3 lightPos(3.0f, 1.0f, 2.0f);
+
+	GLint uniLightPos = glGetUniformLocation(shaderProgram.shaderProgram, "lightPos");
+
+	glUniform3f(uniLightPos, lightPos.x, lightPos.y, lightPos.z);
 
 	float time = elapsedTime;
 
@@ -35,5 +42,5 @@ void CubeObject::Tick()
 
 CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime)
 {
-
+	//Does nothing but call superclass constructor
 }

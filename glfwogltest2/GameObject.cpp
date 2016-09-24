@@ -20,15 +20,20 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), 0);
 
-	GLint colAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "color");
-	glEnableVertexAttribArray(colAttrib);
-	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
+	GLint normalAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "normal");
+	glEnableVertexAttribArray(normalAttrib);
+	glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
 
-	GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "texcoord");
+	GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "normaltexcoord");
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
+
+	//GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "texcoord");
+	//glEnableVertexAttribArray(texAttrib);
+	//glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
+	//	VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
 
 	// Set up projection matrix
@@ -82,8 +87,8 @@ void GameObject::Draw(Camera camera)
 void GameObject::SetupTextures() {
 	//texture setup
 
-	GLuint textures[2];
-	glGenTextures(2, textures);
+	GLuint textures[1];
+	glGenTextures(1, textures);
 
 	//Load textures from file
 
@@ -93,32 +98,47 @@ void GameObject::SetupTextures() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
-	image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
+	image = SOIL_load_image("normalmaptest1.png", &width, &height, 0, SOIL_LOAD_RGB);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
 		GL_UNSIGNED_BYTE, image);
 	SOIL_free_image_data(image);
-	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texKitten"), 0);
+	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texNormalMap"), 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, textures[0]);
 
-	image = SOIL_load_image("sample2.png", &width, &height, 0, SOIL_LOAD_RGB);
+	//image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
-		GL_UNSIGNED_BYTE, image);
-	SOIL_free_image_data(image);
-	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texPuppy"), 1);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+	//	GL_UNSIGNED_BYTE, image);
+	//SOIL_free_image_data(image);
+	//glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texKitten"), 0);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+	//image = SOIL_load_image("sample2.png", &width, &height, 0, SOIL_LOAD_RGB);
+
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+	//	GL_UNSIGNED_BYTE, image);
+	//SOIL_free_image_data(image);
+	//glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texPuppy"), 1);
+
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 //Sets the transform
