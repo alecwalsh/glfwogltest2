@@ -20,15 +20,15 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), 0);
 
-	GLint colAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "color");
-	glEnableVertexAttribArray(colAttrib);
-	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
+	GLint normalAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "normal");
+	glEnableVertexAttribArray(normalAttrib);
+	glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
 
-	GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "texcoord");
-	glEnableVertexAttribArray(texAttrib);
-	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
-		VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
+	//GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "texcoord");
+	//glEnableVertexAttribArray(texAttrib);
+	//glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
+	//	VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
 
 	// Set up projection matrix

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#define VERTEX_SIZE 8
+#define VERTEX_SIZE 6
 
 class Mesh
 {

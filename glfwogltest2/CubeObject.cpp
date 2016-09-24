@@ -4,7 +4,12 @@
 void CubeObject::Tick()
 {
 	GLint uniTime = glGetUniformLocation(shaderProgram.shaderProgram, "time");
-	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
+	
+	glm::vec3 lightPos(1.5f, 1.0f, 2.0f);
+
+	GLint uniLightPos = glGetUniformLocation(shaderProgram.shaderProgram, "lightPos");
+
+	glUniform3f(uniLightPos, lightPos.x, lightPos.y, lightPos.z);
 
 	float time = elapsedTime;
 
@@ -35,5 +40,5 @@ void CubeObject::Tick()
 
 CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime)
 {
-
+	//Does nothing but call superclass constructor
 }
