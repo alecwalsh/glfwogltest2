@@ -3,9 +3,11 @@
 // Runs every frame
 void CubeObject::Tick()
 {
+	//TODO: move glGetUniformLocation calls outside of tick function; they only need to be called once per shader
 	GLint uniTime = glGetUniformLocation(shaderProgram.shaderProgram, "time");
 	
-	glm::vec3 lightPos(1.5f, 1.0f, 2.0f);
+	//TODO: display light source as a white cube
+	glm::vec3 lightPos(3.0f, 1.0f, 2.0f);
 
 	GLint uniLightPos = glGetUniformLocation(shaderProgram.shaderProgram, "lightPos");
 

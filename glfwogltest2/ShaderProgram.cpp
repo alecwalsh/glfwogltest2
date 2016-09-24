@@ -4,6 +4,10 @@
 #include <fstream>
 #include <sstream>
 
+ShaderProgram::ShaderProgram(char const* vertShader, char const* fragShader) {
+	ShaderProgramFromFiles(vertShader, fragShader);
+}
+
 //TODO: add error handling
 GLuint ShaderProgram::ShaderProgramFromFiles(char const* vertShaderFile, char const* fragShaderFile) {
 	std::ifstream vert_if;
@@ -43,11 +47,6 @@ GLuint ShaderProgram::ShaderProgramFromFiles(char const* vertShaderFile, char co
 
 	return shaderProgram;
 }
-
-ShaderProgram::ShaderProgram(char const* vertShader, char const* fragShader) {
-	ShaderProgramFromFiles(vertShader, fragShader);
-}
-
 
 ShaderProgram::~ShaderProgram() {
 	glDeleteProgram(shaderProgram);
