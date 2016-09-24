@@ -120,10 +120,19 @@ int main(int argc, char* argv[]) {
 	auto mesh = Mesh(vertices, elements);
 
 	auto camera = Camera(
-		glm::vec3(0.0f, 0.0f, 2.0f),
+		glm::vec3(2.0f, 2.0f, 2.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
 	);
+
+	auto& cf = camera.cameraFront;
+
+	pitch = glm::degrees(asin(cf.y));
+	yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
+
+	if (cf.z < 0) {
+		yaw = -yaw;
+	}
 
 	glm::mat4 transform;
 	transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1, 0, 0));
