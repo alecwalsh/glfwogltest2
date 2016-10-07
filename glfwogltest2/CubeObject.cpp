@@ -40,6 +40,14 @@ void CubeObject::Tick()
 	std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
 
+void CubeObject::Draw(Camera camera) {
+	//Sets up cameraPos uniform then calls base class method
+	GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
+	glUniform3f(uniCameraPos, camera.position.x, camera.position.y, camera.position.z);
+
+	GameObject::Draw(camera);
+}
+
 CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime)
 {
 	//Does nothing but call superclass constructor

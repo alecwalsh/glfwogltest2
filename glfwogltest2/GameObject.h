@@ -28,7 +28,7 @@ public:
 	// Runs every frame
 	virtual void Tick() = 0;
 	// Renders the object
-	void Draw(Camera camera);
+	virtual void Draw(Camera camera);
 	void SetupTextures();
 
 	void SetTransform(glm::mat4 _transform);
