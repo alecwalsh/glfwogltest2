@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
 		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f
 	});
 
-	auto mesh = Mesh(vertices);
+	auto mesh = Mesh("data/cube.txt");
 
 	auto camera = Camera(
 		glm::vec3(2.0f, 2.0f, 2.0f),

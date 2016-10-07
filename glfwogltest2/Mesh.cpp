@@ -1,7 +1,8 @@
-#include "Mesh.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
-
+#include "Mesh.h"
 
 Mesh::Mesh(std::vector<GLfloat> vertices): usesElementArray(false)
 {
@@ -13,6 +14,25 @@ Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> elements) : usesEl
 {
 	this->vertices = vertices;
 	this->elements = elements;
+	UploadToGPU();
+}
+
+Mesh::Mesh(std::string fileName) : usesElementArray(false)
+{
+	std::ifstream infile(fileName);
+	std::string line;
+	while (std::getline(infile, line))
+	{
+		std::istringstream iss(line);
+		std::vector<float> vertex(8);
+		
+		iss >> vertex[0] >> vertex[1] >> vertex[2] >> vertex[3] >> vertex[4] >> vertex[5] >> vertex[6] >> vertex[7];
+
+		for (int i = 0; i < 8; i++)
+		{
+			vertices.push_back(vertex[i]);
+		}
+	}
 	UploadToGPU();
 }
 
