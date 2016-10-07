@@ -32,6 +32,8 @@ void main() {
 	
 	vec3 lightDir = normalize(lightPos - FragPos);
 
+	//Calculate specular lighting
+	//I don't really understand that math behind this
 	vec3 viewDir = normalize(cameraPos - FragPos);
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
