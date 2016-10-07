@@ -18,11 +18,14 @@ uniform vec3 cameraPos;
 void main() {
    //outColor = mix(texture(texKitten, Texcoord), texture(texPuppy, Texcoord), time);
 	vec3 lightColor = {1,0,1};
+	vec3 objectColor = {1,1,1};
 	//Ambient
-	float ambient = 0.25f;
+	float ambientStrength = 0.25f;
 	//Specular
 	float specularStrength = 0.5f;
 	
+	vec3 ambient = ambientStrength * lightColor;
+
 	//Uncomment one of the next two lines
 	vec3 norm = normalize(Normal); //Per vertex normals
 	//vec3 norm = normalize(texture(texNormalMap, Normaltexcoord).rgb); //Normal maps
@@ -36,7 +39,9 @@ void main() {
 
 
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = (ambient + diff + specular) * lightColor;
+	vec3 diffuse = diff * lightColor;
+	
+	vec3 result = (ambient + diffuse + specular) * objectColor;
 
-	outColor = vec4(diffuse, 1.0f);
+	outColor = vec4(result, 1.0f);
 }

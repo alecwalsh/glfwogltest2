@@ -40,7 +40,8 @@ void CubeObject::Tick()
 	std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
 
-void CubeObject::Draw(Camera camera) {
+void CubeObject::Draw(Camera camera)
+{
 	//Sets up cameraPos uniform then calls base class method
 	GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
 	glUniform3f(uniCameraPos, camera.position.x, camera.position.y, camera.position.z);

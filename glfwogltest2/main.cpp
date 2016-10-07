@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 	auto t_prev = t_start;
 	float elapsedTime = 0.0f;
 	float deltaTime = 0.0f;
-	
+
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -137,6 +137,8 @@ int main(int argc, char* argv[]) {
 		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
 	);
 
+
+	//Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse for the first time
 	auto& cf = camera.cameraFront;
 
 	pitch = glm::degrees(asin(cf.y));
@@ -146,8 +148,9 @@ int main(int argc, char* argv[]) {
 		yaw = -yaw;
 	}
 
+	//Creates a CubeObject
 	glm::mat4 transform;
-	transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1, 0, 0));
+	//transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1, 0, 0));
 	CubeObject* go = new CubeObject(mesh, sp, transform, elapsedTime, deltaTime);
 
 
@@ -225,7 +228,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = xpos;
 	lastY = ypos;
 
-	
+
 	yaw -= deltaX * xSensitivity;
 	pitch += deltaY *  ySensitivity;
 
@@ -264,7 +267,7 @@ void handle_movement(Camera& camera, float deltaTime)
 	{
 		translation = glm::translate(translation, velocity * deltaTime * rightVector);
 	}
-	
+
 	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
 	{
 		translation = glm::translate(translation, velocity * deltaTime * frontVector);
