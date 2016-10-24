@@ -17,6 +17,15 @@ protected:
 	Mesh& mesh;
 	ShaderProgram& shaderProgram;
 	glm::mat4 transform;
+
+	struct
+	{
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+		GLfloat shininess;
+	} material;
+
 	GLuint vao;
 	float& elapsedTime;
 	float& deltaTime;

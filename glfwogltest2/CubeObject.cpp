@@ -42,6 +42,27 @@ void CubeObject::Tick()
 
 void CubeObject::Draw(Camera camera)
 {
+	//Set material properties
+	GLint matAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.ambient");
+	GLint matDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.diffuse");
+	GLint matSpecularLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.specular");
+	GLint matShineLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.shininess");
+
+	glUniform3f(matAmbientLoc, material.ambient.r, material.ambient.g, material.ambient.b);
+	glUniform3f(matDiffuseLoc, material.diffuse.r, material.diffuse.g, material.diffuse.b);
+	glUniform3f(matSpecularLoc, material.specular.r, material.specular.g, material.specular.b);
+	glUniform1f(matShineLoc, material.shininess);
+
+	//Set light properties
+	GLint lightAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "light.ambient");
+	GLint lightDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "light.diffuse");
+	GLint lightSpecularLoc = glGetUniformLocation(shaderProgram.shaderProgram, "light.specular");
+
+	glUniform3f(lightAmbientLoc, 0.2f, 0.2f, 0.2f);
+	glUniform3f(lightDiffuseLoc, 0.5f, 0.5f, 0.5f); // Let's darken the light a bit to fit the scene
+	glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
+
+
 	//Sets up cameraPos uniform then calls base class method
 	GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
 	glUniform3f(uniCameraPos, camera.position.x, camera.position.y, camera.position.z);
@@ -51,5 +72,9 @@ void CubeObject::Draw(Camera camera)
 
 CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime)
 {
-	//Does nothing but call superclass constructor
+	//Sets up material properties for the cube
+	material.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
+	material.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+	material.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+	material.shininess = 32.0f;
 }
