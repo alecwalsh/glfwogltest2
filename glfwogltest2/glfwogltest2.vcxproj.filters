@@ -36,6 +36,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.h">
@@ -53,12 +56,21 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\frag1.glsl">
+    <None Include="shaders\frag_cube.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\vert1.glsl">
+    <None Include="shaders\vert_cube.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\frag_light.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\vert_light.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -16,6 +16,7 @@
 #include "ShaderProgram.h"
 #include "GameObject.h"
 #include "CubeObject.h"
+#include "Light.h"
 #include "Camera.h"
 //TODO: clean up duplicate includes
 
@@ -71,9 +72,8 @@ int main(int argc, char* argv[]) {
 	glDepthFunc(GL_LESS);
 
 	//compile and link shaders
-	auto sp = ShaderProgram("shaders/vert1.glsl", "shaders/frag1.glsl");
-	GLuint shaderProgram = sp.shaderProgram;
-
+	auto cubeShader = ShaderProgram("shaders/vert_cube.glsl", "shaders/frag_cube.glsl");
+	auto lightShader = ShaderProgram("shaders/vert_light.glsl", "shaders/frag_light.glsl");
 
 	//std::vector<GLuint> elements = {
 	//	0, 1, 2, 2, 3, 0,
@@ -106,7 +106,9 @@ int main(int argc, char* argv[]) {
 	//Creates a CubeObject
 	glm::mat4 transform;
 	//transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1, 0, 0));
-	CubeObject* go = new CubeObject(mesh, sp, transform, elapsedTime, deltaTime);
+	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime);
+	//TODO: The following line causes a black screen, find out why
+	Light* light = new Light(mesh, lightShader, transform, elapsedTime, deltaTime);
 
 
 	//main loop
@@ -134,6 +136,7 @@ int main(int argc, char* argv[]) {
 		glfwSwapBuffers(window);
 	}
 
+	delete go;
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	std::cout << "bye\n";

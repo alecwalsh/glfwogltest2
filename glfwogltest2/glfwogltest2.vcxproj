@@ -132,6 +132,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CubeObject.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -140,12 +141,15 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CubeObject.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ShaderProgram.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\frag1.glsl" />
-    <None Include="shaders\vert1.glsl" />
+    <None Include="shaders\frag_cube.glsl" />
+    <None Include="shaders\frag_light.glsl" />
+    <None Include="shaders\vert_light.glsl" />
+    <None Include="shaders\vert_cube.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
