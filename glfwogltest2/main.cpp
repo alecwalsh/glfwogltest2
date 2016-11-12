@@ -25,6 +25,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void handle_movement(Camera& camera, float deltaTime);
 
+void render(GameObject *go, std::vector<Light*> lights);
+
 //TODO: avoid globals
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -107,8 +109,10 @@ int main(int argc, char* argv[]) {
 	glm::mat4 transform;
 	//transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1, 0, 0));
 	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime);
-	//TODO: The following line causes a black screen, find out why
-	Light* light = new Light(mesh, lightShader, transform, elapsedTime, deltaTime);
+
+	std::vector<Light*> lights;
+	Light* light = new Light(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
+	lights.push_back(light);
 
 
 	//main loop
@@ -130,6 +134,7 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		go->Tick();
+		render(go, lights);
 		go->Draw(camera);
 
 		//Swap buffers
@@ -243,6 +248,14 @@ void handle_movement(Camera& camera, float deltaTime)
 	{
 		translation = glm::translate(translation, velocity * deltaTime * downVector);
 	}
+	if (keys[GLFW_KEY_Q])
+	{
+		//roll
+	}
+	if (keys[GLFW_KEY_E])
+	{
+		//roll
+	}
 
 	if (mouseMoved)
 	{
@@ -251,4 +264,19 @@ void handle_movement(Camera& camera, float deltaTime)
 	}
 
 	camera.Translate(translation);
+}
+
+void render(GameObject *go, std::vector<Light*> lights) {
+	auto shaderProgram = go->shaderProgram;
+
+	//Set light properties
+	GLint lightPositionLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].position");
+	GLint lightAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].ambient");
+	GLint lightDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].diffuse");
+	GLint lightSpecularLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].specular");
+
+	glUniform3f(lightPositionLoc, lights[0]->position.x, lights[0]->position.y, lights[0]->position.z);
+	glUniform3f(lightAmbientLoc, lights[0]->ambient.r, lights[0]->ambient.g, lights[0]->ambient.b);
+	glUniform3f(lightDiffuseLoc, lights[0]->diffuse.r, lights[0]->diffuse.g, lights[0]->diffuse.b);
+	glUniform3f(lightSpecularLoc, lights[0]->specular.r, lights[0]->specular.g, lights[0]->specular.b);
 }

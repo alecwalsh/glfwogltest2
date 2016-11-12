@@ -15,7 +15,6 @@ class GameObject
 {
 protected:
 	Mesh& mesh;
-	ShaderProgram& shaderProgram;
 	glm::mat4 transform;
 
 	struct
@@ -42,5 +41,7 @@ public:
 
 	void SetTransform(glm::mat4 _transform);
 	void ModTransform(glm::mat4 _transform);
+
+	ShaderProgram& shaderProgram;
 };
 

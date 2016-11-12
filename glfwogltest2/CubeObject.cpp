@@ -5,13 +5,6 @@ void CubeObject::Tick()
 {
 	//TODO: move glGetUniformLocation calls outside of tick function; they only need to be called once per shader
 	GLint uniTime = glGetUniformLocation(shaderProgram.shaderProgram, "time");
-	
-	//TODO: display light source as a white cube
-	glm::vec3 lightPos(3.0f, 1.0f, 2.0f);
-
-	GLint uniLightPos = glGetUniformLocation(shaderProgram.shaderProgram, "lightPos");
-
-	glUniform3f(uniLightPos, lightPos.x, lightPos.y, lightPos.z);
 
 	float time = elapsedTime;
 
@@ -53,15 +46,6 @@ void CubeObject::Draw(Camera camera)
 	glUniform3f(matSpecularLoc, material.specular.r, material.specular.g, material.specular.b);
 	glUniform1f(matShineLoc, material.shininess);
 
-	//Set light properties
-	GLint lightAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "light.ambient");
-	GLint lightDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "light.diffuse");
-	GLint lightSpecularLoc = glGetUniformLocation(shaderProgram.shaderProgram, "light.specular");
-
-	glUniform3f(lightAmbientLoc, 0.2f, 0.2f, 0.2f);
-	glUniform3f(lightDiffuseLoc, 0.5f, 0.5f, 0.5f); // Let's darken the light a bit to fit the scene
-	glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
-
 
 	//Sets up cameraPos uniform then calls base class method
 	GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
@@ -75,7 +59,7 @@ CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	//Sets up material properties for the cube
 	material.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
 	material.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-	material.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+	material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 	material.shininess = 32.0f;
 }
 
