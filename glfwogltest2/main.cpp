@@ -266,9 +266,11 @@ void handle_movement(Camera& camera, float deltaTime)
 	camera.Translate(translation);
 }
 
+//TODO: Support multiple lights and multiple types of lights
 void render(GameObject *go, std::vector<Light*> lights) {
 	auto shaderProgram = go->shaderProgram;
 
+	//TODO: don't do this every frame
 	//Set light properties
 	GLint lightPositionLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].position");
 	GLint lightAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].ambient");
