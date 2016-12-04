@@ -17,13 +17,5 @@ uniform mat4 view;
 uniform mat4 proj;
 
 void main() {
-	Color = color;
-
-	//Normal matrix
-	Normal = mat3(transpose(inverse(model))) * normal; //This is inefficient, should calculate on CPU
-
-	FragPos = vec3(model * vec4(position, 1.0f));
-	//Texcoord = texcoord;
-	Normaltexcoord = normaltexcoord;
 	gl_Position = proj * view * model * vec4(position, 1.0);
 }

@@ -8,6 +8,9 @@
 
 #include <SOIL.h>
 
+#include <cstdio>
+
+#include <sstream>
 #include <iostream>
 //#include <thread>
 #include <vector>
@@ -111,9 +114,10 @@ int main(int argc, char* argv[]) {
 	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime);
 
 	std::vector<Light*> lights;
-	Light* light = new Light(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
+	auto light = new Light(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
+	auto light2 = new Light(glm::vec3(-3.0f, 1.0f, -2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
 	lights.push_back(light);
-
+	lights.push_back(light2);
 
 	//main loop
 	while (!glfwWindowShouldClose(window))
@@ -270,15 +274,29 @@ void handle_movement(Camera& camera, float deltaTime)
 void render(GameObject *go, std::vector<Light*> lights) {
 	auto shaderProgram = go->shaderProgram;
 
-	//TODO: don't do this every frame
-	//Set light properties
-	GLint lightPositionLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].position");
-	GLint lightAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].ambient");
-	GLint lightDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].diffuse");
-	GLint lightSpecularLoc = glGetUniformLocation(shaderProgram.shaderProgram, "lights[0].specular");
+	GLint numLights = glGetUniformLocation(shaderProgram.shaderProgram, "numLights");
+	glUniform1i(numLights, lights.size());
 
-	glUniform3f(lightPositionLoc, lights[0]->position.x, lights[0]->position.y, lights[0]->position.z);
-	glUniform3f(lightAmbientLoc, lights[0]->ambient.r, lights[0]->ambient.g, lights[0]->ambient.b);
-	glUniform3f(lightDiffuseLoc, lights[0]->diffuse.r, lights[0]->diffuse.g, lights[0]->diffuse.b);
-	glUniform3f(lightSpecularLoc, lights[0]->specular.r, lights[0]->specular.g, lights[0]->specular.b);
+	for (size_t i = 0; i < lights.size(); i++)
+	{
+		auto glarg = [i](const char* member) 
+		{
+			std::stringstream ss;
+			ss << "lights[" << i << "]." << member;
+			auto str = ss.str();
+			return ss.str();
+		};
+		auto a = glarg("hi");
+		//TODO: don't do this every frame
+		//Set light properties
+		GLint lightPositionLoc = glGetUniformLocation(shaderProgram.shaderProgram, glarg("position").c_str());
+		GLint lightAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, glarg("ambient").c_str());
+		GLint lightDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, glarg("diffuse").c_str());
+		GLint lightSpecularLoc = glGetUniformLocation(shaderProgram.shaderProgram, glarg("specular").c_str());
+
+		glUniform3f(lightPositionLoc, lights[i]->position.x, lights[i]->position.y, lights[i]->position.z);
+		glUniform3f(lightAmbientLoc, lights[i]->ambient.r, lights[i]->ambient.g, lights[i]->ambient.b);
+		glUniform3f(lightDiffuseLoc, lights[i]->diffuse.r, lights[i]->diffuse.g, lights[i]->diffuse.b);
+		glUniform3f(lightSpecularLoc, lights[i]->specular.r, lights[i]->specular.g, lights[i]->specular.b);
+	}
 }
