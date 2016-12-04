@@ -70,8 +70,8 @@
     <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\include;C:\Users\Alec\Code\opengl_libs\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\lib\Release\x64;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\src\Release;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\projects\VC9\x64\Release;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.1.2\include;C:\Users\Alec\Code\opengl_libs\glm;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\src;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\lib\Release\x64;C:\Users\Alec\Code\opengl_libs\glfw-3.2\src\Release;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\projects\VC9\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.2\include;C:\Users\Alec\Code\opengl_libs\glm;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\Alec\Code\opengl_libs\glew-1.13.0\include;C:\Users\Alec\Code\opengl_libs\glfw-3.2\include;C:\Users\Alec\Code\opengl_libs\glm;C:\Users\Alec\Code\opengl_libs\soil\Simple OpenGL Image Library\src;$(IncludePath)</IncludePath>

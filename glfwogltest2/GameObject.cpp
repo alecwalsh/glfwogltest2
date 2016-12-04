@@ -113,12 +113,12 @@ void GameObject::SetupTextures() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
-	image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
+	image = SOIL_load_image("container2.png", &width, &height, 0, SOIL_LOAD_RGB);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
 		GL_UNSIGNED_BYTE, image);
 	SOIL_free_image_data(image);
-	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texKitten"), 1);
+	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 1);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -143,7 +143,7 @@ void GameObject::SetupTextures() {
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, textures[3]);
 
-	image = SOIL_load_image("specmask1.png", &width, &height, 0, SOIL_LOAD_RGB);
+	image = SOIL_load_image("container2_specular.png", &width, &height, 0, SOIL_LOAD_RGB);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
 		GL_UNSIGNED_BYTE, image);

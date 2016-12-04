@@ -8,7 +8,7 @@ in vec2 Normaltexcoord;
 
 out vec4 outColor;
 
-uniform sampler2D texKitten; //diffuse map
+uniform sampler2D texDiffuseMap; //diffuse map
 uniform sampler2D texPuppy;
 uniform sampler2D texNormalMap;
 uniform sampler2D texSpecMap;
@@ -61,9 +61,9 @@ void main() {
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
 
-	vec3 ambient  = light.ambient * texture(texKitten, Normaltexcoord).rgb;
-	vec3 diffuse  = light.diffuse * (diff * material.diffuse) * texture(texKitten, Normaltexcoord).rgb;
-	vec3 specular = light.specular * (spec * material.specular) * texture(texSpecMap,Normaltexcoord).r;
+	vec3 ambient  = light.ambient * texture(texDiffuseMap, Normaltexcoord).rgb;
+	vec3 diffuse  = light.diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Normaltexcoord).rgb;
+	vec3 specular = light.specular * (spec * material.specular) * texture(texSpecMap,Normaltexcoord).rgb;
 	
 	vec3 result = (ambient + diffuse + specular) * objectColor;
 
