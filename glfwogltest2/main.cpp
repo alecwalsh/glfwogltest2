@@ -28,7 +28,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void handle_movement(Camera& camera, float deltaTime);
 
-void render(GameObject *go, std::vector<Light*> lights);
+void render(GameObject *go, std::vector<Light*> lights, Camera camera);
 
 //TODO: avoid globals
 // Window dimensions
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 
 	//Creates a CubeObject
 	glm::mat4 transform;
-	//transform = glm::rotate(transform, glm::radians(0.0f), glm::vec3(1, 0, 0));
+	//transform = glm::translate(transform, glm::vec3(1, 0, 0));
 	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime);
 
 	std::vector<Light*> lights;
@@ -138,8 +138,7 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		go->Tick();
-		render(go, lights);
-		go->Draw(camera);
+		render(go, lights, camera);
 
 		//Swap buffers
 		glfwSwapBuffers(window);
@@ -271,32 +270,38 @@ void handle_movement(Camera& camera, float deltaTime)
 }
 
 //TODO: Support multiple lights and multiple types of lights
-void render(GameObject *go, std::vector<Light*> lights) {
-	auto shaderProgram = go->shaderProgram;
+void render(GameObject *go, std::vector<Light*> lights, Camera camera) {
+	auto sp = go->shaderProgram;
 
-	GLint numLights = glGetUniformLocation(shaderProgram.shaderProgram, "numLights");
+	GLint numLights = glGetUniformLocation(sp.shaderProgram, "numLights");
 	glUniform1i(numLights, lights.size());
 
 	for (size_t i = 0; i < lights.size(); i++)
 	{
-		auto glarg = [i](const char* member) 
+		auto glargl = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
 		{
 			std::stringstream ss;
 			ss << "lights[" << i << "]." << member;
 			auto str = ss.str();
 			return ss.str();
 		};
-		auto a = glarg("hi");
+
+		#define glarg(uni) glargl(uni).c_str() //Using a macro for this might be a bad idea but it makes the glGetUniformLocation calls look nicer lol
+
 		//TODO: don't do this every frame
 		//Set light properties
-		GLint lightPositionLoc = glGetUniformLocation(shaderProgram.shaderProgram, glarg("position").c_str());
-		GLint lightAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, glarg("ambient").c_str());
-		GLint lightDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, glarg("diffuse").c_str());
-		GLint lightSpecularLoc = glGetUniformLocation(shaderProgram.shaderProgram, glarg("specular").c_str());
+		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position"));
+		GLint lightAmbientLoc = glGetUniformLocation(sp.shaderProgram, glarg("ambient"));
+		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse"));
+		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular"));
+
+		#undef glarg
 
 		glUniform3f(lightPositionLoc, lights[i]->position.x, lights[i]->position.y, lights[i]->position.z);
 		glUniform3f(lightAmbientLoc, lights[i]->ambient.r, lights[i]->ambient.g, lights[i]->ambient.b);
 		glUniform3f(lightDiffuseLoc, lights[i]->diffuse.r, lights[i]->diffuse.g, lights[i]->diffuse.b);
 		glUniform3f(lightSpecularLoc, lights[i]->specular.r, lights[i]->specular.g, lights[i]->specular.b);
 	}
+
+	go->Draw(camera);
 }

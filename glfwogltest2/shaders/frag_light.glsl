@@ -3,20 +3,23 @@
 in vec3 Color;
 in vec3 Normal;
 in vec3 FragPos;
-//in vec2 Texcoord;
+in vec2 Texcoord;
 in vec2 Normaltexcoord;
 
 out vec4 outColor;
 
-//uniform sampler2D texKitten;
-//uniform sampler2D texPuppy;
+uniform sampler2D texDiffuseMap; //diffuse map
+uniform sampler2D texPuppy;
 uniform sampler2D texNormalMap;
+uniform sampler2D texSpecMap;
 uniform float time;
-uniform vec3 lightPos;
+uniform int numLights;
+
 uniform vec3 cameraPos;
 
 struct Material {
-    vec3 ambient;
+	//TODO: move diffuse texture into struct
+	//sampler2D diffuse;
     vec3 diffuse;
     vec3 specular;
     float shininess;
@@ -32,7 +35,7 @@ struct Light {
     vec3 specular;
 };
 
-uniform Light light;  
+uniform Light lights[10];  
 
 void main() {
 	outColor = vec4(1.0f);
