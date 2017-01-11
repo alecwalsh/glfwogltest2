@@ -42,8 +42,6 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 	
-	SetupTextures();
-	
 	std::cout << "GameObject constructor\n";
 }
 
@@ -83,7 +81,7 @@ void GameObject::Draw(Camera camera)
 }
 
 
-//TODO: Move texture setup outside of class
+//TODO: Move texture setup outside of class, reuse textures between objects
 void GameObject::SetupTextures() {
 	//texture setup
 

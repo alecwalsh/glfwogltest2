@@ -110,14 +110,27 @@ int main(int argc, char* argv[]) {
 
 	//Creates a CubeObject
 	glm::mat4 transform;
-	//transform = glm::translate(transform, glm::vec3(1, 0, 0));
 	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime);
+	go->SetupTextures();
 
 	std::vector<Light*> lights;
 	auto light = new Light(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
 	auto light2 = new Light(glm::vec3(-3.0f, 1.0f, -2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
 	lights.push_back(light);
 	lights.push_back(light2);
+
+	//TODO: Create LightObject class
+	std::vector<CubeObject*> lightObjects;
+	
+	for (size_t i = 0; i < lights.size(); i++)
+	{
+		glm::mat4 lightTransform;
+		lightTransform = glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)), glm::vec3(lights[i]->position.x, 
+																								lights[i]->position.y, 
+																								lights[i]->position.z)); //Scale by 0.5 then translate to correct position
+		auto lo = new CubeObject(mesh, lightShader, lightTransform, elapsedTime, deltaTime);
+		lightObjects.push_back(lo);
+	}
 
 	//main loop
 	while (!glfwWindowShouldClose(window))
@@ -139,6 +152,12 @@ int main(int argc, char* argv[]) {
 
 		go->Tick();
 		render(go, lights, camera);
+
+		for (size_t i = 0; i < lightObjects.size(); i++)
+		{
+			lightObjects[i]->Tick();
+			render(lightObjects[i], lights, camera);
+		}
 
 		//Swap buffers
 		glfwSwapBuffers(window);
@@ -206,7 +225,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	}
 }
 
-void handle_movement(Camera& camera, float deltaTime)
+void handle_movement(Camera& camera, float deltaTime) //TODO: use arrow keys to move objects
 {
 	glm::mat4 translation;
 
@@ -271,7 +290,8 @@ void handle_movement(Camera& camera, float deltaTime)
 
 //TODO: Support multiple lights and multiple types of lights
 void render(GameObject *go, std::vector<Light*> lights, Camera camera) {
-	auto sp = go->shaderProgram;
+	auto& sp = go->shaderProgram;
+	glUseProgram(sp.shaderProgram);
 
 	GLint numLights = glGetUniformLocation(sp.shaderProgram, "numLights");
 	glUniform1i(numLights, lights.size());
