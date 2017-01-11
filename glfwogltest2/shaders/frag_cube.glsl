@@ -4,7 +4,6 @@ in vec3 Color;
 in vec3 Normal;
 in vec3 FragPos;
 in vec2 Texcoord;
-in vec2 Normaltexcoord;
 
 out vec4 outColor;
 
@@ -67,9 +66,9 @@ void main() {
 		vec3 reflectDir = reflect(-lightDir, norm);
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-		ambient  += lights[i].ambient * texture(texDiffuseMap, Normaltexcoord).rgb;
-		diffuse  += lights[i].diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Normaltexcoord).rgb;
-		specular += lights[i].specular * (spec * material.specular) * texture(texSpecMap,Normaltexcoord).rgb;
+		ambient  += lights[i].ambient * texture(texDiffuseMap, Texcoord).rgb;
+		diffuse  += lights[i].diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Texcoord).rgb;
+		specular += lights[i].specular * (spec * material.specular) * texture(texSpecMap, Texcoord).rgb;
 	}
 
 	vec3 result = (ambient + diffuse + specular) * objectColor;

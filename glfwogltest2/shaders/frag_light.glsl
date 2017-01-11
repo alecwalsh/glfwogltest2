@@ -4,7 +4,6 @@ in vec3 Color;
 in vec3 Normal;
 in vec3 FragPos;
 in vec2 Texcoord;
-in vec2 Normaltexcoord;
 
 out vec4 outColor;
 

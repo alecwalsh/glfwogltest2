@@ -25,16 +25,10 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
 
-	GLint normalTexAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "normaltexcoord");
-	glEnableVertexAttribArray(normalTexAttrib);
-	glVertexAttribPointer(normalTexAttrib, 2, GL_FLOAT, GL_FALSE,
+	GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "texcoord");
+	glEnableVertexAttribArray(texAttrib);
+	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
-
-	//GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "texcoord");
-	//glEnableVertexAttribArray(texAttrib);
-	//glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
-	//	VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
-
 
 	// Set up projection matrix
 
