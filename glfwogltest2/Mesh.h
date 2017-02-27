@@ -20,7 +20,7 @@ public:
 
 	Mesh(std::vector<GLfloat> vertices);
 	Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> elements);
-	Mesh::Mesh(std::string fileName); //Reads vertex data from text file
+	Mesh(std::string fileName); //Reads vertex data from text file
 	~Mesh();
 
 	// Generates buffers and uploads data to graphics card

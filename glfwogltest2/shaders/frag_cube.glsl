@@ -40,7 +40,7 @@ uniform Light lights[10];
 void main() {
 	Light light = lights[0];
    //outColor = mix(texture(texKitten, Texcoord), texture(texPuppy, Texcoord), time);
-	vec3 objectColor = {1,1,1};
+	vec3 objectColor = vec3(1,1,1);
 	//Ambient
 	float ambientStrength = 0.25f;
 	//Specular
@@ -50,9 +50,9 @@ void main() {
 	vec3 norm = normalize(Normal); //Per vertex normals
 	//vec3 norm = normalize(texture(texNormalMap, Normaltexcoord).rgb); //Normal maps
 
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec3 ambient = vec3(0);
+	vec3 diffuse = vec3(0);
+	vec3 specular = vec3(0);
 
 	for(int i = 0; i < numLights; i++)
 	{

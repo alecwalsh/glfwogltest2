@@ -14,6 +14,7 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	
 	glUseProgram(shaderProgram.shaderProgram);
 
+	//glGetAttribLocation always returns 0 on Linux, need to fix, maybe use glBindAttribLocation
 	// Specify the layout of the vertex data
 	GLint posAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "position");
 	glEnableVertexAttribArray(posAttrib);
