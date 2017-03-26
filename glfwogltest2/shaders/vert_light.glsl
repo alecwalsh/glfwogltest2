@@ -1,11 +1,11 @@
-#version 150 core
+#version 330
 
 
 //TODO: remove unnecessary attribs after moving lightsObject into separate class
-in vec3 position;
-in vec3 color;
-in vec3 normal;
-in vec2 texcoord;
+layout(location=0) in vec3 position;
+layout(location=3) in vec3 color;
+layout(location=1) in vec3 normal;
+layout(location=2) in vec2 texcoord;
 
 out vec3 Color;
 out vec3 Normal;
