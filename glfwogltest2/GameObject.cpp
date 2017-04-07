@@ -2,7 +2,7 @@
 #include <SOIL.h>
 
 
-GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : mesh(_mesh), shaderProgram(_shaderProgram), transform(_transform), elapsedTime(_elapsedTime), deltaTime(_deltaTime)
+GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : mesh(_mesh), transform(_transform), elapsedTime(_elapsedTime), deltaTime(_deltaTime), shaderProgram(_shaderProgram)
 {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -11,22 +11,22 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers.ebo);
 	}
-	
+
 	glUseProgram(shaderProgram.shaderProgram);
 
-	//glGetAttribLocation always returns 0 on Linux, need to fix, maybe use glBindAttribLocation
 	// Specify the layout of the vertex data
-	GLint posAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "position");
+	//Use attrib location from glBindAttribLocation
+	GLint posAttrib = 0;
 	glEnableVertexAttribArray(posAttrib);
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), 0);
 
-	GLint normalAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "normal");
+	GLint normalAttrib = 1;
 	glEnableVertexAttribArray(normalAttrib);
 	glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
 
-	GLint texAttrib = glGetAttribLocation(shaderProgram.shaderProgram, "texcoord");
+	GLint texAttrib = 2;
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
 		VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
@@ -36,7 +36,7 @@ GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
 	GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
-	
+
 	std::cout << "GameObject constructor\n";
 }
 
@@ -47,7 +47,7 @@ GameObject::~GameObject()
 }
 
 //Copy constructor
-GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), shaderProgram(rhs.shaderProgram), transform(rhs.transform), elapsedTime(rhs.elapsedTime), deltaTime(rhs.deltaTime)
+GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), transform(rhs.transform), elapsedTime(rhs.elapsedTime), deltaTime(rhs.deltaTime), shaderProgram(rhs.shaderProgram)
 {
 	std::cout << "GameObject copy constructor\n";
 }

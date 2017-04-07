@@ -12,5 +12,6 @@ public:
 	GLuint shaderProgram;
 	ShaderProgram(char const* vertShader, char const* fragShader);
 	~ShaderProgram();
+	
 };
 
