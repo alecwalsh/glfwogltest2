@@ -54,7 +54,8 @@ void CubeObject::Draw(Camera camera)
 	GameObject::Draw(camera);
 }
 
-CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime)
+CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime, TextureManager& _texman) : 
+	GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime, _texman)
 {
 	//Sets up material properties for the cube
 	material.ambient = glm::vec3(1.0f, 0.5f, 0.31f);

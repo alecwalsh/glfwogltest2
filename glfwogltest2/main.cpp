@@ -92,7 +92,12 @@ int main(int argc, char* argv[]) {
 
 	auto mesh = Mesh("data/cube.txt");
 
-	auto texman = TextureManager();
+	//Create textures
+	TextureManager texman;
+	texman.AddTexture("normalmaptest1.png");
+	texman.AddTexture("container2.png");
+	texman.AddTexture("sample2.png");
+	texman.AddTexture("container2_specular.png");
 
 	auto camera = Camera(
 		glm::vec3(2.0f, 2.0f, 2.0f),
@@ -113,8 +118,8 @@ int main(int argc, char* argv[]) {
 
 	//Creates a CubeObject
 	glm::mat4 transform;
-	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime);
-	go->SetupTextures(&texman);
+	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
+	go->SetupTextures();
 
 	std::vector<Light*> lights;
 	auto light = new Light(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
@@ -123,6 +128,7 @@ int main(int argc, char* argv[]) {
 	lights.push_back(light2);
 
 	//TODO: Create LightObject class
+	//The white cubes that represent lights
 	std::vector<CubeObject*> lightObjects;
 	
 	for (size_t i = 0; i < lights.size(); i++)
@@ -131,7 +137,7 @@ int main(int argc, char* argv[]) {
 		lightTransform = glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)), glm::vec3(lights[i]->position.x, 
 																								lights[i]->position.y, 
 																								lights[i]->position.z)); //Scale by 0.5 then translate to correct position
-		auto lo = new CubeObject(mesh, lightShader, lightTransform, elapsedTime, deltaTime);
+		auto lo = new CubeObject(mesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
 		lightObjects.push_back(lo);
 	}
 

@@ -9,7 +9,7 @@ class TextureManager {
 public:
 	std::vector<GLuint> textureObjects;
 
-	void NewTexture(const char* fileName, GLenum textureUnit);
+	void AddTexture(const char* fileName);
 	TextureManager();
 	~TextureManager();
 };

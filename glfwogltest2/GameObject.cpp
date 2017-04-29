@@ -1,8 +1,9 @@
 #include "GameObject.h"
 #include <SOIL.h>
 
-
-GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime) : mesh(_mesh), transform(_transform), elapsedTime(_elapsedTime), deltaTime(_deltaTime), shaderProgram(_shaderProgram)
+//TODO: lots of parameters and long initializer list, maybe create Time object?
+GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime, TextureManager& _texman) : 
+	mesh(_mesh), transform(_transform), elapsedTime(_elapsedTime), deltaTime(_deltaTime), texman(_texman), shaderProgram(_shaderProgram)
 {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -47,7 +48,8 @@ GameObject::~GameObject()
 }
 
 //Copy constructor
-GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), transform(rhs.transform), elapsedTime(rhs.elapsedTime), deltaTime(rhs.deltaTime), shaderProgram(rhs.shaderProgram)
+GameObject::GameObject(const GameObject& rhs) : 
+	mesh(rhs.mesh), transform(rhs.transform), elapsedTime(rhs.elapsedTime), deltaTime(rhs.deltaTime), texman(rhs.texman), shaderProgram(rhs.shaderProgram)
 {
 	std::cout << "GameObject copy constructor\n";
 }
@@ -56,6 +58,7 @@ GameObject::GameObject(const GameObject& rhs) : mesh(rhs.mesh), transform(rhs.tr
 // Renders the object
 void GameObject::Draw(Camera camera)
 {
+	BindTextures();
 	glUseProgram(shaderProgram.shaderProgram);
 	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
 
@@ -75,20 +78,23 @@ void GameObject::Draw(Camera camera)
 	}
 }
 
-//TODO: Move texture setup outside of class, reuse textures between objects
-void GameObject::SetupTextures(TextureManager* texman)
+void GameObject::SetupTextures()
 {
-	texman->NewTexture("normalmaptest1.png", GL_TEXTURE0);
-	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texNormalMap"), 0);
-	
-	texman->NewTexture("container2.png", GL_TEXTURE1);
-	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 1);
+	//Set sampler uniforms
+	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 0);
+	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texSpecMap"), 1);
+	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texNormalMap"), 2);
+	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texPuppy"), 3);
+}
 
-	texman->NewTexture("sample2.png", GL_TEXTURE2);
-	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texPuppy"), 2);
+void GameObject::BindTextures()
+{
+	//Bind texture objects to texture units
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texman.textureObjects[1]);
 
-	texman->NewTexture("container2_specular.png", GL_TEXTURE3);
-	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texSpecMap"), 3);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texman.textureObjects[3]);
 }
 
 //Sets the transform

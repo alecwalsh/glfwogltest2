@@ -28,10 +28,10 @@ protected:
 	GLuint vao;
 	float& elapsedTime;
 	float& deltaTime;
-	//TextureManager* texman;
+	TextureManager& texman;
 	
 public:
-	GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime);
+	GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime, TextureManager& _texman);
 	virtual ~GameObject();
 	GameObject(const GameObject& go);
 
@@ -39,11 +39,11 @@ public:
 	virtual void Tick() = 0;
 	// Renders the object
 	virtual void Draw(Camera camera);
-	void SetupTextures(TextureManager* texman);
+	void SetupTextures();
+	void BindTextures();
 
 	void SetTransform(glm::mat4 _transform);
 	void ModTransform(glm::mat4 _transform);
 
 	ShaderProgram& shaderProgram;
 };
-
