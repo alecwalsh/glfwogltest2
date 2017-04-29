@@ -30,7 +30,7 @@ void CubeObject::Tick()
 
 	//this->ModTransform(translation * rotation * scaling);
 
-	std::cout << "Elapsed time:" << elapsedTime << std::endl;
+	//std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
 
 void CubeObject::Draw(Camera camera)

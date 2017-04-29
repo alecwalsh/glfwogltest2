@@ -1,0 +1,40 @@
+#include "TextureManager.h"
+
+//TODO: Support creating multiple textures at once
+void TextureManager::NewTexture(const char* fileName, GLenum textureUnit)
+{
+	//Add a new value to the vector
+	textureObjects.push_back(0);
+	//Set the new value to a valid texture object
+	glGenTextures(1, &textureObjects[textureObjects.size()-1]);
+
+	//Load texture from file and upload to GPU
+	int width, height;
+	unsigned char* image;
+
+	glActiveTexture(textureUnit);
+	glBindTexture(GL_TEXTURE_2D, textureObjects[textureObjects.size()-1]);
+
+	//TODO: check for file existence
+	image = SOIL_load_image(fileName, &width, &height, 0, SOIL_LOAD_RGB);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+		GL_UNSIGNED_BYTE, image);
+
+	SOIL_free_image_data(image);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+TextureManager::TextureManager()
+{
+
+}
+
+TextureManager::~TextureManager()
+{
+	glDeleteTextures(textureObjects.size(), textureObjects.data());
+}

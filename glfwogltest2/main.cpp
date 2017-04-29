@@ -21,6 +21,7 @@
 #include "CubeObject.h"
 #include "Light.h"
 #include "Camera.h"
+#include "TextureManager.h"
 //TODO: clean up duplicate includes
 
 //Prototypes for input handling callbacks
@@ -91,6 +92,8 @@ int main(int argc, char* argv[]) {
 
 	auto mesh = Mesh("data/cube.txt");
 
+	auto texman = TextureManager();
+
 	auto camera = Camera(
 		glm::vec3(2.0f, 2.0f, 2.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
@@ -111,7 +114,7 @@ int main(int argc, char* argv[]) {
 	//Creates a CubeObject
 	glm::mat4 transform;
 	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime);
-	go->SetupTextures();
+	go->SetupTextures(&texman);
 
 	std::vector<Light*> lights;
 	auto light = new Light(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));

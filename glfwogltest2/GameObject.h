@@ -8,7 +8,7 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
 #include "Camera.h"
-
+#include "TextureManager.h"
 
 //TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject
 class GameObject
@@ -28,6 +28,8 @@ protected:
 	GLuint vao;
 	float& elapsedTime;
 	float& deltaTime;
+	//TextureManager* texman;
+	
 public:
 	GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime);
 	virtual ~GameObject();
@@ -37,7 +39,7 @@ public:
 	virtual void Tick() = 0;
 	// Renders the object
 	virtual void Draw(Camera camera);
-	void SetupTextures();
+	void SetupTextures(TextureManager* texman);
 
 	void SetTransform(glm::mat4 _transform);
 	void ModTransform(glm::mat4 _transform);
