@@ -19,7 +19,8 @@
 #include "ShaderProgram.h"
 #include "GameObject.h"
 #include "CubeObject.h"
-#include "Light.h"
+#include "PointLight.h"
+#include "DirLight.h" //TODO:  shouldn't have to include both types of light
 #include "Camera.h"
 #include "TextureManager.h"
 //TODO: clean up duplicate includes
@@ -29,7 +30,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void handle_movement(Camera& camera, float deltaTime);
 
-void render(GameObject *go, std::vector<Light*> lights, Camera camera);
+void render(GameObject *go, std::vector<PointLight*> pointLights, std::vector<DirLight*> dirLights, Camera camera);
 
 //TODO: avoid globals
 // Window dimensions
@@ -121,22 +122,27 @@ int main(int argc, char* argv[]) {
 	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
 	go->SetupTextures();
 
-	std::vector<Light*> lights;
-	auto light = new Light(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
-	auto light2 = new Light(glm::vec3(-3.0f, 1.0f, -2.0f), glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f));
-	lights.push_back(light);
-	lights.push_back(light2);
+    //TODO: use std::vector<std::unique_ptr<Light>>
+	std::vector<PointLight*> pointLights;
+	auto pointLight = new PointLight(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
+	auto pointLight2 = new PointLight(glm::vec3(-3.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
+	pointLights.push_back(pointLight);
+	pointLights.push_back(pointLight2);
+    
+    std::vector<DirLight*> dirLights;
+    auto dirLight = new DirLight(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f), glm::vec3(0.5f));
+    dirLights.push_back(dirLight);
 
 	//TODO: Create LightObject class
 	//The white cubes that represent lights
 	std::vector<CubeObject*> lightObjects;
 	
-	for (size_t i = 0; i < lights.size(); i++)
+	for (size_t i = 0; i < pointLights.size(); i++)
 	{
 		glm::mat4 lightTransform;
-		lightTransform = glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)), glm::vec3(lights[i]->position.x, 
-																								lights[i]->position.y, 
-																								lights[i]->position.z)); //Scale by 0.5 then translate to correct position
+		lightTransform = glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)), glm::vec3(pointLights[i]->position.x, 
+																								pointLights[i]->position.y, 
+																								pointLights[i]->position.z)); //Scale by 0.5 then translate to correct position
 		auto lo = new CubeObject(mesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
 		lightObjects.push_back(lo);
 	}
@@ -160,12 +166,12 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		go->Tick();
-		render(go, lights, camera);
+		render(go, pointLights, dirLights, camera);
 
 		for (size_t i = 0; i < lightObjects.size(); i++)
 		{
 			lightObjects[i]->Tick();
-			render(lightObjects[i], lights, camera);
+			render(lightObjects[i], pointLights, dirLights, camera);
 		}
 
 		//Swap buffers
@@ -298,19 +304,23 @@ void handle_movement(Camera& camera, float deltaTime) //TODO: use arrow keys to 
 }
 
 //TODO: Support multiple lights and multiple types of lights
-void render(GameObject *go, std::vector<Light*> lights, Camera camera) {
+void render(GameObject *go, std::vector<PointLight*> pointLights, std::vector<DirLight*> dirLights, Camera camera) {
 	auto& sp = go->shaderProgram;
 	glUseProgram(sp.shaderProgram);
 
-	GLint numLights = glGetUniformLocation(sp.shaderProgram, "numLights");
-	glUniform1i(numLights, lights.size());
+	GLint numPointLights = glGetUniformLocation(sp.shaderProgram, "numPointLights");
+	glUniform1i(numPointLights, pointLights.size());
+    
+    GLint numDirLights = glGetUniformLocation(sp.shaderProgram, "numDirLights");
+	glUniform1i(numDirLights, dirLights.size());
 
-	for (size_t i = 0; i < lights.size(); i++)
+    //TODO: lots of duplicated code
+	for (size_t i = 0; i < pointLights.size(); i++)
 	{
 		auto glargl = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
 		{
 			std::stringstream ss;
-			ss << "lights[" << i << "]." << member;
+			ss << "pointLights[" << i << "]." << member;
 			auto str = ss.str();
 			return ss.str();
 		};
@@ -320,17 +330,45 @@ void render(GameObject *go, std::vector<Light*> lights, Camera camera) {
 		//TODO: don't do this every frame
 		//Set light properties
 		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position"));
-		GLint lightAmbientLoc = glGetUniformLocation(sp.shaderProgram, glarg("ambient"));
 		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse"));
 		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular"));
 
 		#undef glarg
 
-		glUniform3f(lightPositionLoc, lights[i]->position.x, lights[i]->position.y, lights[i]->position.z);
-		glUniform3f(lightAmbientLoc, lights[i]->ambient.r, lights[i]->ambient.g, lights[i]->ambient.b);
-		glUniform3f(lightDiffuseLoc, lights[i]->diffuse.r, lights[i]->diffuse.g, lights[i]->diffuse.b);
-		glUniform3f(lightSpecularLoc, lights[i]->specular.r, lights[i]->specular.g, lights[i]->specular.b);
+		glUniform3f(lightPositionLoc, pointLights[i]->position.x, pointLights[i]->position.y, pointLights[i]->position.z);
+		glUniform3f(lightDiffuseLoc, pointLights[i]->diffuse.r, pointLights[i]->diffuse.g, pointLights[i]->diffuse.b);
+		glUniform3f(lightSpecularLoc, pointLights[i]->specular.r, pointLights[i]->specular.g, pointLights[i]->specular.b);
+	}
+	
+    for (size_t i = 0; i < dirLights.size(); i++)
+	{
+		auto glargl = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
+		{
+			std::stringstream ss;
+			ss << "dirLights[" << i << "]." << member;
+			auto str = ss.str();
+			return ss.str();
+		};
+
+		#define glarg(uni) glargl(uni).c_str() //Using a macro for this might be a bad idea but it makes the glGetUniformLocation calls look nicer lol
+
+		//TODO: don't do this every frame
+		//Set light properties
+		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position"));
+		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse"));
+		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular"));
+
+		#undef glarg
+
+		glUniform3f(lightPositionLoc, dirLights[i]->direction.x, dirLights[i]->direction.y, dirLights[i]->direction.z);
+		glUniform3f(lightDiffuseLoc, dirLights[i]->diffuse.r, dirLights[i]->diffuse.g, dirLights[i]->diffuse.b);
+		glUniform3f(lightSpecularLoc, dirLights[i]->specular.r, dirLights[i]->specular.g, dirLights[i]->specular.b);
 	}
 
+	GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
+    
+    //TODO: Don't hardcode ambient value
+    glUniform3f(ambientLoc, 0.2f, 0.2f, 0.2f);
+	
 	go->Draw(camera);
 }

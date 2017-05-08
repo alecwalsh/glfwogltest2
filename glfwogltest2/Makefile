@@ -2,9 +2,9 @@
 CXX=g++
 CXXFLAGS=-I/usr/include/SOIL/ -lGLEW -lGL -lglfw -lSOIL -Wall -g
 
-DEPS=Camera.h CubeObject.h GameObject.h Light.h Mesh.h ShaderProgram.h TextureManager.h main.h
-SOURCEFILES=Camera.cpp CubeObject.cpp GameObject.cpp Light.cpp Mesh.cpp ShaderProgram.cpp TextureManager.cpp main.cpp
-OBJECTFILES=Camera.o CubeObject.o GameObject.o Light.o Mesh.o ShaderProgram.o TextureManager.o main.o
+DEPS=Camera.h CubeObject.h GameObject.h Light.h Mesh.h ShaderProgram.h TextureManager.h PointLight.h DirLight.h main.h
+SOURCEFILES=Camera.cpp CubeObject.cpp GameObject.cpp Light.cpp Mesh.cpp ShaderProgram.cpp TextureManager.cpp PointLight.cpp DirLight.cpp main.cpp
+OBJECTFILES=Camera.o CubeObject.o GameObject.o Light.o Mesh.o ShaderProgram.o TextureManager.o PointLight.o DirLight.o main.o
 
 glfwogltest2: $(OBJECTFILES)
 	$(CXX) $(CXXFLAGS) $(OBJECTFILES) -o glfwogltest2
@@ -29,7 +29,13 @@ ShaderProgram.o: ShaderProgram.cpp ShaderProgram.h
 
 TextureManager.o: TextureManager.cpp TextureManager.h
 	$(CXX) $(CXXFLAGS) -c TextureManager.cpp -o TextureManager.o
+	
+DirLight.o: DirLight.cpp DirLight.h Light.h
+	$(CXX) $(CXXFLAGS) -c DirLight.cpp -o DirLight.o
 
+PointLight.o: PointLight.cpp PointLight.h Light.h
+	$(CXX) $(CXXFLAGS) -c PointLight.cpp -o PointLight.o
+	
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c main.cpp -o main.o
 
