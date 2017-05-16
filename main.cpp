@@ -9,6 +9,7 @@
 #include <SOIL/SOIL.h>
 
 #include <cstdio>
+#include <unistd.h>
 
 #include <sstream>
 #include <iostream>
@@ -45,6 +46,7 @@ double pitch = 0.0f;
 bool keys[1024];
 
 int main(int argc, char* argv[]) {
+    chdir(".."); //Data files and shaders are in parent directory
 	auto t_start = std::chrono::high_resolution_clock::now();
 	auto t_prev = t_start;
 	float elapsedTime = 0.0f;
@@ -95,10 +97,10 @@ int main(int argc, char* argv[]) {
 
 	//Create textures
 	TextureManager texman;
-	texman.AddTexture("normalmaptest1.png");
-	texman.AddTexture("container2.png");
-	texman.AddTexture("sample2.png");
-	texman.AddTexture("container2_specular.png");
+	texman.AddTexture("data/normalmaptest1.png");
+	texman.AddTexture("data/container2.png");
+	texman.AddTexture("data/sample2.png");
+	texman.AddTexture("data/container2_specular.png");
 
 	auto camera = Camera(
 		glm::vec3(2.0f, 2.0f, 2.0f),
