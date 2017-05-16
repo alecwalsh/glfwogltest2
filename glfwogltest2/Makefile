@@ -1,6 +1,6 @@
 #Need to clean this up / use CMake
 CXX=g++
-CXXFLAGS=-I/usr/include/SOIL/ -lGLEW -lGL -lglfw -lSOIL -Wall -g
+CXXFLAGS=-lGLEW -lGL -lglfw -lSOIL -Wall -g
 
 DEPS=Camera.h CubeObject.h GameObject.h Light.h Mesh.h ShaderProgram.h TextureManager.h PointLight.h DirLight.h main.h
 SOURCEFILES=Camera.cpp CubeObject.cpp GameObject.cpp Light.cpp Mesh.cpp ShaderProgram.cpp TextureManager.cpp PointLight.cpp DirLight.cpp main.cpp

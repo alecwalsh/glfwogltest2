@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <GL/glew.h>
-#include <SOIL.h>
+#include <SOIL/SOIL.h>
 
 class TextureManager {
 public:
