@@ -56,7 +56,7 @@ GameObject::GameObject(const GameObject& rhs) :
 
 
 // Renders the object
-void GameObject::Draw(Camera camera)
+void GameObject::Draw(Camera camera) const
 {
 	BindTextures();
 	glUseProgram(shaderProgram.shaderProgram);
@@ -78,7 +78,7 @@ void GameObject::Draw(Camera camera)
 	}
 }
 
-void GameObject::SetupTextures()
+void GameObject::SetupTextures() const
 {
 	//Set sampler uniforms
 	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 0);
@@ -87,7 +87,7 @@ void GameObject::SetupTextures()
 	glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texPuppy"), 3);
 }
 
-void GameObject::BindTextures()
+void GameObject::BindTextures() const
 {
 	//Bind texture objects to texture units
 	glActiveTexture(GL_TEXTURE0);

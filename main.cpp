@@ -16,6 +16,7 @@
 //#include <thread>
 #include <vector>
 #include <chrono>
+#include <memory>
 
 #include "ShaderProgram.h"
 #include "GameObject.h"
@@ -31,7 +32,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void handle_movement(Camera& camera, float deltaTime);
 
-void render(GameObject *go, std::vector<PointLight*> pointLights, std::vector<DirLight*> dirLights, Camera camera);
+void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera);
 
 //TODO: avoid globals
 // Window dimensions
@@ -121,15 +122,15 @@ int main(int argc, char* argv[]) {
 
 	//Creates a CubeObject
 	glm::mat4 transform;
-	CubeObject* go = new CubeObject(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
+	auto go = std::make_unique<CubeObject>(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
 	go->SetupTextures();
 
     //TODO: use std::vector<std::unique_ptr<Light>>
-	std::vector<PointLight*> pointLights;
-	auto pointLight = new PointLight(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
-	auto pointLight2 = new PointLight(glm::vec3(-3.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
-	pointLights.push_back(pointLight);
-	pointLights.push_back(pointLight2);
+    std::vector<std::unique_ptr<PointLight>> pointLights;
+	auto pointLight = std::make_unique<PointLight>(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
+	auto pointLight2 = std::make_unique<PointLight>(glm::vec3(-3.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
+	pointLights.push_back(std::move(pointLight));
+	pointLights.push_back(std::move(pointLight2));
     
     std::vector<DirLight*> dirLights;
     auto dirLight = new DirLight(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f), glm::vec3(0.5f));
@@ -137,7 +138,7 @@ int main(int argc, char* argv[]) {
 
 	//TODO: Create LightObject class
 	//The white cubes that represent lights
-	std::vector<CubeObject*> lightObjects;
+	std::vector<std::unique_ptr<GameObject>> lightObjects;
 	
 	for (size_t i = 0; i < pointLights.size(); i++)
 	{
@@ -145,8 +146,8 @@ int main(int argc, char* argv[]) {
 		lightTransform = glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)), glm::vec3(pointLights[i]->position.x, 
 																								pointLights[i]->position.y, 
 																								pointLights[i]->position.z)); //Scale by 0.5 then translate to correct position
-		auto lo = new CubeObject(mesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
-		lightObjects.push_back(lo);
+		auto lo = std::make_unique<CubeObject>(mesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
+		lightObjects.push_back(std::move(lo));
 	}
 
 	//main loop
@@ -168,19 +169,17 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		go->Tick();
-		render(go, pointLights, dirLights, camera);
+		render(*go, pointLights, dirLights, camera);
 
 		for (size_t i = 0; i < lightObjects.size(); i++)
 		{
 			lightObjects[i]->Tick();
-			render(lightObjects[i], pointLights, dirLights, camera);
+			render(*lightObjects[i], pointLights, dirLights, camera);
 		}
 
 		//Swap buffers
 		glfwSwapBuffers(window);
 	}
-
-	delete go;
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	std::cout << "bye\n";
@@ -306,8 +305,8 @@ void handle_movement(Camera& camera, float deltaTime) //TODO: use arrow keys to 
 }
 
 //TODO: Support multiple lights and multiple types of lights
-void render(GameObject *go, std::vector<PointLight*> pointLights, std::vector<DirLight*> dirLights, Camera camera) {
-	auto& sp = go->shaderProgram;
+void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera) {
+	auto& sp = go.shaderProgram;
 	glUseProgram(sp.shaderProgram);
 
 	GLint numPointLights = glGetUniformLocation(sp.shaderProgram, "numPointLights");
@@ -372,5 +371,5 @@ void render(GameObject *go, std::vector<PointLight*> pointLights, std::vector<Di
     //TODO: Don't hardcode ambient value
     glUniform3f(ambientLoc, 0.2f, 0.2f, 0.2f);
 	
-	go->Draw(camera);
+	go.Draw(camera);
 }

@@ -33,7 +33,7 @@ void CubeObject::Tick()
 	//std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
 
-void CubeObject::Draw(Camera camera)
+void CubeObject::Draw(Camera camera) const
 {
 	//Set material properties
 	GLint matAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.ambient");
