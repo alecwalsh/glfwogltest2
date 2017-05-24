@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0.0)
 
 project (glfwogltest2)
 
+SET(CMAKE_CXX_STANDARD 14)
+
 file(GLOB SOURCES "*.cpp")
  
 add_executable(glfwogltest2 ${SOURCES})

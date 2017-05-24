@@ -30,6 +30,7 @@
 //Prototypes for input handling callbacks
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void handle_movement(Camera& camera, float deltaTime);
 
 void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera);
@@ -59,14 +60,16 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL", nullptr, nullptr); // Windowed
-
+    glfwSetWindowAspectRatio(window, WIDTH, HEIGHT);
+    
 	glfwMakeContextCurrent(window);
 
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -111,6 +114,7 @@ int main(int argc, char* argv[]) {
 
 
 	//Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse for the first time
+    //This is just the inverse of the code in Camera::Rotate
 	auto& cf = camera.cameraFront;
 
 	pitch = glm::degrees(asin(cf.y));
@@ -373,3 +377,11 @@ void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLight
 	
 	go.Draw(camera);
 }
+
+
+//TODO: Update projection matrix to allow different aspect ratios
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0,0, width, height);
+}
+
