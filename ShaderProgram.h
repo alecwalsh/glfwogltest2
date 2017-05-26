@@ -4,9 +4,6 @@
 
 class ShaderProgram
 {
-	GLuint fragShader;
-	GLuint vertShader;
-
 	GLuint ShaderProgramFromFiles(char const* vertShaderFile, char const* fragShaderFile);
 public:
 	GLuint shaderProgram;

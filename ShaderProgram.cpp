@@ -48,15 +48,15 @@ GLuint ShaderProgram::ShaderProgramFromFiles(char const* vertShaderFile, char co
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 
-	this->fragShader = fragmentShader;
-	this->vertShader = vertexShader;
-	this->shaderProgram = shaderProgram;
+    //Don't need these anymore
+    glDeleteShader(fragmentShader);
+    glDeleteShader(vertexShader);
+    
+    this->shaderProgram = shaderProgram;
 
 	return shaderProgram;
 }
 
 ShaderProgram::~ShaderProgram() {
 	glDeleteProgram(shaderProgram);
-	glDeleteShader(fragShader);
-	glDeleteShader(vertShader);
 }

@@ -35,9 +35,9 @@ void handle_movement(Camera& camera, float deltaTime);
 
 void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera);
 
-//TODO: avoid globals
+//TODO: avoid globals, use glfwSetWindowUserPointer
 // Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 600;
+GLuint WIDTH = 800, HEIGHT = 600;
 
 float lastX = WIDTH / 2.0;
 float lastY = HEIGHT / 2.0;
@@ -46,6 +46,7 @@ double yaw = -90.0f;
 double pitch = 0.0f;
 
 bool keys[1024];
+bool hasResized = false;
 
 int main(int argc, char* argv[]) {
     chdir(".."); //Data files and shaders are in parent directory
@@ -63,7 +64,6 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL", nullptr, nullptr); // Windowed
-    glfwSetWindowAspectRatio(window, WIDTH, HEIGHT);
     
 	glfwMakeContextCurrent(window);
 
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 	glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
@@ -163,6 +163,20 @@ int main(int argc, char* argv[]) {
 		t_prev = t_now;
 
 		elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
+        
+        if(hasResized)
+        {
+            
+            glUseProgram(go->shaderProgram.shaderProgram);
+            glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) WIDTH / HEIGHT, 1.0f, 10.0f);
+            GLint uniProj = glGetUniformLocation(go->shaderProgram.shaderProgram, "proj");
+            glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+            
+            glUseProgram(lightObjects[1]->shaderProgram.shaderProgram);
+            
+            GLint uniProj2 = glGetUniformLocation(lightObjects[1]->shaderProgram.shaderProgram, "proj");
+            glUniformMatrix4fv(uniProj2, 1, GL_FALSE, glm::value_ptr(proj));
+        }
 
 		glfwPollEvents();
 		handle_movement(camera, deltaTime);
@@ -383,5 +397,8 @@ void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLight
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0,0, width, height);
+    WIDTH = width;
+    HEIGHT = height;
+    hasResized = true;
 }
 
