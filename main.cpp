@@ -27,26 +27,26 @@
 #include "TextureManager.h"
 //TODO: clean up duplicate includes
 
+
+//TODO: move this to separate file
+struct global_values
+{
+    GLuint WIDTH, HEIGHT;
+    float lastX, lastY;
+    double yaw, pitch;
+    bool hasResized = false;
+};
+
 //Prototypes for input handling callbacks
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void handle_movement(Camera& camera, float deltaTime);
+void handle_movement(global_values* gv, Camera& camera, float deltaTime);
 
 void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera);
 
 //TODO: avoid globals, use glfwSetWindowUserPointer
-// Window dimensions
-GLuint WIDTH = 800, HEIGHT = 600;
-
-float lastX = WIDTH / 2.0;
-float lastY = HEIGHT / 2.0;
-
-double yaw = -90.0f;
-double pitch = 0.0f;
-
 bool keys[1024];
-bool hasResized = false;
 
 int main(int argc, char* argv[]) {
     chdir(".."); //Data files and shaders are in parent directory
@@ -55,6 +55,8 @@ int main(int argc, char* argv[]) {
 	float elapsedTime = 0.0f;
 	float deltaTime = 0.0f;
 
+
+    
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -63,7 +65,7 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL", nullptr, nullptr); // Windowed
+	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", nullptr, nullptr); // Windowed
     
 	glfwMakeContextCurrent(window);
 
@@ -71,8 +73,19 @@ int main(int argc, char* argv[]) {
 	glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    
+    //Set global state and call glfwSetWindowUserPointer to make it accessable to callbacks
+    global_values gs;
+    
+    gs.hasResized = false;
+    gs.WIDTH = 800;
+    gs.HEIGHT = 600;
+    gs.lastX = gs.WIDTH / 2;
+    gs.lastY = gs.HEIGHT / 2;
+    
+    glfwSetWindowUserPointer(window, &gs);
+    
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
 	{
@@ -117,11 +130,11 @@ int main(int argc, char* argv[]) {
     //This is just the inverse of the code in Camera::Rotate
 	auto& cf = camera.cameraFront;
 
-	pitch = glm::degrees(asin(cf.y));
-	yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
+	gs.pitch = glm::degrees(asin(cf.y));
+	gs.yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
 
 	if (cf.z < 0) {
-		yaw = -yaw;
+		gs.yaw = -gs.yaw;
 	}
 
 	//Creates a CubeObject
@@ -164,11 +177,11 @@ int main(int argc, char* argv[]) {
 
 		elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
         
-        if(hasResized)
+        if(gs.hasResized)
         {
             
             glUseProgram(go->shaderProgram.shaderProgram);
-            glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) WIDTH / HEIGHT, 1.0f, 10.0f);
+            glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) gs.WIDTH / gs.HEIGHT, 1.0f, 10.0f);
             GLint uniProj = glGetUniformLocation(go->shaderProgram.shaderProgram, "proj");
             glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
             
@@ -179,7 +192,7 @@ int main(int argc, char* argv[]) {
         }
 
 		glfwPollEvents();
-		handle_movement(camera, deltaTime);
+		handle_movement(&gs, camera, deltaTime);
 
 
 		// Clear the screen to black
@@ -230,6 +243,9 @@ bool mouseMoved = false;
 bool firstMouse = true;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+    float& lastX = static_cast<global_values*>(glfwGetWindowUserPointer(window))->lastX;
+    float& lastY = static_cast<global_values*>(glfwGetWindowUserPointer(window))->lastY;
+    
 	mouseMoved = true;
 	if (firstMouse)
 	{
@@ -247,7 +263,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = xpos;
 	lastY = ypos;
 
-
+    auto& yaw = static_cast<global_values*>(glfwGetWindowUserPointer(window))->yaw;
+    auto& pitch = static_cast<global_values*>(glfwGetWindowUserPointer(window))->pitch;
 	yaw -= deltaX * xSensitivity;
 	pitch += deltaY *  ySensitivity;
 
@@ -259,8 +276,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	}
 }
 
-void handle_movement(Camera& camera, float deltaTime) //TODO: use arrow keys to move objects
+void handle_movement(global_values* gv, Camera& camera, float deltaTime) //TODO: use arrow keys to move objects
 {
+    auto& yaw = gv->yaw;
+    auto& pitch = gv->pitch;
+    
+    
 	glm::mat4 translation;
 
 	//Calculates vectors from the perspective of the camera
@@ -397,8 +418,8 @@ void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLight
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0,0, width, height);
-    WIDTH = width;
-    HEIGHT = height;
-    hasResized = true;
+    static_cast<global_values*>(glfwGetWindowUserPointer(window))->WIDTH = width;
+    static_cast<global_values*>(glfwGetWindowUserPointer(window))->HEIGHT = height;
+    static_cast<global_values*>(glfwGetWindowUserPointer(window))->hasResized = true;
 }
 
