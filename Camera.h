@@ -1,7 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 
 //TODO: Make Camera a subclass of GameObject;  see TODO at top of GameObject.h

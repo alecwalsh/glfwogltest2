@@ -3,8 +3,6 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include <SOIL/SOIL.h>
 
@@ -145,12 +143,12 @@ int main(int argc, char* argv[]) {
     //TODO: use std::vector<std::unique_ptr<Light>>
     std::vector<std::unique_ptr<PointLight>> pointLights;
 	auto pointLight = std::make_unique<PointLight>(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
-	auto pointLight2 = std::make_unique<PointLight>(glm::vec3(-3.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
+	auto pointLight2 = std::make_unique<PointLight>(glm::vec3(-6.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
 	pointLights.push_back(std::move(pointLight));
 	pointLights.push_back(std::move(pointLight2));
     
     std::vector<DirLight*> dirLights;
-    auto dirLight = new DirLight(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f), glm::vec3(0.5f));
+    auto dirLight = new DirLight(glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.5f), glm::vec3(0.25f));
     dirLights.push_back(dirLight);
 
 	//TODO: Create LightObject class
@@ -408,7 +406,7 @@ void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLight
 	GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
     
     //TODO: Don't hardcode ambient value
-    glUniform3f(ambientLoc, 0.2f, 0.2f, 0.2f);
+    glUniform3f(ambientLoc, 0.1f, 0.1f, 0.1f);
 	
 	go.Draw(camera);
 }
