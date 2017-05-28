@@ -71,8 +71,8 @@ void main() {
 		vec3 reflectDir = reflect(-lightDir, norm);
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-		diffuse  += (pointLights[i].diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Texcoord).rgb);// / dist;
-		specular += (pointLights[i].specular * (spec * material.specular) * texture(texSpecMap, Texcoord).rgb);// / dist;
+		diffuse  += (pointLights[i].diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Texcoord).rgb) * 15 / pow(dist, 2);
+		specular += (pointLights[i].specular * (spec * material.specular) * texture(texSpecMap, Texcoord).rgb) * 15 / pow(dist, 2);
 	}
 	
 	//Now calculate directional lights
