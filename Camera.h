@@ -9,7 +9,7 @@ class Camera {
 public:
 	Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up);
 	
-	glm::vec3 UpVector();
+	glm::vec3 UpVector() const;
 
 	void SetPosition(glm::vec3 _position);
 	void ModPosition(glm::mat4 _transform);

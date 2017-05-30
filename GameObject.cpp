@@ -58,6 +58,8 @@ GameObject::GameObject(const GameObject& rhs) :
 // Renders the object
 void GameObject::Draw(Camera camera) const
 {
+    //Make sure the right vertex array is bound
+    glBindVertexArray(vao);
 	BindTextures();
 	glUseProgram(shaderProgram.shaderProgram);
 	GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");

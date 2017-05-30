@@ -108,7 +108,8 @@ int main(int argc, char* argv[]) {
 	//	20, 21, 22, 22, 23, 20
 	//};
 
-	auto mesh = Mesh("data/cube.txt");
+    auto mesh = Mesh("data/cube.txt");
+    auto lightMesh = Mesh("data/cube.txt");
 
 	//Create textures
 	TextureManager texman;
@@ -161,7 +162,7 @@ int main(int argc, char* argv[]) {
 		lightTransform = glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)), glm::vec3(pointLights[i]->position.x, 
 																								pointLights[i]->position.y, 
 																								pointLights[i]->position.z)); //Scale by 0.5 then translate to correct position
-		auto lo = std::make_unique<CubeObject>(mesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
+		auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
 		lightObjects.push_back(std::move(lo));
 	}
 

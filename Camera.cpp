@@ -7,7 +7,8 @@ Camera::Camera(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up): position(
 	cameraFront = glm::normalize(_target - position);
 }
 
-glm::vec3 Camera::UpVector() {
+glm::vec3 Camera::UpVector() const
+{
 	/*Calculates the up vector for the camera
 
 	The nested cross products finds a vector perpendicular to cameraFront and in the same plane as cameraFront and up
