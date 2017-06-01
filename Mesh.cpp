@@ -19,36 +19,8 @@ Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> elements) : usesEl
 
 Mesh::Mesh(std::string fileName) : usesElementArray(false)
 {
-	std::ifstream infile(fileName);
-	std::string line;
-	while (std::getline(infile, line))
-	{
-		std::istringstream iss(line);
-		std::vector<float> vertex(8);
-		
-		iss >> vertex[0] >> vertex[1] >> vertex[2] >> vertex[3] >> vertex[4] >> vertex[5] >> vertex[6] >> vertex[7];
-
-		for (int i = 0; i < 8; i++)
-		{
-			vertices.push_back(vertex[i]);
-		}
-	}
-
-#ifdef USE_ASSIMP
-    //HACK: Just replaces the positions right now, need to read normals and uv's from blend file too
-    ImportMesh("data/cube.blend");
-    for(int i = 0; i < vertices.size()/8; i++)
-    {
-        std::vector<float> vert = {vertices[8*i],vertices[8*i+1],vertices[8*i+2]};
-        vertices[8*i] = vertices_assimp[3*i]/2;
-        vertices[8*i+1] = vertices_assimp[3*i+1]/2;
-        vertices[8*i+2] = vertices_assimp[3*i+2]/2;
-        std::vector<float> vert2 = {vertices[8*i],vertices[8*i+1],vertices[8*i+2]};
-        std::cout << "" << std::endl;
-    }
-#endif
-	
-	UploadToGPU();
+    ImportMesh(fileName);
+    UploadToGPU();
 }
 
 Mesh::~Mesh()
@@ -79,53 +51,64 @@ void Mesh::UploadToGPU()
 	}
 }
 
+//TODO: .blend files normals are per vertex, not per face; .fbx works fine
 bool Mesh::ImportMesh( const std::string& pFile)
 {
-    // Create an instance of the Importer class
     Assimp::Importer importer;
-    // And have it read the given file with some example postprocessing
-    // Usually - if speed is not the most important aspect for you - you'll 
-    // propably to request more postprocessing than we do in this example.
+    //TODO: Change/add postprocessing flags
     const aiScene* scene = importer.ReadFile( pFile, 
-        aiProcess_CalcTangentSpace       | 
         aiProcess_Triangulate            |
-        aiProcess_JoinIdenticalVertices  |
-        aiProcess_SortByPType);
+        aiProcess_JoinIdenticalVertices);
 
     // If the import failed, report it
-    if( !scene)
+    if(!scene)
     {
         std::cout << importer.GetErrorString() << std::endl;
+        exit(EXIT_FAILURE);
         return false;
     }
     
-    auto nf = scene->mMeshes[0]->mNumFaces;
-    
     auto mesh = scene->mMeshes[0];
-    //auto norms = mesh->HasNormals();
     
-    for(auto i = 0; i < nf; i++)
+    for(auto i = 0; i < mesh->mNumFaces; i++)
     {
         auto face = mesh->mFaces[i];
+        //TODO: Add error handling / support more than just triangles
         switch(face.mNumIndices) {
             case 1: 
             case 2: return false;
             case 3: break;
             default: return false;
         }
+        //TODO: use indices for element buffer
         for(auto j = 0; j < face.mNumIndices; j++)
         {
             auto v = mesh->mVertices[face.mIndices[j]];
-            vertices_assimp.push_back(v.x);
-            vertices_assimp.push_back(v.y);
-            vertices_assimp.push_back(v.z);
-            std::cout << "a";
+            auto n = mesh->mNormals[face.mIndices[j]];
+            vertices.push_back(v.x/2);
+            vertices.push_back(v.y/2);
+            vertices.push_back(v.z/2);
+            if(mesh->HasNormals())
+            {
+                vertices.push_back(n.x);
+                vertices.push_back(n.y);
+                vertices.push_back(n.z);
+            } else
+            {
+                std::cerr << "Mesh doesn't have normals." << std::endl;
+                exit(EXIT_FAILURE);
+            }
+            
+            if(mesh->mTextureCoords[0])
+            {
+                vertices.push_back(mesh->mTextureCoords[0][face.mIndices[j]].x);
+                vertices.push_back(mesh->mTextureCoords[0][face.mIndices[j]].y);
+            } else
+            {
+                vertices.push_back(0);
+                vertices.push_back(0);
+            }
         }
     }
-    // Now we can access the file's contents. 
-    //DoTheSceneProcessing( scene);
-    // We're done. Everything will be cleaned up by the importer destructor
-    
-    std::cout << vertices_assimp.size() << std::endl;
     return true;
 }

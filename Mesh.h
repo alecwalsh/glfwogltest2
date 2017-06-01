@@ -9,15 +9,10 @@
 
 #define VERTEX_SIZE 8
 
-//Uncomment this to use assimp to import mesh
-//Still a WIP
-//#define USE_ASSIMP
-
 class Mesh
 {
 public:
-	std::vector<GLfloat> vertices;
-    std::vector<GLfloat> vertices_assimp;
+    std::vector<GLfloat> vertices;
 	std::vector<GLuint> elements;
 
 	const bool usesElementArray;  //Set to true or false depending on which constructor is called
@@ -34,6 +29,7 @@ public:
 
 	// Generates buffers and uploads data to graphics card
 	void UploadToGPU();
+private:
     bool ImportMesh( const std::string& pFile);
 };
 

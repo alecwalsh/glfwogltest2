@@ -99,17 +99,9 @@ int main(int argc, char* argv[]) {
 	auto cubeShader = ShaderProgram("shaders/vert_cube.glsl", "shaders/frag_cube.glsl");
 	auto lightShader = ShaderProgram("shaders/vert_light.glsl", "shaders/frag_light.glsl");
 
-	//std::vector<GLuint> elements = {
-	//	0, 1, 2, 2, 3, 0,
-	//	4, 5, 6, 6, 7, 4,
-	//	8, 9, 10, 10, 11, 8,
-	//	12, 13, 14, 14, 15, 12,
-	//	16, 17, 18, 18, 19, 16,
-	//	20, 21, 22, 22, 23, 20
-	//};
-
-    auto mesh = Mesh("data/cube.txt");
-    auto lightMesh = Mesh("data/cube.txt");
+    //TODO: use .blend files
+    auto mesh = Mesh("data/cube_irreg.fbx");
+    auto lightMesh = Mesh("data/cube.fbx");
 
 	//Create textures
 	TextureManager texman;
