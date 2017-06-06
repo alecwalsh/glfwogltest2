@@ -17,7 +17,7 @@ Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> elements) : usesEl
 	UploadToGPU();
 }
 
-Mesh::Mesh(std::string fileName) : usesElementArray(false)
+Mesh::Mesh(std::string fileName) : usesElementArray(true)
 {
     ImportMesh(fileName);
     UploadToGPU();
@@ -70,7 +70,7 @@ bool Mesh::ImportMesh( const std::string& pFile)
     
     auto mesh = scene->mMeshes[0];
     
-    for(auto i = 0; i < mesh->mNumFaces; i++)
+    for(int i = 0; i < mesh->mNumFaces; i++)
     {
         auto face = mesh->mFaces[i];
         //TODO: Add error handling / support more than just triangles
@@ -80,34 +80,40 @@ bool Mesh::ImportMesh( const std::string& pFile)
             case 3: break;
             default: return false;
         }
-        //TODO: use indices for element buffer
+        
         for(auto j = 0; j < face.mNumIndices; j++)
         {
-            auto v = mesh->mVertices[face.mIndices[j]];
-            auto n = mesh->mNormals[face.mIndices[j]];
-            vertices.push_back(v.x/2);
-            vertices.push_back(v.y/2);
-            vertices.push_back(v.z/2);
-            if(mesh->HasNormals())
-            {
-                vertices.push_back(n.x);
-                vertices.push_back(n.y);
-                vertices.push_back(n.z);
-            } else
-            {
-                std::cerr << "Mesh doesn't have normals." << std::endl;
-                exit(EXIT_FAILURE);
-            }
-            
-            if(mesh->mTextureCoords[0])
-            {
-                vertices.push_back(mesh->mTextureCoords[0][face.mIndices[j]].x);
-                vertices.push_back(mesh->mTextureCoords[0][face.mIndices[j]].y);
-            } else
-            {
-                vertices.push_back(0);
-                vertices.push_back(0);
-            }
+            elements.push_back(face.mIndices[j]);
+        }
+    }
+    
+    for(int i = 0; i < mesh->mNumVertices; i++)
+    {
+        auto v = mesh->mVertices[i];
+
+        vertices.push_back(v.x/2);
+        vertices.push_back(v.y/2);
+        vertices.push_back(v.z/2);
+        if(mesh->HasNormals())
+        {
+            auto n = mesh->mNormals[i];
+            vertices.push_back(n.x);
+            vertices.push_back(n.y);
+            vertices.push_back(n.z);
+        } else
+        {
+            std::cerr << "Mesh doesn't have normals." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        if(mesh->mTextureCoords[0])
+        {
+            vertices.push_back(mesh->mTextureCoords[0][i].x);
+            vertices.push_back(mesh->mTextureCoords[0][i].y);
+        } else
+        {
+            vertices.push_back(0);
+            vertices.push_back(0);
         }
     }
     return true;

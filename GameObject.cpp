@@ -73,7 +73,7 @@ void GameObject::Draw(Camera camera) const
 	if (mesh.usesElementArray)
 	{
         //TODO: Use indexes from imported mesh as element buffer
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh.elements.size(), GL_UNSIGNED_INT, 0);
 	}
 	else
 	{
