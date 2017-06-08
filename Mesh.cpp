@@ -4,13 +4,13 @@
 
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<GLfloat> vertices): usesElementArray(false)
+Mesh::Mesh(std::vector<Vertex> vertices): usesElementArray(false)
 {
 	this->vertices = vertices;
 	UploadToGPU();
 }
 
-Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> elements) : usesElementArray(true)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> elements) : usesElementArray(true)
 {
 	this->vertices = vertices;
 	this->elements = elements;
@@ -70,6 +70,12 @@ bool Mesh::ImportMesh( const std::string& pFile)
     
     auto mesh = scene->mMeshes[0];
     
+        if(!mesh->HasNormals())
+        {
+            std::cerr << "Mesh doesn't have normals." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    
     for(int i = 0; i < mesh->mNumFaces; i++)
     {
         auto face = mesh->mFaces[i];
@@ -81,6 +87,8 @@ bool Mesh::ImportMesh( const std::string& pFile)
             default: return false;
         }
         
+        glm::vec3 test;
+        
         for(auto j = 0; j < face.mNumIndices; j++)
         {
             elements.push_back(face.mIndices[j]);
@@ -90,31 +98,42 @@ bool Mesh::ImportMesh( const std::string& pFile)
     for(int i = 0; i < mesh->mNumVertices; i++)
     {
         auto v = mesh->mVertices[i];
-
-        vertices.push_back(v.x/2);
-        vertices.push_back(v.y/2);
-        vertices.push_back(v.z/2);
-        if(mesh->HasNormals())
-        {
-            auto n = mesh->mNormals[i];
-            vertices.push_back(n.x);
-            vertices.push_back(n.y);
-            vertices.push_back(n.z);
-        } else
-        {
-            std::cerr << "Mesh doesn't have normals." << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
+        auto n = mesh->mNormals[i];
+        
+        glm::vec2 texcoords;
+        
         if(mesh->mTextureCoords[0])
         {
-            vertices.push_back(mesh->mTextureCoords[0][i].x);
-            vertices.push_back(mesh->mTextureCoords[0][i].y);
+            texcoords = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
         } else
         {
-            vertices.push_back(0);
-            vertices.push_back(0);
+            texcoords = {0, 0};
         }
+        
+        vertices.push_back({
+            {v.x/2, v.y/2, v.z/2}, //Position
+            {n.x, n.y, n.z},       //Normals
+            texcoords
+        });
+        
+//         vertices.push_back(v.x/2);
+//         vertices.push_back(v.y/2);
+//         vertices.push_back(v.z/2);
+// 
+//         
+//         vertices.push_back(n.x);
+//         vertices.push_back(n.y);
+//         vertices.push_back(n.z);
+//         
+//         if(mesh->mTextureCoords[0])
+//         {
+//             vertices.push_back(mesh->mTextureCoords[0][i].x);
+//             vertices.push_back(mesh->mTextureCoords[0][i].y);
+//         } else
+//         {
+//             vertices.push_back(0);
+//             vertices.push_back(0);
+//         }
     }
     return true;
 }
