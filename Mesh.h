@@ -39,6 +39,6 @@ public:
 	// Generates buffers and uploads data to graphics card
 	void UploadToGPU();
 private:
-    bool ImportMesh( const std::string& pFile);
+    void ImportMesh( const std::string& pFile);
 };
 

@@ -81,6 +81,7 @@ void GameObject::Draw(Camera camera) const
 	}
 }
 
+//TODO: this should be called once per shader, not once per object
 void GameObject::SetupTextures() const
 {
 	//Set sampler uniforms

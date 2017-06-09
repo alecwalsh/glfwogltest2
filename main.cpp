@@ -151,6 +151,7 @@ int main(int argc, char* argv[]) {
 	//The white cubes that represent lights
 	std::vector<std::unique_ptr<GameObject>> lightObjects;
 	
+    //TODO: Light objects appear in the wrong place compared to the location of the light
 	for (size_t i = 0; i < pointLights.size(); i++)
 	{
 		glm::mat4 lightTransform;

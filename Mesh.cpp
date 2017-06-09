@@ -52,7 +52,8 @@ void Mesh::UploadToGPU()
 }
 
 //TODO: .blend files normals are per vertex, not per face; .fbx works fine
-bool Mesh::ImportMesh( const std::string& pFile)
+//TODO: Shouldn't return bool
+void Mesh::ImportMesh( const std::string& pFile)
 {
     Assimp::Importer importer;
     //TODO: Change/add postprocessing flags
@@ -65,7 +66,6 @@ bool Mesh::ImportMesh( const std::string& pFile)
     {
         std::cout << importer.GetErrorString() << std::endl;
         exit(EXIT_FAILURE);
-        return false;
     }
     
     auto mesh = scene->mMeshes[0];
@@ -80,14 +80,10 @@ bool Mesh::ImportMesh( const std::string& pFile)
     {
         auto face = mesh->mFaces[i];
         //TODO: Add error handling / support more than just triangles
-        switch(face.mNumIndices) {
-            case 1: 
-            case 2: return false;
-            case 3: break;
-            default: return false;
+        if(face.mNumIndices != 3) {
+                std::cerr << "Wrong number of vertices" << std::endl;
+                exit(1);
         }
-        
-        glm::vec3 test;
         
         for(auto j = 0; j < face.mNumIndices; j++)
         {
@@ -113,27 +109,7 @@ bool Mesh::ImportMesh( const std::string& pFile)
         vertices.push_back({
             {v.x/2, v.y/2, v.z/2}, //Position
             {n.x, n.y, n.z},       //Normals
-            texcoords
+            texcoords              //Texture coordinates
         });
-        
-//         vertices.push_back(v.x/2);
-//         vertices.push_back(v.y/2);
-//         vertices.push_back(v.z/2);
-// 
-//         
-//         vertices.push_back(n.x);
-//         vertices.push_back(n.y);
-//         vertices.push_back(n.z);
-//         
-//         if(mesh->mTextureCoords[0])
-//         {
-//             vertices.push_back(mesh->mTextureCoords[0][i].x);
-//             vertices.push_back(mesh->mTextureCoords[0][i].y);
-//         } else
-//         {
-//             vertices.push_back(0);
-//             vertices.push_back(0);
-//         }
     }
-    return true;
 }
