@@ -9,7 +9,7 @@ ShaderProgram::ShaderProgram(char const* vertShader, char const* fragShader) {
 }
 
 //TODO: add error handling
-GLuint ShaderProgram::ShaderProgramFromFiles(char const* vertShaderFile, char const* fragShaderFile) {
+GLuint ShaderProgram::ShaderProgramFromFiles(const char* vertShaderFile, const char* fragShaderFile) {
 	std::ifstream vert_if;
 	vert_if.open(vertShaderFile);
 	std::ifstream frag_if;
