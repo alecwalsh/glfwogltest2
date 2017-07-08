@@ -99,12 +99,12 @@ int main(int argc, char* argv[]) {
 	glDepthFunc(GL_LESS);
 
 	//compile and link shaders
-	auto cubeShader = ShaderProgram("shaders/vert_cube.glsl", "shaders/frag_cube.glsl");
-	auto lightShader = ShaderProgram("shaders/vert_light.glsl", "shaders/frag_light.glsl");
+	ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl"};
+	ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl"};
 
     //TODO: use .blend files
-    auto mesh = Mesh("data/cube_irreg.fbx");
-    auto lightMesh = Mesh("data/cube.fbx");
+    Mesh mesh{"data/cube_irreg.fbx"};
+    Mesh lightMesh{"data/cube.fbx"};
 
 	//Create textures
 	TextureManager texman;
@@ -113,11 +113,11 @@ int main(int argc, char* argv[]) {
 	texman.AddTexture("data/sample2.png");
 	texman.AddTexture("data/container2_specular.png");
 
-	auto camera = Camera(
-		glm::vec3(2.0f, 2.0f, 2.0f),
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f) //y-axis is up
-	);
+    Camera camera{
+        {2.0f, 2.0f, 2.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f} //y-axis is up
+    };
 
 
 	//Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse for the first time

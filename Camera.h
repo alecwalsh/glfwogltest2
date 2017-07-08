@@ -7,7 +7,7 @@
 class Camera {
 	void UpdateViewMatrix();
 public:
-	Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up);
+	Camera(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up);
 	
 	glm::vec3 UpVector() const;
 

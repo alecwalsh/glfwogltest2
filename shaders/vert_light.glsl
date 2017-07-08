@@ -16,12 +16,12 @@ uniform mat4 view;
 uniform mat4 proj;
 
 void main() {
-	Color = color;
+    Color = color;
 
-	//Normal matrix
-	Normal = mat3(transpose(inverse(model))) * normal; //This is inefficient, should calculate on CPU
+    //Normal matrix
+    Normal = mat3(transpose(inverse(model))) * normal; //This is inefficient, should calculate on CPU
 
-	FragPos = vec3(1.0);
-	Texcoord = texcoord;
-	gl_Position = proj * view * model * vec4(position, 1.0);
+    FragPos = vec3(1.0);
+    Texcoord = texcoord;
+    gl_Position = proj * view * model * vec4(position, 1.0);
 }
