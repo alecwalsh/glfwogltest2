@@ -352,23 +352,18 @@ void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLight
     //TODO: lots of duplicated code
 	for (size_t i = 0; i < pointLights.size(); i++)
 	{
-		auto glargl = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
+		auto glarg = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
 		{
 			std::stringstream ss;
 			ss << "pointLights[" << i << "]." << member;
-			auto str = ss.str();
 			return ss.str();
 		};
 
-		#define glarg(uni) glargl(uni).c_str() //Using a macro for this might be a bad idea but it makes the glGetUniformLocation calls look nicer lol
-
 		//TODO: don't do this every frame
 		//Set light properties
-		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position"));
-		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse"));
-		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular"));
-
-		#undef glarg
+		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position").c_str());
+		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse").c_str());
+		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular").c_str());
 
 		glUniform3f(lightPositionLoc, pointLights[i]->position.x, pointLights[i]->position.y, pointLights[i]->position.z);
 		glUniform3f(lightDiffuseLoc, pointLights[i]->diffuse.r, pointLights[i]->diffuse.g, pointLights[i]->diffuse.b);
@@ -377,23 +372,18 @@ void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLight
 	
     for (size_t i = 0; i < dirLights.size(); i++)
 	{
-		auto glargl = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
+		auto glarg = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
 		{
 			std::stringstream ss;
 			ss << "dirLights[" << i << "]." << member;
-			auto str = ss.str();
 			return ss.str();
 		};
 
-		#define glarg(uni) glargl(uni).c_str() //Using a macro for this might be a bad idea but it makes the glGetUniformLocation calls look nicer lol
-
 		//TODO: don't do this every frame
 		//Set light properties
-		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position"));
-		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse"));
-		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular"));
-
-		#undef glarg
+		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position").c_str());
+		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse").c_str());
+		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular").c_str());
 
 		glUniform3f(lightPositionLoc, dirLights[i]->direction.x, dirLights[i]->direction.y, dirLights[i]->direction.z);
 		glUniform3f(lightDiffuseLoc, dirLights[i]->diffuse.r, dirLights[i]->diffuse.g, dirLights[i]->diffuse.b);
