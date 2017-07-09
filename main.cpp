@@ -340,7 +340,8 @@ void handle_movement(global_values* gv, Camera& camera, float deltaTime) //TODO:
 
 //TODO: Support multiple lights and multiple types of lights
 void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera) {
-	auto& sp = go.shaderProgram;
+	const auto& sp = go.shaderProgram;
+    const auto& spsp = sp.shaderProgram;
 	glUseProgram(sp.shaderProgram);
 
 	GLint numPointLights = glGetUniformLocation(sp.shaderProgram, "numPointLights");
@@ -352,42 +353,34 @@ void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLight
     //TODO: lots of duplicated code
 	for (size_t i = 0; i < pointLights.size(); i++)
 	{
-		auto glarg = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
-		{
-			std::stringstream ss;
-			ss << "pointLights[" << i << "]." << member;
-			return ss.str();
-		};
+        auto getLightUniLoc = [i, sp = sp.shaderProgram](const char* member) // Gets the uniform location for members of the light struct
+        {
+            std::stringstream ss;
+            ss << "pointLights[" << i << "]." << member;
+            return glGetUniformLocation(sp, ss.str().c_str());
+        };
 
-		//TODO: don't do this every frame
-		//Set light properties
-		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position").c_str());
-		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse").c_str());
-		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular").c_str());
-
-		glUniform3f(lightPositionLoc, pointLights[i]->position.x, pointLights[i]->position.y, pointLights[i]->position.z);
-		glUniform3f(lightDiffuseLoc, pointLights[i]->diffuse.r, pointLights[i]->diffuse.g, pointLights[i]->diffuse.b);
-		glUniform3f(lightSpecularLoc, pointLights[i]->specular.r, pointLights[i]->specular.g, pointLights[i]->specular.b);
+        //TODO: don't do this every frame
+        //Set light properties
+        glUniform3f(getLightUniLoc("position"), pointLights[i]->position.x, pointLights[i]->position.y, pointLights[i]->position.z);
+        glUniform3f(getLightUniLoc("diffuse"), pointLights[i]->diffuse.r, pointLights[i]->diffuse.g, pointLights[i]->diffuse.b);
+        glUniform3f(getLightUniLoc("specular"), pointLights[i]->specular.r, pointLights[i]->specular.g, pointLights[i]->specular.b);
 	}
 	
     for (size_t i = 0; i < dirLights.size(); i++)
 	{
-		auto glarg = [i](const char* member) //Lambda that creates a string to serve as an argument for glGetUniformLocation
-		{
-			std::stringstream ss;
-			ss << "dirLights[" << i << "]." << member;
-			return ss.str();
-		};
+        auto getLightUniLoc = [i, sp = sp.shaderProgram](const char* member) // Gets the uniform location for members of the light struct
+        {
+            std::stringstream ss;
+            ss << "dirLights[" << i << "]." << member;
+            return glGetUniformLocation(sp, ss.str().c_str());
+        };
 
 		//TODO: don't do this every frame
 		//Set light properties
-		GLint lightPositionLoc = glGetUniformLocation(sp.shaderProgram, glarg("position").c_str());
-		GLint lightDiffuseLoc = glGetUniformLocation(sp.shaderProgram, glarg("diffuse").c_str());
-		GLint lightSpecularLoc = glGetUniformLocation(sp.shaderProgram, glarg("specular").c_str());
-
-		glUniform3f(lightPositionLoc, dirLights[i]->direction.x, dirLights[i]->direction.y, dirLights[i]->direction.z);
-		glUniform3f(lightDiffuseLoc, dirLights[i]->diffuse.r, dirLights[i]->diffuse.g, dirLights[i]->diffuse.b);
-		glUniform3f(lightSpecularLoc, dirLights[i]->specular.r, dirLights[i]->specular.g, dirLights[i]->specular.b);
+		glUniform3f(getLightUniLoc("position"), dirLights[i]->direction.x, dirLights[i]->direction.y, dirLights[i]->direction.z);
+		glUniform3f(getLightUniLoc("diffuse"), dirLights[i]->diffuse.r, dirLights[i]->diffuse.g, dirLights[i]->diffuse.b);
+		glUniform3f(getLightUniLoc("specular"), dirLights[i]->specular.r, dirLights[i]->specular.g, dirLights[i]->specular.b);
 	}
 
 	GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
