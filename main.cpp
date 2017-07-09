@@ -15,6 +15,7 @@
 #include <vector>
 #include <chrono>
 #include <memory>
+#include <functional>
 
 #include "ShaderProgram.h"
 #include "GameObject.h"
@@ -341,7 +342,7 @@ void handle_movement(global_values* gv, Camera& camera, float deltaTime) //TODO:
 //TODO: Support multiple lights and multiple types of lights
 void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera) {
 	const auto& sp = go.shaderProgram;
-    const auto& spsp = sp.shaderProgram;
+    
 	glUseProgram(sp.shaderProgram);
 
 	GLint numPointLights = glGetUniformLocation(sp.shaderProgram, "numPointLights");
@@ -349,46 +350,48 @@ void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLight
     
     GLint numDirLights = glGetUniformLocation(sp.shaderProgram, "numDirLights");
 	glUniform1i(numDirLights, dirLights.size());
+    
+    
+    auto getLightUniLoc = [sp = sp.shaderProgram](const char* member, int i, const char* lightType) // Gets the uniform location for light struct members
+    {
+        std::stringstream ss;
+        ss << lightType << "[" << i << "]." << member;
+        return glGetUniformLocation(sp, ss.str().c_str());
+    };
+    
+    using namespace std::placeholders;
+    
+    //TODO: don't do this every frame
+    for (size_t i = 0; i < pointLights.size(); i++)
+    {
+        //Get the uniform location for point lights
+        auto getPointLightUniLoc = std::bind(getLightUniLoc, _1, i, "pointLights");
 
-    //TODO: lots of duplicated code
-	for (size_t i = 0; i < pointLights.size(); i++)
-	{
-        auto getLightUniLoc = [i, sp = sp.shaderProgram](const char* member) // Gets the uniform location for members of the light struct
-        {
-            std::stringstream ss;
-            ss << "pointLights[" << i << "]." << member;
-            return glGetUniformLocation(sp, ss.str().c_str());
-        };
+
+        //Set light properties
+        glUniform3f(getPointLightUniLoc("position"), pointLights[i]->position.x, pointLights[i]->position.y, pointLights[i]->position.z);
+        glUniform3f(getPointLightUniLoc("diffuse"), pointLights[i]->diffuse.r, pointLights[i]->diffuse.g, pointLights[i]->diffuse.b);
+        glUniform3f(getPointLightUniLoc("specular"), pointLights[i]->specular.r, pointLights[i]->specular.g, pointLights[i]->specular.b);
+    }
+    
+    for (size_t i = 0; i < dirLights.size(); i++)
+{   
+        //Get the uniform location for directional lights
+        auto getDirLightUniLoc = std::bind(getLightUniLoc, _1, i, "dirLights");
 
         //TODO: don't do this every frame
         //Set light properties
-        glUniform3f(getLightUniLoc("position"), pointLights[i]->position.x, pointLights[i]->position.y, pointLights[i]->position.z);
-        glUniform3f(getLightUniLoc("diffuse"), pointLights[i]->diffuse.r, pointLights[i]->diffuse.g, pointLights[i]->diffuse.b);
-        glUniform3f(getLightUniLoc("specular"), pointLights[i]->specular.r, pointLights[i]->specular.g, pointLights[i]->specular.b);
-	}
-	
-    for (size_t i = 0; i < dirLights.size(); i++)
-	{
-        auto getLightUniLoc = [i, sp = sp.shaderProgram](const char* member) // Gets the uniform location for members of the light struct
-        {
-            std::stringstream ss;
-            ss << "dirLights[" << i << "]." << member;
-            return glGetUniformLocation(sp, ss.str().c_str());
-        };
+        glUniform3f(getDirLightUniLoc("position"), dirLights[i]->direction.x, dirLights[i]->direction.y, dirLights[i]->direction.z);
+        glUniform3f(getDirLightUniLoc("diffuse"), dirLights[i]->diffuse.r, dirLights[i]->diffuse.g, dirLights[i]->diffuse.b);
+        glUniform3f(getDirLightUniLoc("specular"), dirLights[i]->specular.r, dirLights[i]->specular.g, dirLights[i]->specular.b);
+    }
 
-		//TODO: don't do this every frame
-		//Set light properties
-		glUniform3f(getLightUniLoc("position"), dirLights[i]->direction.x, dirLights[i]->direction.y, dirLights[i]->direction.z);
-		glUniform3f(getLightUniLoc("diffuse"), dirLights[i]->diffuse.r, dirLights[i]->diffuse.g, dirLights[i]->diffuse.b);
-		glUniform3f(getLightUniLoc("specular"), dirLights[i]->specular.r, dirLights[i]->specular.g, dirLights[i]->specular.b);
-	}
-
-	GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
+    GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
     
     //TODO: Don't hardcode ambient value
     glUniform3f(ambientLoc, 0.1f, 0.1f, 0.1f);
-	
-	go.Draw(camera);
+
+    go.Draw(camera);
 }
 
 
