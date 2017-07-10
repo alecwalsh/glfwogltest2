@@ -1,15 +1,26 @@
 #include "TextureManager.h"
 
+Texture::operator GLuint()
+{
+    return texObject;
+}
+
+
+Texture::~Texture()
+{
+    glDeleteTextures(1, &texObject);
+}
+
+
 //TODO: Support creating multiple textures at once
-//TODO: Retrieve textures by name instead of OpenGL object, probably std::unordered_map
-void TextureManager::AddTexture(const char* fileName)
+void TextureManager::AddTexture(const char* id, const char* fileName)
 {
 	//Add a new value to the vector
-	textureObjects.push_back(0);
+	textureObjects.emplace(id, Texture{});
 	//Set the new value to a valid texture object
-	glGenTextures(1, &textureObjects[textureObjects.size()-1]);
+	glGenTextures(1, &textureObjects[id].texObject);
 
-    glBindTexture(GL_TEXTURE_2D, textureObjects[textureObjects.size()-1]);
+    glBindTexture(GL_TEXTURE_2D, textureObjects[id]);
     
 	//Load texture from file and upload to GPU
 	int width, height;
@@ -37,5 +48,5 @@ TextureManager::TextureManager()
 
 TextureManager::~TextureManager()
 {
-	glDeleteTextures(textureObjects.size(), textureObjects.data());
+    
 }

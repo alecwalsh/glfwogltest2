@@ -109,10 +109,10 @@ int main(int argc, char* argv[]) {
 
     //Create textures
     TextureManager texman;
-    texman.AddTexture("data/container2.png");
-    texman.AddTexture("data/container2_specular.png");
-    texman.AddTexture("data/normalmaptest1.png");
-    texman.AddTexture("data/sample2.png");
+    texman.AddTexture("container", "data/container2.png");
+    texman.AddTexture("container_specular", "data/container2_specular.png");
+    texman.AddTexture("normalmaptest1", "data/normalmaptest1.png");
+    texman.AddTexture("puppy", "data/sample2.png");
 
     Camera camera{
         {2.0f, 2.0f, 2.0f},
