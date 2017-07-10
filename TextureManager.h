@@ -7,21 +7,9 @@
 #include <GL/glew.h>
 #include <SOIL/SOIL.h>
 
-//TODO: Move Texture to separate fileName
-struct Texture
-{
-    //OpenGL texture object
-    GLuint texObject;
-    
-    operator GLuint();
-    
-    ~Texture();
-};
-
-
 class TextureManager {
 public:
-    std::unordered_map<std::string, Texture> textureObjects;
+    std::unordered_map<std::string, GLuint> textureObjects;
 
     void AddTexture(const char* id, const char* fileName);
     TextureManager();
