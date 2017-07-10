@@ -9,15 +9,11 @@ void TextureManager::AddTexture(const char* fileName)
 	//Set the new value to a valid texture object
 	glGenTextures(1, &textureObjects[textureObjects.size()-1]);
 
+    glBindTexture(GL_TEXTURE_2D, textureObjects[textureObjects.size()-1]);
+    
 	//Load texture from file and upload to GPU
 	int width, height;
 	unsigned char* image;
-
-	//This is always set to GL_TEXTURE0 because we need to bind a texture unit to bind a texture object
-	//but we don't care which texture unit it is right now
-	//We set the correct texture unit for rendering in the GameObject
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureObjects[textureObjects.size()-1]);
 
 	//TODO: check for file existence
 	image = SOIL_load_image(fileName, &width, &height, 0, SOIL_LOAD_RGB);

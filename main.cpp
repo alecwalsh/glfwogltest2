@@ -107,12 +107,12 @@ int main(int argc, char* argv[]) {
     Mesh mesh{"data/cube_irreg.fbx"};
     Mesh lightMesh{"data/cube.fbx"};
 
-	//Create textures
-	TextureManager texman;
-	texman.AddTexture("data/normalmaptest1.png");
-	texman.AddTexture("data/container2.png");
-	texman.AddTexture("data/sample2.png");
-	texman.AddTexture("data/container2_specular.png");
+    //Create textures
+    TextureManager texman;
+    texman.AddTexture("data/container2.png");
+    texman.AddTexture("data/container2_specular.png");
+    texman.AddTexture("data/normalmaptest1.png");
+    texman.AddTexture("data/sample2.png");
 
     Camera camera{
         {2.0f, 2.0f, 2.0f},

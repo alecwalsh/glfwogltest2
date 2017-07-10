@@ -95,10 +95,10 @@ void GameObject::BindTextures() const
 {
 	//Bind texture objects to texture units
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texman.textureObjects[1]);
+	glBindTexture(GL_TEXTURE_2D, texman.textureObjects[0]);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texman.textureObjects[3]);
+	glBindTexture(GL_TEXTURE_2D, texman.textureObjects[1]);
 }
 
 //Sets the transform
