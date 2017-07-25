@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.0)
 
 project (glfwogltest2)
 
+SET(CMAKE_CXX_COMPILER g++)
 SET(CMAKE_CXX_STANDARD 14)
 
 file(GLOB SOURCES "*.cpp")
