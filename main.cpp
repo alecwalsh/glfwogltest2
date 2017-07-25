@@ -42,7 +42,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void handle_movement(global_values* gv, Camera& camera, float deltaTime);
 
-void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera);
+void render(const GameObject& go, const std::vector<std::unique_ptr<PointLight>>& pointLights, const std::vector<std::unique_ptr<DirLight>>& dirLights, const Camera& camera);
 
 //TODO: avoid globals, use glfwSetWindowUserPointer
 bool keys[1024];
@@ -144,9 +144,9 @@ int main(int argc, char* argv[]) {
 	pointLights.push_back(std::move(pointLight));
 	pointLights.push_back(std::move(pointLight2));
     
-    std::vector<DirLight*> dirLights;
-    auto dirLight = new DirLight(glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.5f), glm::vec3(0.25f));
-    dirLights.push_back(dirLight);
+    std::vector<std::unique_ptr<DirLight>> dirLights;
+    auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.5f), glm::vec3(0.25f));
+    dirLights.push_back(std::move(dirLight));
 
 	//TODO: Create LightObject class
 	//The white cubes that represent lights
@@ -340,7 +340,7 @@ void handle_movement(global_values* gv, Camera& camera, float deltaTime) //TODO:
 }
 
 //TODO: Support multiple lights and multiple types of lights
-void render(GameObject& go, std::vector<std::unique_ptr<PointLight>>& pointLights, std::vector<DirLight*> dirLights, Camera camera) {
+void render(const GameObject& go, const std::vector<std::unique_ptr<PointLight>>& pointLights, const std::vector<std::unique_ptr<DirLight>>& dirLights, const Camera& camera) {
 	const auto& sp = go.shaderProgram;
     
 	glUseProgram(sp.shaderProgram);
