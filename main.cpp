@@ -57,9 +57,15 @@ int main(int argc, char* argv[]) {
 	glfwInit();
 
     //TODO: Switch between GL and GLES with command line switch
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    auto gl_major_version = 3;
+    auto gl_minor_version = 3;
+    bool gl_es = false;
+    
+    int gl_api = gl_es ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API;
+    
+    glfwWindowHint(GLFW_CLIENT_API, gl_api);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major_version);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, gl_minor_version);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 8);
@@ -98,9 +104,10 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
+    auto version = std::tie(gl_major_version, gl_minor_version, gl_es);
 	//compile and link shaders
-	ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl"};
-	ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl"};
+	ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", version};
+	ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", version};
 
     //TODO: use .blend files
     Mesh mesh{"data/cube_irreg.fbx"};

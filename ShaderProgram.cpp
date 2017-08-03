@@ -4,21 +4,33 @@
 #include <fstream>
 #include <sstream>
 
-ShaderProgram::ShaderProgram(char const* vertShader, char const* fragShader) {
-	ShaderProgramFromFiles(vertShader, fragShader);
+ShaderProgram::ShaderProgram(char const* vertShader, char const* fragShader, std::tuple<int, int, bool> version) : version(version)
+{
+    ShaderProgramFromFiles(vertShader, fragShader);
 }
 
 //TODO: add error handling
-GLuint ShaderProgram::ShaderProgramFromFiles(const char* vertShaderFile, const char* fragShaderFile) {
-    std::string version = "#version 300 es\n";
+GLuint ShaderProgram::ShaderProgramFromFiles(const char* vertShaderFile, const char* fragShaderFile)
+{
+    using std::get;
+    using std::to_string;
     
-    auto getSource = [version](auto shaderFile)
+    //std::string version = "#version 300 es\n";
+    std::string version_string = "#version ";
+    version_string += to_string(get<0>(version)) + to_string(get<1>(version)) + '0';
+    version_string += get<2>(version) ? " es" : "";
+    version_string += '\n';
+    
+    std::cout << version_string;
+    //exit(0);
+    
+    auto getSource = [version_string](auto shaderFile)
     {
         std::ifstream shader_file;
         shader_file.open(shaderFile);
         
         std::stringstream buffer;
-        buffer << version << shader_file.rdbuf();
+        buffer << version_string << shader_file.rdbuf();
         
         return buffer.str();
     };
@@ -101,6 +113,7 @@ void ShaderProgram::getLinkErrors(GLuint shaderProgram)
     }
 }
 
-ShaderProgram::~ShaderProgram() {
+ShaderProgram::~ShaderProgram()
+{
 	glDeleteProgram(shaderProgram);
 }
