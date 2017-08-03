@@ -1,4 +1,6 @@
-#version 330
+#ifdef GL_ES
+precision highp float;
+#endif
 
 //TODO: remove unnecessary attribs after moving lightsObject into separate class
 in vec3 position;

@@ -1,4 +1,6 @@
-#version 330
+#ifdef GL_ES
+precision highp float;
+#endif
 
 in vec3 Color;
 in vec3 Normal;
@@ -45,9 +47,9 @@ void main() {
     //outColor = mix(texture(texKitten, Texcoord), texture(texPuppy, Texcoord), time);
     vec3 objectColor = vec3(1,1,1);
     //Ambient
-    float ambientStrength = 0.25f;
+    float ambientStrength = 0.25;
     //Specular
-    float specularStrength = 0.5f;
+    float specularStrength = 0.5;
 
     //Uncomment one of the next two lines
     vec3 norm = normalize(Normal); //Per vertex normals
@@ -71,8 +73,8 @@ void main() {
         vec3 reflectDir = reflect(-lightDir, norm);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-        diffuse  += pointLights[i].diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Texcoord).rgb * 15 / pow(dist, 2);
-        specular += pointLights[i].specular * (spec * material.specular) * texture(texSpecMap, Texcoord).rgb * 15 / pow(dist, 2);
+        diffuse  += pointLights[i].diffuse * (diff * material.diffuse) * texture2D(texDiffuseMap, Texcoord).rgb * 15.0 / pow(dist, 2.0);
+        specular += pointLights[i].specular * (spec * material.specular) * texture2D(texSpecMap, Texcoord).rgb * 15.0 / pow(dist, 2.0);
     }
 
     //Now calculate directional lights
@@ -88,11 +90,11 @@ void main() {
         vec3 reflectDir = reflect(-lightDir, norm);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-        diffuse  += dirLights[i].diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Texcoord).rgb;
-        specular += dirLights[i].specular * (spec * material.specular) * texture(texSpecMap, Texcoord).rgb;
+        diffuse  += dirLights[i].diffuse * (diff * material.diffuse) * texture2D(texDiffuseMap, Texcoord).rgb;
+        specular += dirLights[i].specular * (spec * material.specular) * texture2D(texSpecMap, Texcoord).rgb;
     }
 
-    vec3 ambient = uniAmbient * texture(texDiffuseMap, Texcoord).rgb;
+    vec3 ambient = uniAmbient * texture2D(texDiffuseMap, Texcoord).rgb;
 
     vec3 result = (ambient + diffuse + specular) * objectColor;
 

@@ -1,4 +1,6 @@
-#version 330
+#ifdef GL_ES
+precision highp float;
+#endif
 
 in vec3 Color;
 in vec3 Normal;
