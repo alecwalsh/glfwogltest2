@@ -1,10 +1,10 @@
 #pragma once
+#include "glad/glad.h"
 
 #include <string>
 #include <vector>
 #include <unordered_map>
 
-#include <GL/glew.h>
 #include <SOIL/SOIL.h>
 
 class TextureManager {

@@ -1,5 +1,4 @@
-#define GLEW_STATIC
-#include <GL/glew.h>
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -91,13 +90,13 @@ int main(int argc, char* argv[]) {
     
     glfwSetWindowUserPointer(window, &gs);
     
-	glewExperimental = GL_TRUE;
-	if (glewInit() != GLEW_OK)
-	{
-		std::cerr << "Error initializing GLEW";
-		glfwTerminate();
-		return -1;
-	}
+    int load_result = gl_es ? gladLoadGLES2Loader((GLADloadproc) glfwGetProcAddress) : gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    if (!load_result)
+    {
+        std::cerr << "Error initializing GLEW";
+        glfwTerminate();
+        return -1;
+    }
 
 	
     glEnable(GL_MULTISAMPLE);

@@ -9,7 +9,7 @@ ShaderProgram::ShaderProgram(char const* vertShader, char const* fragShader, std
     ShaderProgramFromFiles(vertShader, fragShader);
 }
 
-//TODO: add error handling
+//TODO: Make version_string work with OpenGL below 3.3
 GLuint ShaderProgram::ShaderProgramFromFiles(const char* vertShaderFile, const char* fragShaderFile)
 {
     using std::get;
@@ -20,9 +20,6 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const char* vertShaderFile, const c
     version_string += to_string(get<0>(version)) + to_string(get<1>(version)) + '0';
     version_string += get<2>(version) ? " es" : "";
     version_string += '\n';
-    
-    std::cout << version_string;
-    //exit(0);
     
     auto getSource = [version_string](auto shaderFile)
     {

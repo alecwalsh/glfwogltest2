@@ -10,8 +10,8 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
 file(GLOB SOURCES "*.cpp")
+set(SOURCES ${SOURCES} glad/glad.c)
  
 add_executable(glfwogltest2 ${SOURCES})
 
-target_include_directories(glfwogltest2 PUBLIC ./include)
-target_link_libraries(glfwogltest2 GLEW GL glfw SOIL assimp)
+target_link_libraries(glfwogltest2 GL glfw SOIL assimp dl)
