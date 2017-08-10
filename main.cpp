@@ -41,7 +41,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void handle_movement(global_values* gv, Camera& camera, float deltaTime);
 
-void render(const GameObject& go, const std::vector<std::unique_ptr<PointLight>>& pointLights, const std::vector<std::unique_ptr<DirLight>>& dirLights, const Camera& camera);
+template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
+
+void render(const GameObject& go, const vec_uniq<PointLight>& pointLights, const vec_uniq<DirLight>& dirLights, const Camera& camera);
 
 //TODO: avoid globals, use glfwSetWindowUserPointer
 bool keys[1024];
@@ -142,20 +144,19 @@ int main(int argc, char* argv[]) {
 	auto go = std::make_unique<CubeObject>(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
 	go->SetupTextures();
 
-    //TODO: use std::vector<std::unique_ptr<Light>>
-    std::vector<std::unique_ptr<PointLight>> pointLights;
+    vec_uniq<PointLight> pointLights;
 	auto pointLight = std::make_unique<PointLight>(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
 	auto pointLight2 = std::make_unique<PointLight>(glm::vec3(-6.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
 	pointLights.push_back(std::move(pointLight));
 	pointLights.push_back(std::move(pointLight2));
     
-    std::vector<std::unique_ptr<DirLight>> dirLights;
+    vec_uniq<DirLight> dirLights;
     auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.5f), glm::vec3(0.25f));
     dirLights.push_back(std::move(dirLight));
 
 	//TODO: Create LightObject class
 	//The white cubes that represent lights
-	std::vector<std::unique_ptr<GameObject>> lightObjects;
+	vec_uniq<GameObject> lightObjects;
 	
     //TODO: Light objects appear in the wrong place compared to the location of the light
 	for (size_t i = 0; i < pointLights.size(); i++)
@@ -345,7 +346,7 @@ void handle_movement(global_values* gv, Camera& camera, float deltaTime) //TODO:
 }
 
 //TODO: Support multiple lights and multiple types of lights
-void render(const GameObject& go, const std::vector<std::unique_ptr<PointLight>>& pointLights, const std::vector<std::unique_ptr<DirLight>>& dirLights, const Camera& camera) {
+void render(const GameObject& go, const vec_uniq<PointLight>& pointLights, const vec_uniq<DirLight>& dirLights, const Camera& camera) {
 	const auto& sp = go.shaderProgram;
     
 	glUseProgram(sp.shaderProgram);
