@@ -111,6 +111,7 @@ int main(int argc, char* argv[]) {
 	ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", version};
 
     //TODO: use .blend files
+    Mesh floorMesh{"data/floor.fbx"};
     Mesh mesh{"data/cube_irreg.fbx"};
     Mesh lightMesh{"data/cube.fbx"};
 
@@ -143,6 +144,11 @@ int main(int argc, char* argv[]) {
 	glm::mat4 transform;
 	auto go = std::make_unique<CubeObject>(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
 	go->SetupTextures();
+    
+    glm::mat4 floorTransform = glm::translate(glm::mat4(), {0.0f, -1.5f, 0.0f});
+    floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
+    floorTransform = glm::scale(floorTransform, {5.0f, 5.0f, 1.0f});
+    auto floor = std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, elapsedTime, deltaTime, texman);
 
     vec_uniq<PointLight> pointLights;
 	auto pointLight = std::make_unique<PointLight>(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
@@ -151,7 +157,7 @@ int main(int argc, char* argv[]) {
 	pointLights.push_back(std::move(pointLight2));
     
     vec_uniq<DirLight> dirLights;
-    auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.5f), glm::vec3(0.25f));
+    auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(0.5f), glm::vec3(0.25f));
     dirLights.push_back(std::move(dirLight));
 
 	//TODO: Create LightObject class
@@ -203,6 +209,7 @@ int main(int argc, char* argv[]) {
 
 		go->Tick();
 		render(*go, pointLights, dirLights, camera);
+        render(*floor, pointLights, dirLights, camera);
 
 		for (size_t i = 0; i < lightObjects.size(); i++)
 		{
