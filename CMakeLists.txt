@@ -1,16 +1,17 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.0)
 
 project (glfwogltest2)
-
-SET(CMAKE_CXX_STANDARD 14)
-
-#Debug flags
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
 file(GLOB SOURCES "*.cpp")
 set(SOURCES ${SOURCES} glad/glad.c)
  
 add_executable(glfwogltest2 ${SOURCES})
 
+target_compile_features(glfwogltest2 PUBLIC cxx_std_14)
+
 target_link_libraries(glfwogltest2 GL glfw SOIL assimp dl)
+
+#Debug flags
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(glfwogltest2 PUBLIC -DDEBUG)
+endif()
