@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <sstream>
-//#include <thread>
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -23,6 +22,7 @@
 #include "PointLight.h"
 #include "ShaderProgram.h"
 #include "TextureManager.h"
+#include "ConfigManager.h"
 // TODO: clean up duplicate includes
 
 // TODO: move this to separate file
@@ -55,6 +55,8 @@ int main(int argc, char *argv[]) {
     float deltaTime = 0.0f;
 
     glfwInit();
+    
+    ConfigManager cm("config.lua");
 
     // TODO: Switch between GL and GLES with command line switch
     auto gl_major_version = 3;
@@ -69,9 +71,14 @@ int main(int argc, char *argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 8);
-
-    GLFWwindow *window = glfwCreateWindow(800, 600, "OpenGL", nullptr, nullptr); // Windowed
-
+    
+    global_values gs;
+    
+    gs.WIDTH = cm.width;
+    gs.HEIGHT = cm.height;
+    
+    GLFWwindow *window = glfwCreateWindow(gs.WIDTH, gs.HEIGHT, "OpenGL", nullptr, nullptr); // Windowed
+    
     glfwMakeContextCurrent(window);
 
     glfwSetKeyCallback(window, key_callback);
@@ -81,11 +88,7 @@ int main(int argc, char *argv[]) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Set global state and call glfwSetWindowUserPointer to make it accessable to callbacks
-    global_values gs;
-
     gs.hasResized = false;
-    gs.WIDTH = 800;
-    gs.HEIGHT = 600;
     gs.lastX = gs.WIDTH / 2;
     gs.lastY = gs.HEIGHT / 2;
 
