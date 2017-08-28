@@ -103,6 +103,7 @@ int main(int argc, char *argv[]) {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+    //TODO: Add AssetManager, like TextureManager but for all assets
     auto version = std::tie(gl_major_version, gl_minor_version, gl_es);
     // compile and link shaders
     ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", version};
@@ -115,10 +116,10 @@ int main(int argc, char *argv[]) {
 
     // Create textures
     TextureManager texman;
-    texman.AddTexture("container", "data/container2.png");
-    texman.AddTexture("container_specular", "data/container2_specular.png");
-    texman.AddTexture("normalmaptest1", "data/normalmaptest1.png");
-    texman.AddTexture("puppy", "data/sample2.png");
+    texman.AddTexture("container", "container2.png");
+    texman.AddTexture("container_specular", "container2_specular.png");
+    texman.AddTexture("normalmaptest1", "normalmaptest1.png");
+    texman.AddTexture("puppy", "sample2.png");
 
     Camera camera{
         {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
