@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     glfwInit();
     
-    ConfigManager cm("config.lua");
+    ConfigManager cm{"config.lua"};
 
     // TODO: Switch between GL and GLES with command line switch
     auto gl_major_version = 3;
@@ -80,6 +80,8 @@ int main(int argc, char *argv[]) {
     GLFWwindow *window = glfwCreateWindow(gs.WIDTH, gs.HEIGHT, "OpenGL", nullptr, nullptr); // Windowed
     
     glfwMakeContextCurrent(window);
+    
+    glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -101,7 +103,6 @@ int main(int argc, char *argv[]) {
         glfwTerminate();
         return -1;
     }
-    glfwSwapInterval(0);
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);

@@ -2,49 +2,55 @@
 
 #include <iostream>
 
-ConfigManager::ConfigManager() {
-    L = luaL_newstate();
-    //TODO: add autoexec.lua with default values
-    luaL_dofile(L, "autoexec.lua");
+//TODO: add autoexec.lua with default values
+ConfigManager::ConfigManager() : LuaScript("autoexec.lua") {
     LoadVars();
 }
 
-ConfigManager::ConfigManager(const char* fileName) {
-    L = luaL_newstate();
-    luaL_dofile(L, fileName);
+ConfigManager::ConfigManager(const char* fileName) : LuaScript(fileName) {
     LoadVars();
 }
 
 ConfigManager::~ConfigManager() {
-    lua_close(L);
+    
 }
 
-int ConfigManager::getWidth() {
+int ConfigManager::getWidth() const {
     lua_getglobal(L, "width");
+    //Check for incorrect type
     if(!lua_isinteger(L, 1)) {
         std::cout << "Error: Width must be an integer, using default value" << std::endl;
+        //Clean up the stack
+        lua_pop(L, 1);
         return width;
     }
     auto width = lua_tointeger(L, 1);
+    
+    //Clean up the stack
     lua_pop(L, 1);
     if(width < 1) {
         std::cout << "Error: Invalid width, using default value" << std::endl;
-        return this->width;
+        width = this->width;
     }
     return width;
 }
 
-int ConfigManager::getHeight() {
+int ConfigManager::getHeight() const {
     lua_getglobal(L, "height");
-    if(!lua_isinteger(L, 1)) {
+    //Check for incorrect type
+    if(!lua_isinteger(L, -1)) {
         std::cout << "Error: Height must be an integer, using default value" << std::endl;
+        //Clean up the stack
+        lua_pop(L, 1);
         return height;
     }
     auto height = lua_tointeger(L, 1);
+    
+    //Clean up the stack
     lua_pop(L, 1);
     if(height < 1) {
         std::cout << "Error: Invalid height, using default value" << std::endl;
-        return this->height;
+        height = this->height;
     }
     return height;
 }

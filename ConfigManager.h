@@ -1,19 +1,16 @@
 #pragma once
-#include <lua.hpp>
 
-#include <string>
-#include <stdexcept>
+#include "LuaScript.h"
 
-class ConfigManager {
+class ConfigManager : public LuaScript {
 private:
-    lua_State* L;
     void LoadVars();
-    int getWidth();
-    int getHeight();
+    int getWidth() const;
+    int getHeight() const;
 public:
     ConfigManager();
     ConfigManager(const char* fileName);
-    ~ConfigManager();
+    virtual ~ConfigManager() override;
     
     int width = 800, height = 600;
 };
