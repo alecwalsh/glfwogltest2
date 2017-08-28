@@ -101,6 +101,7 @@ int main(int argc, char *argv[]) {
         glfwTerminate();
         return -1;
     }
+    glfwSwapInterval(0);
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
@@ -203,7 +204,7 @@ int main(int argc, char *argv[]) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        go->Tick();
+        go->TickLua();
         render(*go, pointLights, dirLights, camera);
         render(*floor, pointLights, dirLights, camera);
 

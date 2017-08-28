@@ -16,15 +16,29 @@ void CubeObject::Tick() {
         glUniform1f(uniTime, 1 - (time - floor(time)));
     }
 
-    glm::mat4 rotation, translation, scaling;
-
-    rotation = glm::rotate(rotation, deltaTime * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
-    scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
+//     glm::mat4 rotation, translation, scaling;
+// 
+//     rotation = glm::rotate(rotation, deltaTime * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+//     translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
+//     scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // this->ModTransform(translation * rotation * scaling);
 
     // std::cout << "Elapsed time:" << elapsedTime << std::endl;
+}
+
+void CubeObject::TickLua() {
+    lua_getglobal(L, "Tick");
+    lua_pcall(L, 0, 1, 0);
+    auto i = lua_tointeger(L, 1);
+    
+    glm::mat4 rotation, translation, scaling;
+
+    rotation = glm::rotate(rotation, deltaTime * i * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    this->ModTransform(translation * rotation * scaling);
+    
+    Tick();
 }
 
 void CubeObject::Draw(Camera camera) const {
@@ -49,6 +63,9 @@ void CubeObject::Draw(Camera camera) const {
 CubeObject::CubeObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime,
                        float &_deltaTime, TextureManager &_texman)
     : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime, _texman) {
+    L = luaL_newstate();
+    luaL_dofile(L, "cube.lua");
+    
     // Sets up material properties for the cube
     material.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
     material.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -56,4 +73,6 @@ CubeObject::CubeObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _tr
     material.shininess = 32.0f;
 }
 
-CubeObject::~CubeObject() {}
+CubeObject::~CubeObject() {
+    lua_close(L);
+}
