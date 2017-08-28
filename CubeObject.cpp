@@ -16,21 +16,16 @@ void CubeObject::Tick() {
         glUniform1f(uniTime, 1 - (time - floor(time)));
     }
 
-//     glm::mat4 rotation, translation, scaling;
-// 
-//     rotation = glm::rotate(rotation, deltaTime * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-//     translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
-//     scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
-
-    // this->ModTransform(translation * rotation * scaling);
-
     // std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
 
 void CubeObject::TickLua() {
-    lua_getglobal(L, "Tick");
+    int starttop = lua_gettop(L);
+    
+    lua_getglobal(L, "cube");
+    lua_getfield(L, -1, "tick");
     lua_pcall(L, 0, 1, 0);
-    auto i = lua_tointeger(L, 1);
+    float i = (float)lua_tonumber(L, -1);
     
     glm::mat4 rotation, translation, scaling;
 
@@ -39,6 +34,10 @@ void CubeObject::TickLua() {
     this->ModTransform(translation * rotation * scaling);
     
     Tick();
+    
+    lua_pop(L, 2);
+    
+    assert(lua_gettop(L) - starttop == 0);
 }
 
 void CubeObject::Draw(Camera camera) const {
