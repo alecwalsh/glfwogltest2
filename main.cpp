@@ -57,6 +57,8 @@ int main(int argc, char *argv[]) {
     glfwInit();
     
     ConfigManager cm{"config.lua"};
+    
+    LuaScript ls{"bind.lua"};
 
     // TODO: Switch between GL and GLES with command line switch
     auto gl_major_version = 3;
@@ -145,6 +147,8 @@ int main(int argc, char *argv[]) {
     glm::mat4 transform;
     auto go = std::make_unique<CubeObject>(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
     go->SetupTextures();
+    
+    ls.Register("Tick", &CubeObject::TickLua, go.get());
 
     glm::mat4 floorTransform = glm::translate(glm::mat4(), {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
@@ -205,7 +209,9 @@ int main(int argc, char *argv[]) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        go->TickLua();
+        lua_getglobal(ls.L, "start");
+        lua_pcall(ls.L, 0, 0, 0);
+        
         render(*go, pointLights, dirLights, camera);
         render(*floor, pointLights, dirLights, camera);
 

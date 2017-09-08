@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LuaScript.h"
+#include "lua_cpp_bind/LuaScript.h"
 
 class ConfigManager : public LuaScript {
 private:
