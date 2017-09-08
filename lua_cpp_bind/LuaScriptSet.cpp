@@ -50,8 +50,10 @@ int set_cpp(lua_State* L) {
 
 //TODO: implement this
 int get_cpp(lua_State* L) {
+    int starttop = lua_gettop(L);
     int propertyMap_idx = lua_upvalueindex(1);
     std::string name = lua_tostring(L, 1);
+    lua_pop(L, 1);
     
     auto propertyMap = static_cast<std::unordered_map<std::string, std::pair<void*, int>>*>(lua_touserdata(L, propertyMap_idx));
     
@@ -77,6 +79,6 @@ int get_cpp(lua_State* L) {
         default:
             break;
     }
-    
+    assert(starttop == lua_gettop(L));
     return 1;
 }

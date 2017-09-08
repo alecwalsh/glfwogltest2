@@ -15,29 +15,14 @@ void CubeObject::Tick() {
     } else {
         glUniform1f(uniTime, 1 - (time - floor(time)));
     }
-
-    // std::cout << "Elapsed time:" << elapsedTime << std::endl;
-}
-
-void CubeObject::TickLua() {
-    int starttop = lua_gettop(L);
-    
-    lua_getglobal(L, "cube");
-    lua_getfield(L, -1, "tick");
-    lua_pcall(L, 0, 1, 0);
-    float i = (float)lua_tonumber(L, -1);
     
     glm::mat4 rotation, translation, scaling;
 
-    rotation = glm::rotate(rotation, deltaTime * i * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    rotation = glm::rotate(rotation, deltaTime * RotSpeed * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     this->ModTransform(translation * rotation * scaling);
-    
-    Tick();
-    
-    lua_pop(L, 2);
-    
-    assert(lua_gettop(L) - starttop == 0);
+
+    // std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
 
 void CubeObject::Draw(Camera camera) const {
@@ -62,9 +47,6 @@ void CubeObject::Draw(Camera camera) const {
 CubeObject::CubeObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime,
                        float &_deltaTime, TextureManager &_texman)
     : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime, _texman) {
-    L = luaL_newstate();
-    luaL_dofile(L, "cube.lua");
-    
     // Sets up material properties for the cube
     material.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
     material.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -73,5 +55,9 @@ CubeObject::CubeObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _tr
 }
 
 CubeObject::~CubeObject() {
-    lua_close(L);
+    
+}
+
+void CubeObject::SetLuaState(lua_State* L) {
+    this->L = L;
 }

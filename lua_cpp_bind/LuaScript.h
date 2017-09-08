@@ -20,6 +20,7 @@ public:
     LuaScript();
     LuaScript(std::string fileName);
     virtual ~LuaScript();
+    void SetupBinding();
 //TODO: make private again
 public:
     lua_State* L;
