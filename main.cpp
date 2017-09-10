@@ -146,12 +146,16 @@ int main(int argc, char *argv[]) {
     // Creates a CubeObject
     glm::mat4 transform;
     auto go = std::make_unique<CubeObject>(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
+    go->name = "cube1";
     go->SetupTextures();
-    go->SetLuaState(ls.L);
+    go->LuaRegister(ls);
+    
+//     auto modTransformLambda = [](int x, int y, int z){};
     
     ls.Register("Tick", &CubeObject::Tick, go.get());
-//     ls.Register("LambdaTest", []{std::cout << "Lambda called from Lua\n";});
+    ls.Register("LambdaTest", []{/*std::cout << "Lambda called from Lua\n";*/});
     ls.Register("RotSpeed", &go->RotSpeed, LUA_TNUMBER);
+    ls.Register("elapsedTime", &elapsedTime, LUA_TNUMBER);
 
     glm::mat4 floorTransform = glm::translate(glm::mat4(), {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
@@ -212,7 +216,7 @@ int main(int argc, char *argv[]) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        luaL_dostring(ls.L, "loop()");
+        ls.exec("loop()");
 //         lua_pcall(ls.L, 0, 0, 0);
         
         render(*go, pointLights, dirLights, camera);

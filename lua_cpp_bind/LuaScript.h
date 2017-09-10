@@ -14,17 +14,21 @@ public:
     
     template<typename T>
     void Register(std::string name, T ptr, int type);
+    
     template<typename R, typename T, typename... Args>
     void Register(std::string name, mptr_t<R,T> mptr, T* obj, Args&&... args);
+    
     template<typename F>
     void Register(std::string name, F&& f);
+    
+    void exec(std::string code);
     
     LuaScript();
     LuaScript(std::string fileName);
     virtual ~LuaScript();
-    void SetupBinding();
 //TODO: make private again
 public:
+    void SetupBinding();
     lua_State* L;
     std::unordered_map<std::string, std::pair<void*, int>> propertyMap;
     std::unordered_map<std::string, std::function<void()>> methodMap;

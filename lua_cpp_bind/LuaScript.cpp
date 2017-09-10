@@ -25,7 +25,9 @@ LuaScript::~LuaScript() {
     lua_close(L);
 }
 
-
+void LuaScript::exec(std::string code) {
+    luaL_dostring(L, code.c_str());
+}
 
 void LuaScript::SetupBinding() {
     lua_pushlightuserdata(L, &propertyMap);

@@ -58,6 +58,7 @@ CubeObject::~CubeObject() {
     
 }
 
-void CubeObject::SetLuaState(lua_State* L) {
-    this->L = L;
+void CubeObject::LuaRegister(LuaScript& L) {
+    GameObject::LuaRegister(L);
+    std::cout << "Registered CubeObject with Lua\n";
 }
