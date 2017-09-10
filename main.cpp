@@ -150,6 +150,7 @@ int main(int argc, char *argv[]) {
     go->SetLuaState(ls.L);
     
     ls.Register("Tick", &CubeObject::Tick, go.get());
+//     ls.Register("LambdaTest", []{std::cout << "Lambda called from Lua\n";});
     ls.Register("RotSpeed", &go->RotSpeed, LUA_TNUMBER);
 
     glm::mat4 floorTransform = glm::translate(glm::mat4(), {0.0f, -1.5f, 0.0f});
