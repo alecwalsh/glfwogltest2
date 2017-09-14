@@ -25,15 +25,26 @@ int get_cpp(lua_State* L);
 
 class LuaScript {
 public:
+    //The integer and float types are LUA_INTEGER and LUA_NUMBER from luaconf.h, make sure to use the right types
+    enum class Type {
+        Integer,
+        Float,
+        String,
+        Bool
+    };
     //Pointer to a member function
     template<typename R, typename T> using mptr_t = R(T::*);
     
+    //Register a normal variable
     template<typename T>
-    void Register(std::string name, T ptr, int type);
+    void Register(std::string name, T ptr, Type type);
     
+    //TODO: Can't change the object the memberr function is called on
+    //Register a member function
     template<typename R, typename T, typename... Args>
     void Register(std::string name, mptr_t<R,T> mptr, T* obj, Args&&... args);
     
+    //Register any Callable
     template<typename F>
     void Register(std::string name, F&& f);
     
@@ -46,12 +57,12 @@ public:
 public:
     void SetupBinding();
     lua_State* L;
-    std::unordered_map<std::string, std::pair<void*, int>> propertyMap;
+    std::unordered_map<std::string, std::pair<void*, Type>> propertyMap;
     std::unordered_map<std::string, std::function<void()>> methodMap;
 };
 
 template<typename T>
-void LuaScript::Register(std::string name, T ptr, int type) {
+void LuaScript::Register(std::string name, T ptr, Type type) {
     propertyMap.insert({name, {ptr, type}});
 }
 

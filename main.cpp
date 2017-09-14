@@ -153,9 +153,9 @@ int main(int argc, char *argv[]) {
 //     auto modTransformLambda = [](int x, int y, int z){};
     
     ls.Register("Tick", &CubeObject::Tick, go.get());
-    ls.Register("LambdaTest", []{/*std::cout << "Lambda called from Lua\n";*/});
-    ls.Register("RotSpeed", &go->RotSpeed, LUA_TNUMBER);
-    ls.Register("elapsedTime", &elapsedTime, LUA_TNUMBER);
+    ls.Register("LambdaTest", []{std::cout << "Lambda called from Lua\n";});
+    ls.Register("elapsedTime", &elapsedTime, LuaScript::Type::Float);
+    ls.Register("RotSpeed", &go->RotSpeed, LuaScript::Type::Float);
 
     glm::mat4 floorTransform = glm::translate(glm::mat4(), {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
