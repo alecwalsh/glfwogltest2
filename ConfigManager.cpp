@@ -18,13 +18,13 @@ ConfigManager::~ConfigManager() {
 int ConfigManager::getWidth() const {
     lua_getglobal(L, "width");
     //Check for incorrect type
-    if(!lua_isinteger(L, 1)) {
+    if(!lua_isinteger(L, -1)) {
         std::cout << "Error: Width must be an integer, using default value" << std::endl;
         //Clean up the stack
         lua_pop(L, 1);
         return width;
     }
-    auto width = lua_tointeger(L, 1);
+    auto width = lua_tointeger(L, -1);
     
     //Clean up the stack
     lua_pop(L, 1);
@@ -44,7 +44,7 @@ int ConfigManager::getHeight() const {
         lua_pop(L, 1);
         return height;
     }
-    auto height = lua_tointeger(L, 1);
+    auto height = lua_tointeger(L, -1);
     
     //Clean up the stack
     lua_pop(L, 1);

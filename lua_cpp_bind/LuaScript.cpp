@@ -4,9 +4,21 @@
 
 #include "LuaScript.h"
 
+int error_handler(lua_State *L) {
+    //Prints the error message and returns the error object unchanged
+    const char *msg = lua_tostring(L, -1);
+    if(msg != NULL) {
+        printf("%s\n", msg);
+    }
+    return 1;
+}
+
 LuaScript::LuaScript() {
     L = luaL_newstate();
     luaL_openlibs(L);
+    
+    //Push error handler
+    lua_pushcfunction(L, error_handler);
     
     SetupBinding();
 }
@@ -15,9 +27,16 @@ LuaScript::LuaScript(std::string fileName) {
     L = luaL_newstate();
     luaL_openlibs(L);
     
+    //Push error handler
+    lua_pushcfunction(L, error_handler);
+    
     SetupBinding();
     
-    luaL_dofile(L, fileName.c_str());
+    if(luaL_loadfile(L, fileName.c_str()) == LUA_ERRFILE) {
+        std::cout << "Error opening " << fileName << std::endl;
+        return;
+    }
+    lua_pcall(L, 0, LUA_MULTRET, 1);
 }
 
 LuaScript::~LuaScript() {
@@ -25,8 +44,8 @@ LuaScript::~LuaScript() {
 }
 
 void LuaScript::exec(std::string code) {
-//     luaL_dostring(L, code.c_str());
-    luaL_loadstring(L, code.c_str()); lua_call(L, 0, LUA_MULTRET);
+    luaL_loadstring(L, code.c_str());
+    lua_pcall(L, 0, LUA_MULTRET, 1);
 }
 
 void LuaScript::SetupBinding() {
@@ -146,6 +165,7 @@ int get_cpp(lua_State* L) {
             lua_pushboolean(L, *((bool*)(*propertyMap)[name].first));
             break;
         default:
+            printf("Error: Invalid Lua type\n");
             break;
     }
     

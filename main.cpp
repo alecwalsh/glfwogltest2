@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     glfwInit();
     
-    ConfigManager cm{"config.lua"};
+    ConfigManager cm;
     
     LuaScript ls{"bind.lua"};
 
