@@ -32,8 +32,20 @@ LuaScript::LuaScript(std::string fileName) {
     
     SetupBinding();
     
-    if(luaL_loadfile(L, fileName.c_str()) == LUA_ERRFILE) {
-        std::cout << "Error opening " << fileName << std::endl;
+    auto err = luaL_loadfile(L, fileName.c_str());
+    if(err != LUA_OK) {
+        switch(err) {
+            case LUA_ERRSYNTAX:
+                std::cout << "Syntax error in Lua file " << fileName << std::endl;
+                break;
+            case LUA_ERRFILE:
+                std::cout << "Error opening " << fileName << std::endl;
+                break;
+            default:
+                std::cout << "Error running Lua code" << std::endl;
+                std::cout << "Error code: " << err << std::endl;
+                break;
+        }
         return;
     }
     lua_pcall(L, 0, LUA_MULTRET, 1);
@@ -44,7 +56,17 @@ LuaScript::~LuaScript() {
 }
 
 void LuaScript::exec(std::string code) {
-    luaL_loadstring(L, code.c_str());
+    auto err = luaL_loadstring(L, code.c_str());
+    if(err != LUA_OK) {
+        if(err == LUA_ERRSYNTAX) {
+            std::cout << "Syntax error in Lua code: " << std::endl;
+            std::cout << code << std::endl;
+        } else {
+            std::cout << "Error running Lua code" << std::endl;
+            std::cout << "Error code: " << err << std::endl;
+        }
+        return;
+    }
     lua_pcall(L, 0, LUA_MULTRET, 1);
 }
 
