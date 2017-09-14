@@ -6,7 +6,7 @@ file(GLOB SOURCES "*.cpp")
  
 add_library(lua_cpp_bind STATIC ${SOURCES})
 
-target_compile_features(lua_cpp_bind PUBLIC cxx_std_14)
+target_compile_features(lua_cpp_bind PUBLIC cxx_std_11)
 set_target_properties(lua_cpp_bind PROPERTIES CXX_STANDARD_REQUIRED true)
 
 target_link_libraries(lua_cpp_bind lua)
