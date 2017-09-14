@@ -5,7 +5,23 @@
 
 #include <lua.hpp>
 
-#include "LuaScriptSet.h"
+//Use these at the beginning and end of function to make sure you left Lua's stack the way you found it
+#ifdef DEBUG
+#define LUA_STACK_CHECK_START int starttop = lua_gettop(L);
+#define LUA_STACK_CHECK_END assert(starttop == lua_gettop(L));
+#else
+#define LUA_STACK_CHECK_START
+#define LUA_STACK_CHECK_END
+#endif
+
+//Call a C++ method
+int call_cpp(lua_State* L);
+
+//Set a C++ value
+int set_cpp(lua_State* L);
+
+//Get a C++ value
+int get_cpp(lua_State* L);
 
 class LuaScript {
 public:
@@ -55,7 +71,7 @@ template<typename F>
 void LuaScript::Register(std::string name, F&& f) {
     //Creates a lambda that calls mptr on obj with args
     //Args is passed by reference, so you can change them after calling Register
-    methodMap.insert({name, std::function<void()>(f)});
+    methodMap.insert({name, std::function<void()>(std::forward<F>(f))});
     
     lua_pushstring(L, name.c_str());
     lua_pushlightuserdata(L, &methodMap);
