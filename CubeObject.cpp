@@ -15,14 +15,12 @@ void CubeObject::Tick() {
     } else {
         glUniform1f(uniTime, 1 - (time - floor(time)));
     }
-
+    
     glm::mat4 rotation, translation, scaling;
 
-    rotation = glm::rotate(rotation, deltaTime * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, 0.0f));
-    scaling = glm::scale(scaling, glm::vec3(1.0f, 1.0f, 1.0f));
+    rotation = glm::rotate(rotation, deltaTime * RotSpeed * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    // this->ModTransform(translation * rotation * scaling);
+    this->ModTransform(translation * rotation * scaling);
 
     // std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
@@ -56,4 +54,11 @@ CubeObject::CubeObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _tr
     material.shininess = 32.0f;
 }
 
-CubeObject::~CubeObject() {}
+CubeObject::~CubeObject() {
+    
+}
+
+void CubeObject::LuaRegister(LuaScript& L) {
+    GameObject::LuaRegister(L);
+    std::cout << "Registered CubeObject with Lua\n";
+}

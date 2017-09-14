@@ -8,10 +8,11 @@
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "TextureManager.h"
+#include "lua_cpp_bind/LuaScript.h"
 
 // TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject
 class GameObject {
-  protected:
+protected:
     Mesh &mesh;
     glm::mat4 transform;
 
@@ -27,9 +28,10 @@ class GameObject {
     float &deltaTime;
     TextureManager &texman;
 
-  public:
+public:
+    std::string name = "";
     GameObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime, float &_deltaTime,
-               TextureManager &_texman);
+                TextureManager &_texman);
     virtual ~GameObject();
     GameObject(const GameObject &go);
 
@@ -44,4 +46,6 @@ class GameObject {
     void ModTransform(glm::mat4 _transform);
 
     ShaderProgram &shaderProgram;
+
+    virtual void LuaRegister(LuaScript& L);
 };

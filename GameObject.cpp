@@ -93,3 +93,10 @@ void GameObject::SetTransform(glm::mat4 _transform) { transform = _transform; }
 
 // Modifies the transform
 void GameObject::ModTransform(glm::mat4 _transform) { transform *= _transform; }
+
+
+void GameObject::LuaRegister(LuaScript& L) {
+    std::cout << "Registered GameObject with Lua\n";
+    
+//     L.
+}
