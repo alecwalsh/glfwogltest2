@@ -3,7 +3,7 @@
 #include <iostream>
 
 //TODO: add autoexec.lua with default values
-ConfigManager::ConfigManager() : LuaScript("autoexec.lua") {
+ConfigManager::ConfigManager() : LuaScript("default.lua") {
     LoadVars();
 }
 
