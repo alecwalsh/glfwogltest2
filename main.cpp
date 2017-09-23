@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     glfwInit();
     
-    ConfigManager cm;
+    ConfigManager cm{};
     
     LuaScript ls{"bind.lua"};
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 8);
     
-    global_values gs;
+    global_values gs{};
     
     gs.WIDTH = cm.width;
     gs.HEIGHT = cm.height;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
     // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
     // for the first time
     // This is just the inverse of the code in Camera::Rotate
-    auto &cf = camera.cameraFront;
+    auto& cf = camera.cameraFront;
 
     gs.pitch = glm::degrees(asin(cf.y));
     gs.yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
@@ -162,6 +162,8 @@ int main(int argc, char *argv[]) {
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
     floorTransform = glm::scale(floorTransform, {5.0f, 5.0f, 1.0f});
     auto floor = std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, elapsedTime, deltaTime, texman);
+    floor->texture_name = "container";
+    floor->spec_texture_name = "container_specular";
 
     vec_uniq<PointLight> pointLights;
     auto pointLight = std::make_unique<PointLight>(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));

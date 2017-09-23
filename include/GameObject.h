@@ -27,9 +27,10 @@ protected:
     float &elapsedTime;
     float &deltaTime;
     TextureManager &texman;
-
 public:
     std::string name = "";
+    std::string texture_name = "container";
+    std::string spec_texture_name = "container_specular";
     GameObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime, float &_deltaTime,
                 TextureManager &_texman);
     virtual ~GameObject();
@@ -42,8 +43,8 @@ public:
     void SetupTextures() const;
     void BindTextures() const;
 
-    void SetTransform(glm::mat4 _transform);
-    void ModTransform(glm::mat4 _transform);
+    void SetTransform(glm::mat4 transform_);
+    void ModTransform(glm::mat4 transform_);
 
     ShaderProgram &shaderProgram;
 

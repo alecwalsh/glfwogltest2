@@ -82,17 +82,17 @@ void GameObject::SetupTextures() const {
 void GameObject::BindTextures() const {
     // Bind texture objects to texture units
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texman.textureObjects["container"]);
+    glBindTexture(GL_TEXTURE_2D, texman.textureObjects[texture_name]);
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texman.textureObjects["container_specular"]);
+    glBindTexture(GL_TEXTURE_2D, texman.textureObjects[spec_texture_name]);
 }
 
 // Sets the transform
-void GameObject::SetTransform(glm::mat4 _transform) { transform = _transform; }
+void GameObject::SetTransform(glm::mat4 transform_) { transform = transform_; }
 
 // Modifies the transform
-void GameObject::ModTransform(glm::mat4 _transform) { transform *= _transform; }
+void GameObject::ModTransform(glm::mat4 transform_) { transform *= transform_; }
 
 
 void GameObject::LuaRegister(LuaScript& L) {
