@@ -18,8 +18,9 @@
 #include "Camera.h"
 #include "CubeObject.h"
 #include "DirLight.h" //TODO:  shouldn't have to include both types of light
-#include "GameObject.h"
 #include "PointLight.h"
+#include "SpotLight.h"
+#include "GameObject.h"
 #include "ShaderProgram.h"
 #include "TextureManager.h"
 #include "ConfigManager.h"
@@ -41,7 +42,7 @@ void handle_movement(global_values *gv, Camera &camera, float deltaTime);
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
-void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const vec_uniq<DirLight> &dirLights,
+void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const vec_uniq<DirLight> &dirLights, const vec_uniq<SpotLight> &spotLights,
             const Camera &camera);
 
 // TODO: avoid globals, use glfwSetWindowUserPointer
@@ -174,6 +175,10 @@ int main(int argc, char *argv[]) {
     vec_uniq<DirLight> dirLights;
     auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(0.5f), glm::vec3(0.25f));
     dirLights.push_back(std::move(dirLight));
+    
+    vec_uniq<SpotLight> spotLights;
+    auto spotLight = std::make_unique<SpotLight>(glm::vec3(3.0f, 0.75f, 0.0f), glm::vec3(-1.0f, -0.25f, 0.0f), glm::vec3(3.0f), glm::vec3(3.0f), glm::cos(glm::radians(15.5f)));
+    spotLights.push_back(std::move(spotLight));
 
     // TODO: Create LightObject class
     // The white cubes that represent lights
@@ -200,15 +205,15 @@ int main(int argc, char *argv[]) {
         elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
 
         if (gs.hasResized) {
-
-            glUseProgram(go->shaderProgram.shaderProgram);
+            //TODO: do this for all shaders automatically, instead of manually
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)gs.WIDTH / gs.HEIGHT, 1.0f, 10.0f);
-            GLint uniProj = glGetUniformLocation(go->shaderProgram.shaderProgram, "proj");
+            
+            glUseProgram(cubeShader.shaderProgram);
+            GLint uniProj = glGetUniformLocation(cubeShader.shaderProgram, "proj");
             glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 
-            glUseProgram(lightObjects[1]->shaderProgram.shaderProgram);
-
-            GLint uniProj2 = glGetUniformLocation(lightObjects[1]->shaderProgram.shaderProgram, "proj");
+            glUseProgram(lightShader.shaderProgram);
+            GLint uniProj2 = glGetUniformLocation(lightShader.shaderProgram, "proj");
             glUniformMatrix4fv(uniProj2, 1, GL_FALSE, glm::value_ptr(proj));
         }
 
@@ -222,12 +227,12 @@ int main(int argc, char *argv[]) {
         ls.exec("loop()");
 //         lua_pcall(ls.L, 0, 0, 0);
         
-        render(*go, pointLights, dirLights, camera);
-        render(*floor, pointLights, dirLights, camera);
+        render(*go, pointLights, dirLights, spotLights, camera);
+        render(*floor, pointLights, dirLights, spotLights, camera);
 
         for (size_t i = 0; i < lightObjects.size(); i++) {
             lightObjects[i]->Tick();
-            render(*lightObjects[i], pointLights, dirLights, camera);
+            render(*lightObjects[i], pointLights, dirLights, spotLights, camera);
         }
 
         // Swap buffers
@@ -348,7 +353,7 @@ void handle_movement(global_values *gv, Camera &camera, float deltaTime) // TODO
 }
 
 // TODO: Support multiple lights and multiple types of lights
-void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const vec_uniq<DirLight> &dirLights,
+void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const vec_uniq<DirLight> &dirLights, const vec_uniq<SpotLight> &spotLights,
             const Camera &camera) {
     const auto &sp = go.shaderProgram;
 
@@ -359,6 +364,9 @@ void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const
 
     GLint numDirLights = glGetUniformLocation(sp.shaderProgram, "numDirLights");
     glUniform1i(numDirLights, dirLights.size());
+    
+    GLint numSpotLights = glGetUniformLocation(sp.shaderProgram, "numSpotLights");
+    glUniform1i(numSpotLights, spotLights.size());
 
     auto getLightUniLoc = [sp = sp.shaderProgram](
         const char *member, int i, const char *lightType) // Gets the uniform location for light struct members
@@ -390,13 +398,41 @@ void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const
 
         // TODO: don't do this every frame
         // Set light properties
-        glUniform3f(getDirLightUniLoc("position"), dirLights[i]->direction.x, dirLights[i]->direction.y,
+        glUniform3f(getDirLightUniLoc("direction"), dirLights[i]->direction.x, dirLights[i]->direction.y,
                     dirLights[i]->direction.z);
         glUniform3f(getDirLightUniLoc("diffuse"), dirLights[i]->diffuse.r, dirLights[i]->diffuse.g,
                     dirLights[i]->diffuse.b);
         glUniform3f(getDirLightUniLoc("specular"), dirLights[i]->specular.r, dirLights[i]->specular.g,
                     dirLights[i]->specular.b);
     }
+    
+    for (size_t i = 0; i < spotLights.size(); i++) {
+        // Get the uniform location for directional lights
+        auto getSpotLightUniLoc = std::bind(getLightUniLoc, _1, i, "spotLights");
+
+        // TODO: don't do this every frame
+        // Set light properties
+        //TODO: Support regular spotlights and flashlights
+        //Use the spotlight's position and direction
+//         glUniform3f(getSpotLightUniLoc("position"), spotLights[i]->position.x, spotLights[i]->position.y,
+//                     spotLights[i]->position.z);
+//         glUniform3f(getSpotLightUniLoc("direction"), spotLights[i]->direction.x, spotLights[i]->direction.y,
+//                     spotLights[i]->direction.z);
+        //Set the position and direction to the camera's, like a flashlight
+        glUniform3f(getSpotLightUniLoc("position"), camera.position.x, camera.position.y,
+                    camera.position.z);
+        glUniform3f(getSpotLightUniLoc("direction"), camera.cameraFront.x, camera.cameraFront.y,
+                    camera.cameraFront.z);
+        glUniform3f(getSpotLightUniLoc("diffuse"), spotLights[i]->diffuse.r, spotLights[i]->diffuse.g,
+                    spotLights[i]->diffuse.b);
+        
+        glUniform3f(getSpotLightUniLoc("diffuse"), spotLights[i]->diffuse.r, spotLights[i]->diffuse.g,
+                    spotLights[i]->diffuse.b);
+        glUniform3f(getSpotLightUniLoc("specular"), spotLights[i]->specular.r, spotLights[i]->specular.g,
+                    spotLights[i]->specular.b);
+        glUniform1f(getSpotLightUniLoc("cutoffAngle"), spotLights[i]->cutoffAngle);
+    }
+
 
     GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
 
