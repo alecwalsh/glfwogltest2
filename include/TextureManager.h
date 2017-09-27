@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <SOIL/SOIL.h>
-
 class TextureManager {
   public:
     std::unordered_map<std::string, GLuint> textureObjects;

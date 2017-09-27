@@ -1,5 +1,4 @@
 #include "GameObject.h"
-#include <SOIL/SOIL.h>
 
 // TODO: lots of parameters and long initializer list, maybe create Time object?
 GameObject::GameObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime,

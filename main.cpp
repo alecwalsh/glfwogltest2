@@ -3,8 +3,6 @@
 
 #include <glm/glm.hpp>
 
-#include <SOIL/SOIL.h>
-
 #include <cstdio>
 #include <unistd.h>
 

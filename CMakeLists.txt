@@ -13,7 +13,7 @@ target_compile_features(glfwogltest2 PUBLIC cxx_std_14)
 set_target_properties(glfwogltest2 PROPERTIES CXX_STANDARD_REQUIRED true)
 
 target_include_directories(glfwogltest2 PUBLIC "include" PUBLIC ".")
-target_link_libraries(glfwogltest2 GL glfw SOIL assimp dl lua lua_cpp_bind)
+target_link_libraries(glfwogltest2 GL glfw assimp dl lua lua_cpp_bind)
 
 #Debug flags
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
