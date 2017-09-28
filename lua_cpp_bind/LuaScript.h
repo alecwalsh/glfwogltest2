@@ -24,8 +24,10 @@ int set_cpp(lua_State* L);
 int get_cpp(lua_State* L);
 
 class LuaScript {
+protected:
+    lua_State* L;
 public:
-    //The integer and float types are LUA_INTEGER and LUA_NUMBER from luaconf.h, make sure to use the right types
+    //The integer and float types are LUA_INTEGER and LUA_NUMBER from luaconf.h, make sure to use the right types(e.g. Don't use double instead of float)
     enum class Type {
         Integer,
         Float,
@@ -39,7 +41,7 @@ public:
     template<typename T>
     void Register(std::string name, T ptr, Type type);
     
-    //TODO: Can't change the object the memberr function is called on
+    //TODO: Can't change the object the member function is called on
     //Register a member function
     template<typename R, typename T, typename... Args>
     void Register(std::string name, mptr_t<R,T> mptr, T* obj, Args&&... args);
@@ -53,10 +55,8 @@ public:
     LuaScript();
     LuaScript(std::string fileName);
     virtual ~LuaScript();
-//TODO: make private again
-public:
+private:
     void SetupBinding();
-    lua_State* L;
     std::unordered_map<std::string, std::pair<void*, Type>> propertyMap;
     std::unordered_map<std::string, std::function<void()>> methodMap;
 };
@@ -80,8 +80,6 @@ void LuaScript::Register(std::string name, mptr_t<R,T> mptr, T* obj, Args&&... a
 
 template<typename F>
 void LuaScript::Register(std::string name, F&& f) {
-    //Creates a lambda that calls mptr on obj with args
-    //Args is passed by reference, so you can change them after calling Register
     methodMap.insert({name, std::function<void()>(std::forward<F>(f))});
     
     lua_pushstring(L, name.c_str());

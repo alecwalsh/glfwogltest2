@@ -4,7 +4,7 @@
 
 #include "LuaScript.h"
 
-int error_handler(lua_State *L) {
+static int error_handler(lua_State *L) {
     //Prints the error message and returns the error object unchanged
     const char *msg = lua_tostring(L, -1);
     if(msg != NULL) {
@@ -155,7 +155,6 @@ int set_cpp(lua_State* L) {
     return 0;
 }
 
-//TODO: implement this
 int get_cpp(lua_State* L) {
     LUA_STACK_CHECK_START
     int propertyMap_idx = lua_upvalueindex(1);
