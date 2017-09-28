@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
     if (!load_result) {
         std::cerr << "Error initializing glad" << std::endl;
         glfwTerminate();
-        return 1;
+        return EXIT_FAILURE;
     }
 
     glEnable(GL_MULTISAMPLE);
@@ -238,11 +238,11 @@ int main(int argc, char *argv[]) {
     }
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    std::cout << "bye\n";
+    std::cout << "bye" << std::endl;
 
     glfwTerminate();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
