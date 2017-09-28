@@ -100,9 +100,9 @@ int main(int argc, char *argv[]) {
     int load_result = gl_es ? gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)
                             : gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!load_result) {
-        std::cerr << "Error initializing GLEW";
+        std::cerr << "Error initializing glad" << std::endl;
         glfwTerminate();
-        return -1;
+        return 1;
     }
 
     glEnable(GL_MULTISAMPLE);
