@@ -4,7 +4,9 @@
 #include <glm/glm.hpp>
 
 #include <cstdio>
+#ifdef __unix__
 #include <unistd.h>
+#endif
 
 #include <iostream>
 #include <sstream>
@@ -47,7 +49,12 @@ void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const
 bool keys[1024];
 
 int main(int argc, char *argv[]) {
+#ifdef __unix__
     chdir(".."); // Data files and shaders are in parent directory
+#elif !defined(_WIN32)
+    //TODO: Find out how to change directory on Windows
+    #error "Not implemented yet: chdir"
+#endif
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_prev = t_start;
     float elapsedTime = 0.0f;
