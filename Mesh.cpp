@@ -44,7 +44,6 @@ void Mesh::UploadToGPU() {
 }
 
 // TODO: .blend files normals are per vertex, not per face; .fbx works fine
-// TODO: Shouldn't return bool
 void Mesh::ImportMesh(const std::string &pFile) {
     Assimp::Importer importer;
     // TODO: Change/add postprocessing flags

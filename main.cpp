@@ -117,9 +117,46 @@ int main(int argc, char *argv[]) {
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    
+    auto version = std::tie(gl_major_version, gl_minor_version, gl_es);
+    
+    //A fullscreen quad
+    //The scene is rendered to a texture and the texture is applied to the quad
+    std::vector<float> fsq_vertices{1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
+    };
+    
+    std::vector<GLubyte> fsq_elements = {0, 1, 2, 0, 2, 3};
+    
+    GLuint fsq_vao;
+    glGenVertexArrays(1, &fsq_vao);
+    glBindVertexArray(fsq_vao);
+    
+    GLuint fsq_vbo, fsq_ebo;
+    glGenBuffers(1, &fsq_vbo);
+    glGenBuffers(1, &fsq_ebo);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, fsq_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(fsq_vertices[0]) * (fsq_vertices.size()), fsq_vertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fsq_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(fsq_elements[0]) * (fsq_elements.size()), fsq_elements.data(), GL_STATIC_DRAW);
+    
+    GLint posAttrib = 0;
+    glEnableVertexAttribArray(posAttrib);
+    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+    
+    GLint texAttrib = 1;
+    glEnableVertexAttribArray(texAttrib);
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    
+    glBindVertexArray(0);
+    
+    ShaderProgram fsq_shader{"shaders/vert_fsq.glsl", "shaders/frag_fsq.glsl", version};
 
     //TODO: Add AssetManager, like TextureManager but for all assets
-    auto version = std::tie(gl_major_version, gl_minor_version, gl_es);
     // compile and link shaders
     ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", version};
     ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", version};
@@ -128,6 +165,7 @@ int main(int argc, char *argv[]) {
     Mesh floorMesh{"data/floor.fbx"};
     Mesh mesh{"data/cube_irreg.fbx"};
     Mesh lightMesh{"data/cube.fbx"};
+    
 
     // Create textures
     TextureManager texman;
@@ -158,8 +196,6 @@ int main(int argc, char *argv[]) {
     go->name = "cube1";
     go->SetupTextures();
     go->LuaRegister(ls);
-    
-//     auto modTransformLambda = [](int x, int y, int z){};
     
     ls.Register("Tick", &CubeObject::Tick, go.get());
     ls.Register("LambdaTest", []{std::cout << "Lambda called from Lua\n";});
@@ -208,7 +244,7 @@ int main(int argc, char *argv[]) {
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer bound" << std::endl;
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+//     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     
     GLuint fb_texture;
     glGenTextures(1, &fb_texture);
@@ -234,7 +270,7 @@ int main(int argc, char *argv[]) {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         } else {
                 texman.AddTextureFromGLObject("fbtex", fb_texture);
-                std::cout << "addedFBTexture()" << std::endl;
+//                 std::cout << "addedFBTexture()" << std::endl;
         }
         
         
@@ -261,14 +297,18 @@ int main(int argc, char *argv[]) {
         ls.exec("loop()");
 //         lua_pcall(ls.L, 0, 0, 0);
         
-        render(*go, pointLights, dirLights, spotLights, camera);
-        render(*floor, pointLights, dirLights, spotLights, camera);
+//         render(*go, pointLights, dirLights, spotLights, camera);
+//         render(*floor, pointLights, dirLights, spotLights, camera);
 
         for (size_t i = 0; i < lightObjects.size(); i++) {
             lightObjects[i]->Tick();
-            render(*lightObjects[i], pointLights, dirLights, spotLights, camera);
+//             render(*lightObjects[i], pointLights, dirLights, spotLights, camera);
         }
-
+        
+        glBindVertexArray(fsq_vao);
+        glUseProgram(fsq_shader.shaderProgram);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void*)0);
+        
         // Swap buffers
         glfwSwapBuffers(window);
     }
