@@ -34,7 +34,102 @@ struct global_values {
     bool hasResized = false;
 };
 
-bool renderedFramebuffer = false;
+using gl_version_t = std::tuple<int, int, bool>;
+
+gl_version_t gl_version;
+
+//TODO: Move to separate file
+struct FullscreenQuad {
+    const GLfloat vertices[20] = {
+        1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 
+        1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 
+        -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
+    };
+    const GLubyte elements[6] = {0, 1, 2, 0, 2, 3};
+    ShaderProgram shader;
+    GLuint vao;
+    struct buffers {
+        GLuint vbo;
+        GLuint ebo;
+    } buffers;
+    GLuint fbo;
+    GLuint rbo; //Renderbuffer for depth attachment
+    GLuint fb_texture; //Texture for color attachment
+    void BindFramebuffer() {
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    }
+    void UnbindFramebuffer() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+    void SetupFramebuffer() {
+        glGenFramebuffers(1, &fbo);
+        
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+            std::cout << "Framebuffer bound" << std::endl;
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        
+        glGenTextures(1, &fb_texture);
+        glBindTexture(GL_TEXTURE_2D, fb_texture);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb_texture, 0);
+        
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 800, 600);  
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        
+        glUseProgram(shader.shaderProgram);
+        glUniform1i(glGetUniformLocation(shader.shaderProgram, "texFramebuffer"), 0);
+    }
+    void Draw() {
+        glUseProgram(shader.shaderProgram);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, fb_texture);
+        
+        glBindVertexArray(vao);
+        
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+    }
+    //gl_version needs to be set before insantiating this struct with the default constructor
+    FullscreenQuad() : FullscreenQuad{gl_version} {}
+    FullscreenQuad(gl_version_t version) : shader{"shaders/vert_fsq.glsl", "shaders/frag_fsq.glsl", version} {
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+        
+        glGenBuffers(2, (GLuint*)&buffers);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, buffers.vbo);
+        glBufferData(GL_ARRAY_BUFFER, 20 * sizeof(vertices[0]), vertices, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers.ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(elements[0]), elements, GL_STATIC_DRAW);
+        
+        GLint posAttrib = 0;
+        glEnableVertexAttribArray(posAttrib);
+        glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        
+        GLint texAttrib = 1;
+        glEnableVertexAttribArray(texAttrib);
+        glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glBindVertexArray(0);
+        
+        SetupFramebuffer();
+    }
+    ~FullscreenQuad() {
+        glDeleteVertexArrays(1, &vao);
+        glDeleteBuffers(2, (GLuint*)&buffers);
+        glDeleteFramebuffers(1, &fbo);
+    }
+};
 
 // Prototypes for input handling callbacks
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -104,7 +199,7 @@ int main(int argc, char *argv[]) {
     gs.lastX = gs.WIDTH / 2;
     gs.lastY = gs.HEIGHT / 2;
 
-    glfwSetWindowUserPointer(window, &gs);
+    glfwSetWindowUserPointer(window, static_cast<void*>(&gs));
 
     int load_result = gl_es ? gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)
                             : gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -115,51 +210,17 @@ int main(int argc, char *argv[]) {
     }
 
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
     
-    auto version = std::tie(gl_major_version, gl_minor_version, gl_es);
+    gl_version = std::tie(gl_major_version, gl_minor_version, gl_es);
     
     //A fullscreen quad
     //The scene is rendered to a texture and the texture is applied to the quad
-    std::vector<float> fsq_vertices{1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
-    };
-    
-    std::vector<GLubyte> fsq_elements = {0, 1, 2, 0, 2, 3};
-    
-    GLuint fsq_vao;
-    glGenVertexArrays(1, &fsq_vao);
-    glBindVertexArray(fsq_vao);
-    
-    GLuint fsq_vbo, fsq_ebo;
-    glGenBuffers(1, &fsq_vbo);
-    glGenBuffers(1, &fsq_ebo);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, fsq_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(fsq_vertices[0]) * (fsq_vertices.size()), fsq_vertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fsq_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(fsq_elements[0]) * (fsq_elements.size()), fsq_elements.data(), GL_STATIC_DRAW);
-    
-    GLint posAttrib = 0;
-    glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-    
-    GLint texAttrib = 1;
-    glEnableVertexAttribArray(texAttrib);
-    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    
-    glBindVertexArray(0);
-    
-    ShaderProgram fsq_shader{"shaders/vert_fsq.glsl", "shaders/frag_fsq.glsl", version};
+    FullscreenQuad fsq{};
 
     //TODO: Add AssetManager, like TextureManager but for all assets
-    // compile and link shaders
-    ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", version};
-    ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", version};
+    // Compile and link shaders
+    ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", gl_version};
+    ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", gl_version};
 
     // TODO: use .blend files
     Mesh floorMesh{"data/floor.fbx"};
@@ -216,7 +277,7 @@ int main(int argc, char *argv[]) {
     pointLights.push_back(std::move(pointLight2));
 
     vec_uniq<DirLight> dirLights;
-    auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(0.5f), glm::vec3(0.25f));
+    auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(1.5f), glm::vec3(0.5f));
     dirLights.push_back(std::move(dirLight));
     
     vec_uniq<SpotLight> spotLights;
@@ -237,25 +298,7 @@ int main(int argc, char *argv[]) {
         auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
         lightObjects.push_back(std::move(lo));
     }
-    
-    unsigned int fbo;
-    glGenFramebuffers(1, &fbo);
-    
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "Framebuffer bound" << std::endl;
-    }
-//     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    
-    GLuint fb_texture;
-    glGenTextures(1, &fb_texture);
-    glBindTexture(GL_TEXTURE_2D, fb_texture);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb_texture, 0);
     
     // main loop
     while (!glfwWindowShouldClose(window)) {
@@ -265,14 +308,12 @@ int main(int argc, char *argv[]) {
         t_prev = t_now;
 
         elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
-
-        if(renderedFramebuffer) {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        } else {
-                texman.AddTextureFromGLObject("fbtex", fb_texture);
-//                 std::cout << "addedFBTexture()" << std::endl;
-        }
         
+        //Enable depth test when rendering main scene
+        glEnable(GL_DEPTH_TEST);
+        
+        //Render main scene to the framebuffer's texture
+        fsq.BindFramebuffer();
         
         if (gs.hasResized) {
             //TODO: do this for all shaders automatically, instead of manually
@@ -297,23 +338,30 @@ int main(int argc, char *argv[]) {
         ls.exec("loop()");
 //         lua_pcall(ls.L, 0, 0, 0);
         
-//         render(*go, pointLights, dirLights, spotLights, camera);
-//         render(*floor, pointLights, dirLights, spotLights, camera);
+        render(*go, pointLights, dirLights, spotLights, camera);
+        render(*floor, pointLights, dirLights, spotLights, camera);
 
         for (size_t i = 0; i < lightObjects.size(); i++) {
             lightObjects[i]->Tick();
-//             render(*lightObjects[i], pointLights, dirLights, spotLights, camera);
+            render(*lightObjects[i], pointLights, dirLights, spotLights, camera);
         }
         
-        glBindVertexArray(fsq_vao);
-        glUseProgram(fsq_shader.shaderProgram);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void*)0);
+        //Unbind the framebuffer and draw the fullscreen quad with the main scene as the texture
+        fsq.UnbindFramebuffer();
+    
+        // Clear the screen to black
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        //Depth test is unnecessary here because we are rendering a single quad
+        glDisable(GL_DEPTH_TEST);
+        
+        //Draw the fullscreen quad
+        fsq.Draw();
         
         // Swap buffers
         glfwSwapBuffers(window);
     }
-    
-    glDeleteFramebuffers(1, &fbo);
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(500));
     std::cout << "bye" << std::endl;
@@ -515,8 +563,7 @@ void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const
     // TODO: Don't hardcode ambient value
     glUniform3f(ambientLoc, 0.1f, 0.1f, 0.1f);
     
-    go.Draw(camera, renderedFramebuffer);
-    renderedFramebuffer = true;
+    go.Draw(camera);
 }
 
 // TODO: Update projection matrix to allow different aspect ratios

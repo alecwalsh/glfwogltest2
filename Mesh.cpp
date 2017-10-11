@@ -20,7 +20,10 @@ Mesh::Mesh(std::string fileName) : usesElementArray(true) {
     UploadToGPU();
 }
 
-Mesh::~Mesh() {}
+//TODO: delete buffers
+Mesh::~Mesh() {
+    
+}
 
 // Generates buffers and uploads data to graphics card
 void Mesh::UploadToGPU() {

@@ -25,7 +25,7 @@ void CubeObject::Tick() {
     // std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
 
-void CubeObject::Draw(Camera camera, bool useFB) const {
+void CubeObject::Draw(Camera camera) const {
     // Set material properties
     GLint matAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.ambient");
     GLint matDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.diffuse");
@@ -41,7 +41,7 @@ void CubeObject::Draw(Camera camera, bool useFB) const {
     GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
     glUniform3f(uniCameraPos, camera.position.x, camera.position.y, camera.position.z);
 
-    GameObject::Draw(camera, useFB);
+    GameObject::Draw(camera);
 }
 
 CubeObject::CubeObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime,

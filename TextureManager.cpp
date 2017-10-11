@@ -51,7 +51,7 @@ void TextureManager::AddTextureFromGLObject(const char *id, GLuint texture) {
 TextureManager::TextureManager() {}
 
 TextureManager::~TextureManager() {
-    for (auto it : textureObjects) {
+    for (auto& it : textureObjects) {
         glDeleteTextures(1, &it.second);
     }
 }
