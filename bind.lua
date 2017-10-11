@@ -22,6 +22,6 @@ function loop()
     end
     
     cpp.RotSpeed = RotSpeed
-    Tick()
+--     Tick()
 --     LambdaTest()
 end

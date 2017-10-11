@@ -10,9 +10,9 @@ in vec2 Texcoord;
 out vec4 outColor;
 
 uniform sampler2D texDiffuseMap; //diffuse map
-uniform sampler2D texPuppy;
-uniform sampler2D texNormalMap;
 uniform sampler2D texSpecMap;
+uniform sampler2D texNormalMap;
+uniform sampler2D texFramebuffer;
 uniform float time;
 uniform int numPointLights;
 uniform int numDirLights;

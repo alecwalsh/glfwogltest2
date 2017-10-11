@@ -6,7 +6,7 @@
 #include <cstring>
 
 // TODO: Support creating multiple textures at once
-void TextureManager::AddTexture(const char *id, const char *fileName) {
+void TextureManager::AddTextureFromFile(const char *id, const char *fileName) {
     //Prepend the directory name to fileName
     const char* directoryName = "data/textures";
     size_t fileNameLength = strlen(fileName) + strlen(directoryName) + 2; //Need room for / and null terminator
@@ -16,7 +16,7 @@ void TextureManager::AddTexture(const char *id, const char *fileName) {
     strcat(finalFileName, "/");
     strcat(finalFileName, fileName);
     
-    // Add a new value to the vector
+    // Add a new value to the map
     textureObjects.emplace(id, 0);
     // Set the new value to a valid texture object
     glGenTextures(1, &textureObjects[id]);
@@ -41,6 +41,11 @@ void TextureManager::AddTexture(const char *id, const char *fileName) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+void TextureManager::AddTextureFromGLObject(const char *id, GLuint texture) {
+    // Add the texture to the map
+    textureObjects.emplace(id, texture);
 }
 
 TextureManager::TextureManager() {}

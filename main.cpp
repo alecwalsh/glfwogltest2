@@ -34,6 +34,8 @@ struct global_values {
     bool hasResized = false;
 };
 
+bool renderedFramebuffer = false;
+
 // Prototypes for input handling callbacks
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
@@ -129,10 +131,10 @@ int main(int argc, char *argv[]) {
 
     // Create textures
     TextureManager texman;
-    texman.AddTexture("container", "container2.png");
-    texman.AddTexture("container_specular", "container2_specular.png");
-    texman.AddTexture("normalmaptest1", "normalmaptest1.png");
-    texman.AddTexture("puppy", "sample2.png");
+    texman.AddTextureFromFile("container", "container2.png");
+    texman.AddTextureFromFile("container_specular", "container2_specular.png");
+    texman.AddTextureFromFile("normalmaptest1", "normalmaptest1.png");
+    texman.AddTextureFromFile("puppy", "sample2.png");
 
     Camera camera{
         {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
@@ -199,7 +201,26 @@ int main(int argc, char *argv[]) {
         auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
         lightObjects.push_back(std::move(lo));
     }
+    
+    unsigned int fbo;
+    glGenFramebuffers(1, &fbo);
+    
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Framebuffer bound" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    
+    GLuint fb_texture;
+    glGenTextures(1, &fb_texture);
+    glBindTexture(GL_TEXTURE_2D, fb_texture);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb_texture, 0);
+    
     // main loop
     while (!glfwWindowShouldClose(window)) {
         auto t_now = std::chrono::high_resolution_clock::now();
@@ -209,6 +230,14 @@ int main(int argc, char *argv[]) {
 
         elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
 
+        if(renderedFramebuffer) {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        } else {
+                texman.AddTextureFromGLObject("fbtex", fb_texture);
+                std::cout << "addedFBTexture()" << std::endl;
+        }
+        
+        
         if (gs.hasResized) {
             //TODO: do this for all shaders automatically, instead of manually
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)gs.WIDTH / gs.HEIGHT, 1.0f, 10.0f);
@@ -243,6 +272,8 @@ int main(int argc, char *argv[]) {
         // Swap buffers
         glfwSwapBuffers(window);
     }
+    
+    glDeleteFramebuffers(1, &fbo);
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(500));
     std::cout << "bye" << std::endl;
@@ -443,8 +474,9 @@ void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const
 
     // TODO: Don't hardcode ambient value
     glUniform3f(ambientLoc, 0.1f, 0.1f, 0.1f);
-
-    go.Draw(camera);
+    
+    go.Draw(camera, renderedFramebuffer);
+    renderedFramebuffer = true;
 }
 
 // TODO: Update projection matrix to allow different aspect ratios

@@ -48,10 +48,10 @@ GameObject::GameObject(const GameObject &rhs)
 }
 
 // Renders the object
-void GameObject::Draw(Camera camera) const {
+void GameObject::Draw(Camera camera, bool useFB) const {
     // Make sure the right vertex array is bound
     glBindVertexArray(vao);
-    BindTextures();
+    BindTextures(useFB);
     glUseProgram(shaderProgram.shaderProgram);
     GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
 
@@ -75,16 +75,22 @@ void GameObject::SetupTextures() const {
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 0);
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texSpecMap"), 1);
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texNormalMap"), 2);
-    glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texPuppy"), 3);
+    glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texFramebuffer"), 3);
 }
 
-void GameObject::BindTextures() const {
-    // Bind texture objects to texture units
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texman.textureObjects[texture_name]);
+void GameObject::BindTextures(bool useFB) const {
+    if(useFB) {
+        // Bind framebuffer texture object to texture unit
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texman.textureObjects["fbtex"]);
+    } else {
+        // Bind texture objects to texture units
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texman.textureObjects[texture_name]);
 
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texman.textureObjects[spec_texture_name]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texman.textureObjects[spec_texture_name]);
+    }
 }
 
 // Sets the transform

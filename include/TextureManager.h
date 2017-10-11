@@ -9,7 +9,8 @@ class TextureManager {
   public:
     std::unordered_map<std::string, GLuint> textureObjects;
 
-    void AddTexture(const char *id, const char *fileName);
+    void AddTextureFromFile(const char *id, const char *fileName);
+    void AddTextureFromGLObject(const char *id, GLuint texture);
     TextureManager();
     ~TextureManager();
 };

@@ -8,7 +8,7 @@ public:
                 TextureManager &_texman);
     virtual ~CubeObject() override;
     void Tick() override;
-    void Draw(Camera camera) const override;
+    void Draw(Camera camera, bool useFB) const override;
     
     void LuaRegister(LuaScript& L) override;
 };

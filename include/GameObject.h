@@ -39,9 +39,10 @@ public:
     // Runs every frame
     virtual void Tick() = 0;
     // Renders the object
-    virtual void Draw(Camera camera) const;
+    virtual void Draw(Camera camera, bool useFB) const;
     void SetupTextures() const;
-    void BindTextures() const;
+    void BindFramebufferTexture() const;
+    void BindTextures(bool useFB) const;
 
     void SetTransform(glm::mat4 transform_);
     void ModTransform(glm::mat4 transform_);
