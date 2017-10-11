@@ -4,6 +4,11 @@ Camera::Camera(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up) : position
     viewMat = glm::lookAt(position, _target, up);
 
     cameraFront = glm::normalize(_target - position);
+    auto& cf = cameraFront;
+    auto x = cf[0];
+    auto y = cf[1];
+    auto z = cf[2];
+    auto a = 0;
 }
 
 glm::vec3 Camera::UpVector() const {

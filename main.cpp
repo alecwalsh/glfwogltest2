@@ -175,8 +175,10 @@ int main(int argc, char *argv[]) {
     dirLights.push_back(std::move(dirLight));
     
     vec_uniq<SpotLight> spotLights;
-    auto spotLight = std::make_unique<SpotLight>(glm::vec3(3.0f, 0.75f, 0.0f), glm::vec3(-1.0f, -0.25f, 0.0f), glm::vec3(3.0f), glm::vec3(3.0f), glm::cos(glm::radians(15.5f)));
-    spotLights.push_back(std::move(spotLight));
+    auto spotLight = std::make_unique<SpotLight>(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(-0.0f, -1.f, 0.0f), glm::vec3(3.0f), glm::vec3(3.0f), glm::cos(glm::radians(15.5f)));
+    spotLights.push_back(std::move(spotLight));\
+    
+    Camera shadowCamera{{2.5f, 2.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
 
     // TODO: Create LightObject class
     // The white cubes that represent lights
@@ -225,12 +227,12 @@ int main(int argc, char *argv[]) {
         ls.exec("loop()");
 //         lua_pcall(ls.L, 0, 0, 0);
         
-        render(*go, pointLights, dirLights, spotLights, camera);
-        render(*floor, pointLights, dirLights, spotLights, camera);
+        render(*go, pointLights, dirLights, spotLights, shadowCamera);
+        render(*floor, pointLights, dirLights, spotLights, shadowCamera);
 
         for (size_t i = 0; i < lightObjects.size(); i++) {
             lightObjects[i]->Tick();
-            render(*lightObjects[i], pointLights, dirLights, spotLights, camera);
+            render(*lightObjects[i], pointLights, dirLights, spotLights, shadowCamera);
         }
 
         // Swap buffers
@@ -412,17 +414,15 @@ void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const
         // Set light properties
         //TODO: Support regular spotlights and flashlights
         //Use the spotlight's position and direction
-//         glUniform3f(getSpotLightUniLoc("position"), spotLights[i]->position.x, spotLights[i]->position.y,
-//                     spotLights[i]->position.z);
-//         glUniform3f(getSpotLightUniLoc("direction"), spotLights[i]->direction.x, spotLights[i]->direction.y,
-//                     spotLights[i]->direction.z);
+        glUniform3f(getSpotLightUniLoc("position"), spotLights[i]->position.x, spotLights[i]->position.y,
+                    spotLights[i]->position.z);
+        glUniform3f(getSpotLightUniLoc("direction"), spotLights[i]->direction.x, spotLights[i]->direction.y,
+                    spotLights[i]->direction.z);
         //Set the position and direction to the camera's, like a flashlight
-        glUniform3f(getSpotLightUniLoc("position"), camera.position.x, camera.position.y,
-                    camera.position.z);
-        glUniform3f(getSpotLightUniLoc("direction"), camera.cameraFront.x, camera.cameraFront.y,
-                    camera.cameraFront.z);
-        glUniform3f(getSpotLightUniLoc("diffuse"), spotLights[i]->diffuse.r, spotLights[i]->diffuse.g,
-                    spotLights[i]->diffuse.b);
+//         glUniform3f(getSpotLightUniLoc("position"), camera.position.x, camera.position.y,
+//                     camera.position.z);
+//         glUniform3f(getSpotLightUniLoc("direction"), camera.cameraFront.x, camera.cameraFront.y,
+//                     camera.cameraFront.z);
         
         glUniform3f(getSpotLightUniLoc("diffuse"), spotLights[i]->diffuse.r, spotLights[i]->diffuse.g,
                     spotLights[i]->diffuse.b);

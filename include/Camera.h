@@ -6,7 +6,8 @@
 class Camera {
     void UpdateViewMatrix();
 
-  public:
+public:
+    //TODO: remove underscores from argument names
     Camera(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up);
 
     glm::vec3 UpVector() const;

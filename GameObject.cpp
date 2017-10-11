@@ -28,13 +28,7 @@ GameObject::GameObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _tr
     GLint texAttrib = 2;
     glEnableVertexAttribArray(texAttrib);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void *)(6 * sizeof(float)));
-
-    // Set up projection matrix
-
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
-    GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
-
+    
     std::cout << "GameObject constructor\n";
 }
 
@@ -61,6 +55,12 @@ void GameObject::Draw(Camera camera) const {
     GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
 
+    // Set up projection matrix
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 1.0f, 10.0f);
+    glm::mat4 proj2 = glm::ortho(-1.0f, 10.0f, -1.0f, 10.0f, 1.0f, 10.0f);
+    GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+    
     if (mesh.usesElementArray) {
         // TODO: Use indexes from imported mesh as element buffer
         glDrawElements(GL_TRIANGLES, mesh.elements.size(), GL_UNSIGNED_INT, 0);
