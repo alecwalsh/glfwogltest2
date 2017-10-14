@@ -101,7 +101,7 @@ struct FullscreenQuad {
     }
     //gl_version needs to be set before insantiating this struct with the default constructor
     FullscreenQuad() : FullscreenQuad{gl_version} {}
-    FullscreenQuad(gl_version_t version) : shader{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess.glsl", version} {
+    FullscreenQuad(gl_version_t version) : shader{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", version} {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
         
