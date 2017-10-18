@@ -6,6 +6,8 @@
 #include <cstdio>
 #ifdef __unix__
 #include <unistd.h>
+#elif _WIN32
+#include <direct.h>
 #endif
 
 #include <iostream>
@@ -148,9 +150,8 @@ bool keys[1024];
 int main(int argc, char *argv[]) {
 #ifdef __unix__
     chdir(".."); // Data files and shaders are in parent directory
-#elif !defined(_WIN32)
-    //TODO: Find out how to change directory on Windows
-    #error "Not implemented yet: chdir"
+#elif _WIN32
+    _chdir("..");
 #endif
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_prev = t_start;
