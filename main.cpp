@@ -141,8 +141,7 @@ void handle_movement(global_values *gv, Camera &camera, float deltaTime);
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
-void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const vec_uniq<DirLight> &dirLights, const vec_uniq<SpotLight> &spotLights,
-            const Camera &camera);
+void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &camera);
 
 // TODO: avoid globals, use glfwSetWindowUserPointer
 bool keys[1024];
@@ -271,33 +270,35 @@ int main(int argc, char *argv[]) {
     floor->texture_name = "container";
     floor->spec_texture_name = "container_specular";
 
-    vec_uniq<PointLight> pointLights;
+    vec_uniq<Light> lights;
+    
     auto pointLight = std::make_unique<PointLight>(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
     auto pointLight2 = std::make_unique<PointLight>(glm::vec3(-6.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
-    pointLights.push_back(std::move(pointLight));
-    pointLights.push_back(std::move(pointLight2));
+    lights.push_back(std::move(pointLight));
+    lights.push_back(std::move(pointLight2));
 
-    vec_uniq<DirLight> dirLights;
     auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(1.5f), glm::vec3(0.5f));
-    dirLights.push_back(std::move(dirLight));
+    lights.push_back(std::move(dirLight));
     
-    vec_uniq<SpotLight> spotLights;
     auto spotLight = std::make_unique<SpotLight>(glm::vec3(3.0f, 0.75f, 0.0f), glm::vec3(-1.0f, -0.25f, 0.0f), glm::vec3(3.0f), glm::vec3(3.0f), glm::cos(glm::radians(15.5f)));
-    spotLights.push_back(std::move(spotLight));
+    lights.push_back(std::move(spotLight));
 
     // TODO: Create LightObject class
     // The white cubes that represent lights
     vec_uniq<GameObject> lightObjects;
 
     // TODO: Light objects appear in the wrong place compared to the location of the light
-    for (size_t i = 0; i < pointLights.size(); i++) {
-        glm::mat4 lightTransform;
-        lightTransform =
-            glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)),
-                           glm::vec3(pointLights[i]->position.x, pointLights[i]->position.y,
-                                     pointLights[i]->position.z)); // Scale by 0.5 then translate to correct position
-        auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
-        lightObjects.push_back(std::move(lo));
+    for (size_t i = 0; i < lights.size(); i++) {
+        if(lights[i]->type == Light::LightType::Point) {
+            auto light = static_cast<PointLight*>(lights[i].get());
+            glm::mat4 lightTransform;
+            lightTransform =
+                glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)),
+                            glm::vec3(light->position.x, light->position.y,
+                                        light->position.z)); // Scale by 0.5 then translate to correct position
+            auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
+            lightObjects.push_back(std::move(lo));
+        }
     }
 
     
@@ -339,12 +340,12 @@ int main(int argc, char *argv[]) {
         ls.exec("loop()");
 //         lua_pcall(ls.L, 0, 0, 0);
         
-        render(*go, pointLights, dirLights, spotLights, camera);
-        render(*floor, pointLights, dirLights, spotLights, camera);
+        render(*go, lights, camera);
+        render(*floor, lights, camera);
 
         for (size_t i = 0; i < lightObjects.size(); i++) {
             lightObjects[i]->Tick();
-            render(*lightObjects[i], pointLights, dirLights, spotLights, camera);
+            render(*lightObjects[i], lights, camera);
         }
         
         //Unbind the framebuffer and draw the fullscreen quad with the main scene as the texture
@@ -478,86 +479,86 @@ void handle_movement(global_values *gv, Camera &camera, float deltaTime) // TODO
 }
 
 // TODO: Support multiple lights and multiple types of lights
-void render(const GameObject &go, const vec_uniq<PointLight> &pointLights, const vec_uniq<DirLight> &dirLights, const vec_uniq<SpotLight> &spotLights,
-            const Camera &camera) {
+void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &camera) {
     const auto &sp = go.shaderProgram;
 
     glUseProgram(sp.shaderProgram);
 
-    GLint numPointLights = glGetUniformLocation(sp.shaderProgram, "numPointLights");
-    glUniform1i(numPointLights, pointLights.size());
-
-    GLint numDirLights = glGetUniformLocation(sp.shaderProgram, "numDirLights");
-    glUniform1i(numDirLights, dirLights.size());
-    
-    GLint numSpotLights = glGetUniformLocation(sp.shaderProgram, "numSpotLights");
-    glUniform1i(numSpotLights, spotLights.size());
-
-    auto getLightUniLoc = [sp = sp.shaderProgram](
-        const char *member, int i, const char *lightType) // Gets the uniform location for light struct members
-    {
-        std::stringstream ss;
-        ss << lightType << "[" << i << "]." << member;
-        return glGetUniformLocation(sp, ss.str().c_str());
-    };
-
-    using namespace std::placeholders;
+    GLint numLights = glGetUniformLocation(sp.shaderProgram, "numLights");
+    glUniform1i(numLights, lights.size());
 
     // TODO: don't do this every frame
-    for (size_t i = 0; i < pointLights.size(); i++) {
-        // Get the uniform location for point lights
-        auto getPointLightUniLoc = std::bind(getLightUniLoc, _1, i, "pointLights");
-
-        // Set light properties
-        glUniform3f(getPointLightUniLoc("position"), pointLights[i]->position.x, pointLights[i]->position.y,
-                    pointLights[i]->position.z);
-        glUniform3f(getPointLightUniLoc("diffuse"), pointLights[i]->diffuse.r, pointLights[i]->diffuse.g,
-                    pointLights[i]->diffuse.b);
-        glUniform3f(getPointLightUniLoc("specular"), pointLights[i]->specular.r, pointLights[i]->specular.g,
-                    pointLights[i]->specular.b);
-    }
-
-    for (size_t i = 0; i < dirLights.size(); i++) {
-        // Get the uniform location for directional lights
-        auto getDirLightUniLoc = std::bind(getLightUniLoc, _1, i, "dirLights");
-
-        // TODO: don't do this every frame
-        // Set light properties
-        glUniform3f(getDirLightUniLoc("direction"), dirLights[i]->direction.x, dirLights[i]->direction.y,
-                    dirLights[i]->direction.z);
-        glUniform3f(getDirLightUniLoc("diffuse"), dirLights[i]->diffuse.r, dirLights[i]->diffuse.g,
-                    dirLights[i]->diffuse.b);
-        glUniform3f(getDirLightUniLoc("specular"), dirLights[i]->specular.r, dirLights[i]->specular.g,
-                    dirLights[i]->specular.b);
-    }
-    
-    for (size_t i = 0; i < spotLights.size(); i++) {
-        // Get the uniform location for directional lights
-        auto getSpotLightUniLoc = std::bind(getLightUniLoc, _1, i, "spotLights");
-
-        // TODO: don't do this every frame
-        // Set light properties
-        //TODO: Support regular spotlights and flashlights
-        //Use the spotlight's position and direction
-//         glUniform3f(getSpotLightUniLoc("position"), spotLights[i]->position.x, spotLights[i]->position.y,
-//                     spotLights[i]->position.z);
-//         glUniform3f(getSpotLightUniLoc("direction"), spotLights[i]->direction.x, spotLights[i]->direction.y,
-//                     spotLights[i]->direction.z);
-        //Set the position and direction to the camera's, like a flashlight
-        glUniform3f(getSpotLightUniLoc("position"), camera.position.x, camera.position.y,
-                    camera.position.z);
-        glUniform3f(getSpotLightUniLoc("direction"), camera.cameraFront.x, camera.cameraFront.y,
-                    camera.cameraFront.z);
-        glUniform3f(getSpotLightUniLoc("diffuse"), spotLights[i]->diffuse.r, spotLights[i]->diffuse.g,
-                    spotLights[i]->diffuse.b);
+    for (size_t i = 0; i < lights.size(); i++) {
+        using Type = Light::LightType;
         
-        glUniform3f(getSpotLightUniLoc("diffuse"), spotLights[i]->diffuse.r, spotLights[i]->diffuse.g,
-                    spotLights[i]->diffuse.b);
-        glUniform3f(getSpotLightUniLoc("specular"), spotLights[i]->specular.r, spotLights[i]->specular.g,
-                    spotLights[i]->specular.b);
-        glUniform1f(getSpotLightUniLoc("cutoffAngle"), spotLights[i]->cutoffAngle);
-    }
+        auto getLightUniLoc = [sp = sp.shaderProgram, i](
+        const char *member) // Gets the uniform location for light struct members
+        {
+            std::stringstream ss;
+            ss << "lights[" << i << "]." << member;
+            return glGetUniformLocation(sp, ss.str().c_str());
+        };
+        
+        // TODO: don't do this every frame
+        switch(lights[i]->type) {
+            case Type::Point:
+                {
+                    auto light = static_cast<PointLight*>(lights[i].get());
+                    glUniform1i(getLightUniLoc("type"), static_cast<int>(light->type));
+                    // Set light properties
+                    glUniform3f(getLightUniLoc("position"), light->position.x, light->position.y,
+                                light->position.z);
+                    glUniform3f(getLightUniLoc("diffuse"), light->diffuse.r, light->diffuse.g,
+                                light->diffuse.b);
+                    glUniform3f(getLightUniLoc("specular"), light->specular.r, light->specular.g,
+                                light->specular.b);
+                }
+                break;
+            case Type::Directional:
+                {
+                    auto light = static_cast<DirLight*>(lights[i].get());
+                    glUniform1i(getLightUniLoc("type"), static_cast<int>(light->type));
+                    // Set light properties
+                    glUniform3f(getLightUniLoc("direction"), light->direction.x, light->direction.y,
+                                light->direction.z);
+                    glUniform3f(getLightUniLoc("diffuse"), light->diffuse.r, light->diffuse.g,
+                                light->diffuse.b);
+                    glUniform3f(getLightUniLoc("specular"), light->specular.r, light->specular.g,
+                                light->specular.b);
+                }
+                break;
+            case Type::Spot:
+                {
+                    auto light = static_cast<SpotLight*>(lights[i].get());
+                    glUniform1i(getLightUniLoc("type"), static_cast<int>(light->type));
+                    // Set light properties
+                    //TODO: Support regular spotlights and flashlights
+                    //Use the spotlight's position and direction
+                    //         glUniform3f(getSpotLightUniLoc("position"), spotLights[i]->position.x, spotLights[i]->position.y,
+                    //                     spotLights[i]->position.z);
+                    //         glUniform3f(getSpotLightUniLoc("direction"), spotLights[i]->direction.x, spotLights[i]->direction.y,
+                    //                     spotLights[i]->direction.z);
+                    //Set the position and direction to the camera's, like a flashlight
+                    glUniform3f(getLightUniLoc("position"), camera.position.x, camera.position.y,
+                    camera.position.z);
+                    glUniform3f(getLightUniLoc("direction"), camera.cameraFront.x, camera.cameraFront.y,
+                    camera.cameraFront.z);
 
+                    glUniform3f(getLightUniLoc("diffuse"), light->diffuse.r, light->diffuse.g,
+                    light->diffuse.b);
+                    glUniform3f(getLightUniLoc("specular"), light->specular.r, light->specular.g,
+                    light->specular.b);
+                    glUniform1f(getLightUniLoc("cutoffAngle"), light->cutoffAngle);
+                }
+                break;
+            default:
+                {
+                    std::cerr << "Invalid light type" << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+                break;
+        }
+    }
 
     GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
 

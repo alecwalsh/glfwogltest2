@@ -40,6 +40,4 @@ float kernel[9] = float[](
         col += sampleTex[i] * kernel[i];
     
     outColor = vec4(col, 1.0);
-    
-//     outColor = vec4(texture(texFramebuffer, Texcoord.st).rgb, 1.0);
 } 
