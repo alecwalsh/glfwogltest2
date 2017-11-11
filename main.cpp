@@ -41,7 +41,31 @@ using gl_version_t = std::tuple<int, int, bool>;
 gl_version_t gl_version;
 
 //TODO: Move to separate file
+//Add ability to replace shaders while running
 struct FullscreenQuad {
+    static FullscreenQuad& GetInstance() {
+        static FullscreenQuad f{};
+        return f;
+    }
+    void BindFramebuffer() {
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    }
+    void UnbindFramebuffer() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+    void Draw() {
+        glUseProgram(shader.shaderProgram);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, fb_texture);
+        
+        glBindVertexArray(vao);
+        
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+    }
+    //Deleted to prevent copies
+    FullscreenQuad(const FullscreenQuad&) = delete;
+    void operator=(const FullscreenQuad&) = delete;
+private:
     const GLfloat vertices[20] = {
         1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 
         1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 
@@ -58,12 +82,6 @@ struct FullscreenQuad {
     GLuint fbo;
     GLuint rbo; //Renderbuffer for depth attachment
     GLuint fb_texture; //Texture for color attachment
-    void BindFramebuffer() {
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    }
-    void UnbindFramebuffer() {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
     void SetupFramebuffer() {
         glGenFramebuffers(1, &fbo);
         
@@ -92,18 +110,8 @@ struct FullscreenQuad {
         glUseProgram(shader.shaderProgram);
         glUniform1i(glGetUniformLocation(shader.shaderProgram, "texFramebuffer"), 0);
     }
-    void Draw() {
-        glUseProgram(shader.shaderProgram);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, fb_texture);
-        
-        glBindVertexArray(vao);
-        
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-    }
     //gl_version needs to be set before insantiating this struct with the default constructor
-    FullscreenQuad() : FullscreenQuad{gl_version} {}
-    FullscreenQuad(gl_version_t version) : shader{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", version} {
+    FullscreenQuad() : shader{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version} {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
         
@@ -158,16 +166,14 @@ int main(int argc, char *argv[]) {
     float deltaTime = 0.0f;
 
     glfwInit();
-    
-    ConfigManager cm{};
-    
-    LuaScript ls{"bind.lua"};
 
     // TODO: Switch between GL and GLES with command line switch
     auto gl_major_version = 3;
     auto gl_minor_version = 3;
     bool gl_es = false;
 
+    gl_version = std::tie(gl_major_version, gl_minor_version, gl_es);
+    
     int gl_api = gl_es ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API;
 
     glfwWindowHint(GLFW_CLIENT_API, gl_api);
@@ -176,6 +182,10 @@ int main(int argc, char *argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 8);
+    
+    ConfigManager cm{};
+    
+    LuaScript ls{"bind.lua"};
     
     global_values gs{};
     
@@ -211,11 +221,9 @@ int main(int argc, char *argv[]) {
 
     glEnable(GL_MULTISAMPLE);
     
-    gl_version = std::tie(gl_major_version, gl_minor_version, gl_es);
-    
     //A fullscreen quad
     //The scene is rendered to a texture and the texture is applied to the quad
-    FullscreenQuad fsq{};
+    FullscreenQuad& fsq = FullscreenQuad::GetInstance();
 
     //TODO: Add AssetManager, like TextureManager but for all assets
     // Compile and link shaders
