@@ -1,6 +1,6 @@
 #include "InputManager.h"
 
-bool InputManager::keys[1024];
+bool InputManager::keys[];
 
 void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
     auto keys = InputManager::keys;
@@ -14,6 +14,18 @@ void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int a
     // When a user presses the escape key, we set the WindowShouldClose property to true, closing the application
     if (keys[GLFW_KEY_ESCAPE]) {
         glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+}
+
+void InputManager::AddKeyBinding(key_t key, std::function<void()> f) {
+    key_bindings.emplace_back(key, f);
+}
+
+void InputManager::HandleInput() {
+    for(auto& [key, f] : key_bindings) {
+        if(keys[key]) {
+            f();
+        }
     }
 }
 

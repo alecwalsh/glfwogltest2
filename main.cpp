@@ -26,6 +26,7 @@
 #include "ShaderProgram.h"
 #include "TextureManager.h"
 #include "ConfigManager.h"
+#include "InputManager.h"
 // TODO: clean up duplicate includes
 
 // TODO: move this to separate file
@@ -39,6 +40,8 @@ struct global_values {
 using gl_version_t = std::tuple<int, int, bool>;
 
 gl_version_t gl_version;
+
+bool mouseMoved = false;
 
 //TODO: Move to separate file
 //Add ability to replace shaders while running
@@ -145,14 +148,11 @@ private:
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void handle_movement(global_values *gv, Camera &camera, float deltaTime);
+void handle_movement(global_values *gv, Camera &camera, float deltaTime, InputManager& im);
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
 void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &camera);
-
-// TODO: avoid globals, use glfwSetWindowUserPointer
-bool keys[1024];
 
 int main(int argc, char *argv[]) {
 #ifdef __unix__
@@ -183,11 +183,71 @@ int main(int argc, char *argv[]) {
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 8);
     
+    Camera camera{
+        {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
+    };
+    
+    
     ConfigManager cm{};
+    InputManager& im = InputManager::GetInstance();
     
     LuaScript ls{"bind.lua"};
     
     global_values gs{};
+    
+    using Direction = Camera::Direction;
+    
+    // Translates the camera in a certain direction
+    auto translateCamera = [&camera, &deltaTime](Direction d){
+        // TODO: Get key bindings from files
+        // TODO: Figure out how to use control key
+        glm::vec3 vector;
+        
+        switch(d) {
+            case Direction::Forward:
+                vector = camera.vectors.frontVector;
+                break;
+            case Direction::Backward:
+                vector = camera.vectors.backVector;
+                break;
+            case Direction::Left:
+                vector = camera.vectors.leftVector;
+                break;
+            case Direction::Right:
+                vector = camera.vectors.rightVector;
+                break;
+            case Direction::Up:
+                vector = camera.vectors.upVector;
+                break;
+            case Direction::Down:
+                vector = camera.vectors.downVector;
+                break;
+        }
+        //TODO: set this elsewhere
+        float velocity = 2.5f;
+        
+        glm::mat4 translation;
+        translation = glm::translate(translation, velocity * deltaTime * vector);
+        camera.Translate(translation);
+    };
+    im.AddKeyBinding(GLFW_KEY_W, [&translateCamera]{
+        translateCamera(Direction::Forward);
+    });
+    im.AddKeyBinding(GLFW_KEY_A, [&translateCamera]{
+        translateCamera(Direction::Left);
+    });
+    im.AddKeyBinding(GLFW_KEY_S, [&translateCamera]{
+        translateCamera(Direction::Backward);
+    });
+    im.AddKeyBinding(GLFW_KEY_D, [&translateCamera]{
+        translateCamera(Direction::Right);
+    });
+    im.AddKeyBinding(GLFW_KEY_SPACE, [&translateCamera]{
+        translateCamera(Direction::Up);
+    });
+    im.AddKeyBinding(GLFW_KEY_C, [&translateCamera]{
+        translateCamera(Direction::Down);
+    });
     
     gs.WIDTH = cm.width;
     gs.HEIGHT = cm.height;
@@ -198,7 +258,7 @@ int main(int argc, char *argv[]) {
     
     glfwSwapInterval(1);
 
-    glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(window, InputManager::key_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -243,14 +303,12 @@ int main(int argc, char *argv[]) {
     texman.AddTextureFromFile("normalmaptest1", "normalmaptest1.png");
     texman.AddTextureFromFile("puppy", "sample2.png");
 
-    Camera camera{
-        {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
-    };
+
 
     // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
     // for the first time
     // This is just the inverse of the code in Camera::Rotate
-    auto& cf = camera.cameraFront;
+    auto& cf = camera.vectors.frontVector;
 
     gs.pitch = glm::degrees(asin(cf.y));
     gs.yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
@@ -319,6 +377,7 @@ int main(int argc, char *argv[]) {
 
         elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
         
+        
         //Enable depth test when rendering main scene
         glEnable(GL_DEPTH_TEST);
         
@@ -339,7 +398,12 @@ int main(int argc, char *argv[]) {
         }
 
         glfwPollEvents();
-        handle_movement(&gs, camera, deltaTime);
+        im.HandleInput();
+        
+        if (mouseMoved) {
+            mouseMoved = false;
+            camera.Rotate(gs.pitch, gs.yaw);
+        }
 
         // Clear the screen to black
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -381,24 +445,14 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
-    if (action == GLFW_PRESS) {
-        keys[key] = true;
-    } else if (action == GLFW_RELEASE) {
-        keys[key] = false;
-    }
 
-    // When a user presses the escape key, we set the WindowShouldClose property to true, closing the application
-    if (keys[GLFW_KEY_ESCAPE]) {
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    }
-}
-
-bool mouseMoved = false;
-bool firstMouse = true;
 void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-    float &lastX = static_cast<global_values *>(glfwGetWindowUserPointer(window))->lastX;
-    float &lastY = static_cast<global_values *>(glfwGetWindowUserPointer(window))->lastY;
+    static bool firstMouse = true;
+    
+    auto gv = static_cast<global_values *>(glfwGetWindowUserPointer(window));
+    
+    float &lastX = gv->lastX;
+    float &lastY = gv->lastY;
 
     mouseMoved = true;
     if (firstMouse) {
@@ -416,8 +470,8 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     lastX = xpos;
     lastY = ypos;
 
-    auto &yaw = static_cast<global_values *>(glfwGetWindowUserPointer(window))->yaw;
-    auto &pitch = static_cast<global_values *>(glfwGetWindowUserPointer(window))->pitch;
+    auto &yaw = gv->yaw;
+    auto &pitch = gv->pitch;
     yaw -= deltaX * xSensitivity;
     pitch += deltaY * ySensitivity;
 
@@ -427,63 +481,6 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     if (pitch < -89.0f) {
         pitch = -89.0f;
     }
-}
-
-void handle_movement(global_values *gv, Camera &camera, float deltaTime) // TODO: use arrow keys to move objects
-{
-    auto &yaw = gv->yaw;
-    auto &pitch = gv->pitch;
-
-    glm::mat4 translation;
-
-    // Calculates vectors from the perspective of the camera
-    // This allows the camera to work no matter how it is moved and rotated
-    glm::vec3 rightVector = glm::normalize(glm::cross(camera.cameraFront, camera.up));
-    glm::vec3 leftVector = -rightVector;
-    glm::vec3 frontVector = camera.cameraFront;
-    glm::vec3 backVector = -frontVector;
-    glm::vec3 upVector = camera.up;
-    glm::vec3 downVector = -upVector;
-
-    float velocity = 2.5f;
-
-    // TODO: Get key bindings from files
-    // TODO: Figure out how to use control key
-
-    // Changes the cameras location in response to keypresses
-    if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
-        translation = glm::translate(translation, velocity * deltaTime * leftVector);
-    }
-    if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
-        translation = glm::translate(translation, velocity * deltaTime * rightVector);
-    }
-
-    if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP]) {
-        translation = glm::translate(translation, velocity * deltaTime * frontVector);
-    }
-    if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN]) {
-        translation = glm::translate(translation, velocity * deltaTime * backVector);
-    }
-
-    if (keys[GLFW_KEY_SPACE]) {
-        translation = glm::translate(translation, velocity * deltaTime * upVector);
-    }
-    if (keys[GLFW_KEY_C]) {
-        translation = glm::translate(translation, velocity * deltaTime * downVector);
-    }
-    if (keys[GLFW_KEY_Q]) {
-        // roll
-    }
-    if (keys[GLFW_KEY_E]) {
-        // roll
-    }
-
-    if (mouseMoved) {
-        mouseMoved = false;
-        camera.Rotate(pitch, yaw);
-    }
-
-    camera.Translate(translation);
 }
 
 // TODO: Support multiple lights and multiple types of lights
@@ -549,8 +546,8 @@ void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &c
                     //Set the position and direction to the camera's, like a flashlight
                     glUniform3f(getLightUniLoc("position"), camera.position.x, camera.position.y,
                     camera.position.z);
-                    glUniform3f(getLightUniLoc("direction"), camera.cameraFront.x, camera.cameraFront.y,
-                    camera.cameraFront.z);
+                    glUniform3f(getLightUniLoc("direction"), camera.vectors.frontVector.x, camera.vectors.frontVector.y,
+                    camera.vectors.frontVector.z);
 
                     glUniform3f(getLightUniLoc("diffuse"), light->diffuse.r, light->diffuse.g,
                     light->diffuse.b);
@@ -579,7 +576,10 @@ void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &c
 // TODO: Update projection matrix to allow different aspect ratios
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    static_cast<global_values *>(glfwGetWindowUserPointer(window))->WIDTH = width;
-    static_cast<global_values *>(glfwGetWindowUserPointer(window))->HEIGHT = height;
-    static_cast<global_values *>(glfwGetWindowUserPointer(window))->hasResized = true;
+    
+    auto gv = static_cast<global_values *>(glfwGetWindowUserPointer(window));
+    
+    gv->WIDTH = width;
+    gv->HEIGHT = height;
+    gv->hasResized = true;
 }
