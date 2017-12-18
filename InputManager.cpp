@@ -5,6 +5,9 @@ bool InputManager::keys[];
 void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
     auto keys = InputManager::keys;
     
+    // Don't wnat to use -1 as an array index
+    if(key == GLFW_KEY_UNKNOWN) return;
+    
     if (action == GLFW_PRESS) {
         keys[key] = true;
     } else if (action == GLFW_RELEASE) {
@@ -22,9 +25,13 @@ void InputManager::AddKeyBinding(key_t key, std::function<void()> f) {
 }
 
 void InputManager::HandleInput() {
-    for(auto& [key, f] : key_bindings) {
+    for(const auto& [key, f] : key_bindings) {
         if(keys[key]) {
             f();
+            //TODO: Remove this once key repeat is handled
+            if(key == GLFW_KEY_R) {
+                keys[key] = false;
+            }
         }
     }
 }

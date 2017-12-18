@@ -6,7 +6,8 @@
 
 #include <GLFW/glfw3.h>
 
-//TODO: Move GLFW callbacks into this class
+//TODO: Move GLFW mouse callback into this class
+//TODO: Allow key binding to either repeat while the key is held down, or only fire once
 class InputManager {
 public:
     using key_t = int;

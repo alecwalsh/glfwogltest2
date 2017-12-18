@@ -4,9 +4,9 @@
 #include <iostream>
 #include <sstream>
 
-ShaderProgram::ShaderProgram(char const *vertShader, char const *fragShader, std::tuple<int, int, bool> version)
-    : version(version) {
-    ShaderProgramFromFiles(vertShader, fragShader);
+ShaderProgram::ShaderProgram(const char *vertShader, const char *fragShader, std::tuple<int, int, bool> version)
+    : version(version), shaderProgram(ShaderProgramFromFiles(vertShader, fragShader)) {
+    
 }
 
 // TODO: Make version_string work with OpenGL below 3.3
@@ -61,11 +61,13 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const char *vertShaderFile, const c
     getLinkErrors(shaderProgram);
 
     // Don't need these anymore
+    glDetachShader(shaderProgram, fragmentShader);
     glDeleteShader(fragmentShader);
+    glDetachShader(shaderProgram, vertexShader);
     glDeleteShader(vertexShader);
 
-    this->shaderProgram = shaderProgram;
-
+    printf("Compiled shader %d\n", shaderProgram);
+    fflush(stdout);
     return shaderProgram;
 }
 
@@ -103,4 +105,20 @@ void ShaderProgram::getLinkErrors(GLuint shaderProgram) {
     }
 }
 
-ShaderProgram::~ShaderProgram() { glDeleteProgram(shaderProgram); }
+ShaderProgram::~ShaderProgram() {
+    glDeleteProgram(shaderProgram);
+}
+
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) {
+    shaderProgram = sp.shaderProgram;
+    sp.shaderProgram = 0;
+    version = std::move(sp.version);
+    return *this;
+}
+
+ShaderProgram& ShaderProgram::operator=(ShaderProgram& sp) {
+    shaderProgram = sp.shaderProgram;
+    sp.shaderProgram = 0;
+    version = sp.version;
+    return *this;
+}

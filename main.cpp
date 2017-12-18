@@ -57,7 +57,7 @@ struct FullscreenQuad {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
     void Draw() {
-        glUseProgram(shader.shaderProgram);
+        glUseProgram(shaderProgram.shaderProgram);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, fb_texture);
         
@@ -75,8 +75,8 @@ private:
         -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 
         -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
     };
-    const GLubyte elements[6] = {0, 1, 2, 0, 2, 3};
-    ShaderProgram shader;
+    const GLubyte elements[6]{0, 1, 2, 0, 2, 3};
+    ShaderProgram shaderProgram;
     GLuint vao;
     struct buffers {
         GLuint vbo;
@@ -110,11 +110,11 @@ private:
         
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
         
-        glUseProgram(shader.shaderProgram);
-        glUniform1i(glGetUniformLocation(shader.shaderProgram, "texFramebuffer"), 0);
+        glUseProgram(shaderProgram.shaderProgram);
+        glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texFramebuffer"), 0);
     }
     //gl_version needs to be set before insantiating this struct with the default constructor
-    FullscreenQuad() : shader{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version} {
+    FullscreenQuad() : shaderProgram{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version} {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
         
@@ -141,6 +141,10 @@ private:
         glDeleteVertexArrays(1, &vao);
         glDeleteBuffers(2, (GLuint*)&buffers);
         glDeleteFramebuffers(1, &fbo);
+    }
+public:
+    void ReloadShader(const char *vertShader, const char *fragShader, std::tuple<int, int, bool> version) {
+        shaderProgram = ShaderProgram(vertShader, fragShader, version);
     }
 };
 
@@ -284,6 +288,17 @@ int main(int argc, char *argv[]) {
     //A fullscreen quad
     //The scene is rendered to a texture and the texture is applied to the quad
     FullscreenQuad& fsq = FullscreenQuad::GetInstance();
+    
+    im.AddKeyBinding(GLFW_KEY_R, [&fsq]{
+        static bool toggled = false;
+        if(toggled) {
+            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version);
+            toggled = false;
+        } else {
+            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl", gl_version);
+            toggled = true;
+        }
+    });
 
     //TODO: Add AssetManager, like TextureManager but for all assets
     // Compile and link shaders
