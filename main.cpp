@@ -29,123 +29,12 @@
 #include "ConfigManager.h"
 #include "InputManager.h"
 #include "Window.h"
+#include "PostProcess.h"
 // TODO: clean up duplicate includes
 
 //TODO: figure out where to put these, avoid extern in other files
 float lastX, lastY;
 double yaw, pitch;
-
-//TODO: Move to separate file
-struct FullscreenQuad {
-    static FullscreenQuad& GetInstance() {
-        static FullscreenQuad f{};
-        return f;
-    }
-    void BindFramebuffer() {
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    }
-    void UnbindFramebuffer() {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-    void Draw() {
-        glUseProgram(shaderProgram.shaderProgram);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, fb_texture);
-        
-        glBindVertexArray(vao);
-        
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-    }
-    //Deleted to prevent copies
-    FullscreenQuad(const FullscreenQuad&) = delete;
-    void operator=(const FullscreenQuad&) = delete;
-private:
-    const GLfloat vertices[20] = {
-        1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 
-        1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 
-        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 
-        -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
-    };
-    const GLubyte elements[6]{0, 1, 2, 0, 2, 3};
-    ShaderProgram shaderProgram;
-    GLuint vao;
-    struct buffers {
-        GLuint vbo;
-        GLuint ebo;
-    } buffers;
-    GLuint fbo;
-    GLuint rbo; //Renderbuffer for depth attachment
-    GLuint fb_texture; //Texture for color attachment
-    void SetupFramebuffer() {
-        glGenFramebuffers(1, &fbo);
-        
-        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-            std::cout << "Framebuffer bound" << std::endl;
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        
-        glGenTextures(1, &fb_texture);
-        glBindTexture(GL_TEXTURE_2D, fb_texture);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::width, Window::height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb_texture, 0);
-        
-        glGenRenderbuffers(1, &rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, Window::width, Window::height);  
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-        
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
-        
-        glUseProgram(shaderProgram.shaderProgram);
-        glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texFramebuffer"), 0);
-    }
-    //gl_version needs to be set before insantiating this struct with the default constructor
-    FullscreenQuad() : shaderProgram{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::gl_version} {
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
-        
-        glGenBuffers(2, (GLuint*)&buffers);
-        
-        glBindBuffer(GL_ARRAY_BUFFER, buffers.vbo);
-        glBufferData(GL_ARRAY_BUFFER, 20 * sizeof(vertices[0]), vertices, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers.ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(elements[0]), elements, GL_STATIC_DRAW);
-        
-        GLint posAttrib = 0;
-        glEnableVertexAttribArray(posAttrib);
-        glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        
-        GLint texAttrib = 1;
-        glEnableVertexAttribArray(texAttrib);
-        glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        glBindVertexArray(0);
-        
-        SetupFramebuffer();
-    }
-    ~FullscreenQuad() {
-        glDeleteVertexArrays(1, &vao);
-        glDeleteBuffers(2, (GLuint*)&buffers);
-        glDeleteFramebuffers(1, &fbo);
-    }
-public:
-    void ReloadShader(const char *vertShader, const char *fragShader, gl_version_t version) {
-        shaderProgram = ShaderProgram(vertShader, fragShader, version);
-    }
-    //Resize framebuffer texture and renderbuffer to match the current window size
-    void Resize() {
-        glBindTexture(GL_TEXTURE_2D, fb_texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::width, Window::height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-        
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, Window::width, Window::height);
-    }
-};
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
@@ -256,7 +145,7 @@ int main(int argc, char *argv[]) {
     
     //A fullscreen quad
     //The scene is rendered to a texture and the texture is applied to the quad
-    FullscreenQuad& fsq = FullscreenQuad::GetInstance();
+    PostProcess& fsq = PostProcess::GetInstance();
     
     im.AddKeyBinding(GLFW_KEY_R, [&fsq, &gl_version]{
         static bool toggled = false;
@@ -350,7 +239,6 @@ int main(int argc, char *argv[]) {
             lightObjects.push_back(std::move(lo));
         }
     }
-
     
     // main loop
     while (!window.ShouldClose()) {
@@ -361,7 +249,6 @@ int main(int argc, char *argv[]) {
 
         elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
         
-        
         //Enable depth test when rendering main scene
         glEnable(GL_DEPTH_TEST);
         
@@ -370,7 +257,6 @@ int main(int argc, char *argv[]) {
         
         if (Window::hasResized) {
             //TODO: do this for all shaders automatically, instead of manually
-//             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)gs.WIDTH / gs.HEIGHT, 1.0f, 10.0f);
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 10.0f);
             
             glUseProgram(cubeShader.shaderProgram);
@@ -383,8 +269,7 @@ int main(int argc, char *argv[]) {
             
             fsq.Resize();
         }
-
-        glfwPollEvents();
+        
         im.HandleInput();
         
         if (mouseMoved) {
@@ -397,7 +282,6 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ls.exec("loop()");
-//         lua_pcall(ls.L, 0, 0, 0);
         
         render(*go, lights, camera);
         render(*floor, lights, camera);
@@ -409,13 +293,6 @@ int main(int argc, char *argv[]) {
         
         //Unbind the framebuffer and draw the fullscreen quad with the main scene as the texture
         fsq.UnbindFramebuffer();
-    
-        // Clear the screen to black
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        
-        //Depth test is unnecessary here because we are rendering a single quad
-        glDisable(GL_DEPTH_TEST);
         
         //Draw the fullscreen quad
         fsq.Draw();

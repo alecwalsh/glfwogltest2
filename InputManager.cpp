@@ -61,6 +61,8 @@ void InputManager::AddKeyBinding(key_t key, std::function<void()> f) {
 }
 
 void InputManager::HandleInput() {
+    glfwPollEvents();
+    
     for(const auto& keypair : key_bindings) {
         auto& key = keypair.first;
         auto& f = keypair.second;
