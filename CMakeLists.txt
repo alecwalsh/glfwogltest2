@@ -9,7 +9,7 @@ set(SOURCES ${SOURCES} glad/glad.c)
 
 add_executable(glfwogltest2 ${SOURCES})
 
-target_compile_features(glfwogltest2 PUBLIC cxx_std_17)
+target_compile_features(glfwogltest2 PUBLIC cxx_std_14)
 set_target_properties(glfwogltest2 PROPERTIES CXX_STANDARD_REQUIRED true)
 set_target_properties(glfwogltest2 PROPERTIES CXX_EXTENSIONS false)
 

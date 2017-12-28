@@ -16,6 +16,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <tuple>
 
 #include "Camera.h"
 #include "CubeObject.h"
@@ -27,24 +28,14 @@
 #include "TextureManager.h"
 #include "ConfigManager.h"
 #include "InputManager.h"
+#include "Window.h"
 // TODO: clean up duplicate includes
 
-// TODO: move this to separate file
-struct global_values {
-    GLuint WIDTH, HEIGHT;
-    float lastX, lastY;
-    double yaw, pitch;
-    bool hasResized = false;
-};
-
-using gl_version_t = std::tuple<int, int, bool>;
-
-gl_version_t gl_version;
-
-bool mouseMoved = false;
+//TODO: figure out where to put these, avoid extern in other files
+float lastX, lastY;
+double yaw, pitch;
 
 //TODO: Move to separate file
-//Add ability to replace shaders while running
 struct FullscreenQuad {
     static FullscreenQuad& GetInstance() {
         static FullscreenQuad f{};
@@ -99,13 +90,13 @@ private:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::width, Window::height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb_texture, 0);
         
         glGenRenderbuffers(1, &rbo);
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 800, 600);  
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, Window::width, Window::height);  
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
         
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
@@ -114,7 +105,7 @@ private:
         glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texFramebuffer"), 0);
     }
     //gl_version needs to be set before insantiating this struct with the default constructor
-    FullscreenQuad() : shaderProgram{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version} {
+    FullscreenQuad() : shaderProgram{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::gl_version} {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
         
@@ -143,16 +134,18 @@ private:
         glDeleteFramebuffers(1, &fbo);
     }
 public:
-    void ReloadShader(const char *vertShader, const char *fragShader, std::tuple<int, int, bool> version) {
+    void ReloadShader(const char *vertShader, const char *fragShader, gl_version_t version) {
         shaderProgram = ShaderProgram(vertShader, fragShader, version);
     }
+    //Resize framebuffer texture and renderbuffer to match the current window size
+    void Resize() {
+        glBindTexture(GL_TEXTURE_2D, fb_texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::width, Window::height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, Window::width, Window::height);
+    }
 };
-
-// Prototypes for input handling callbacks
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
-void mouse_callback(GLFWwindow *window, double xpos, double ypos);
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void handle_movement(global_values *gv, Camera &camera, float deltaTime, InputManager& im);
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
@@ -168,36 +161,30 @@ int main(int argc, char *argv[]) {
     auto t_prev = t_start;
     float elapsedTime = 0.0f;
     float deltaTime = 0.0f;
-
-    glfwInit();
-
+    
+    ConfigManager cm{};
+    
+    Window::width = cm.width;
+    Window::height = cm.height;
+    
     // TODO: Switch between GL and GLES with command line switch
     auto gl_major_version = 3;
     auto gl_minor_version = 3;
     bool gl_es = false;
 
-    gl_version = std::tie(gl_major_version, gl_minor_version, gl_es);
+    Window::gl_version = {gl_major_version, gl_minor_version, gl_es};
     
-    int gl_api = gl_es ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API;
-
-    glfwWindowHint(GLFW_CLIENT_API, gl_api);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major_version);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, gl_minor_version);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-    glfwWindowHint(GLFW_SAMPLES, 8);
+    Window& window = Window::GetInstance();
     
-    Camera camera{
-        {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
-    };
+    const auto& gl_version = Window::gl_version;
     
-    
-    ConfigManager cm{};
     InputManager& im = InputManager::GetInstance();
     
     LuaScript ls{"bind.lua"};
     
-    global_values gs{};
+    Camera camera{
+        {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
+    };
     
     using Direction = Camera::Direction;
     
@@ -253,27 +240,9 @@ int main(int argc, char *argv[]) {
         translateCamera(Direction::Down);
     });
     
-    gs.WIDTH = cm.width;
-    gs.HEIGHT = cm.height;
-    
-    GLFWwindow *window = glfwCreateWindow(gs.WIDTH, gs.HEIGHT, "OpenGL", nullptr, nullptr); // Windowed
-    
-    glfwMakeContextCurrent(window);
-    
     glfwSwapInterval(1);
-
-    glfwSetKeyCallback(window, InputManager::key_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // Set global state and call glfwSetWindowUserPointer to make it accessable to callbacks
-    gs.hasResized = false;
-    gs.lastX = gs.WIDTH / 2;
-    gs.lastY = gs.HEIGHT / 2;
-
-    glfwSetWindowUserPointer(window, static_cast<void*>(&gs));
+    
+    Window::hasResized = false;
 
     int load_result = gl_es ? gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)
                             : gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -289,7 +258,7 @@ int main(int argc, char *argv[]) {
     //The scene is rendered to a texture and the texture is applied to the quad
     FullscreenQuad& fsq = FullscreenQuad::GetInstance();
     
-    im.AddKeyBinding(GLFW_KEY_R, [&fsq]{
+    im.AddKeyBinding(GLFW_KEY_R, [&fsq, &gl_version]{
         static bool toggled = false;
         if(toggled) {
             fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version);
@@ -325,11 +294,11 @@ int main(int argc, char *argv[]) {
     // This is just the inverse of the code in Camera::Rotate
     auto& cf = camera.vectors.frontVector;
 
-    gs.pitch = glm::degrees(asin(cf.y));
-    gs.yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
+    pitch = glm::degrees(asin(cf.y));
+    yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
 
     if (cf.z < 0) {
-        gs.yaw = -gs.yaw;
+        yaw = -yaw;
     }
 
     // Creates a CubeObject
@@ -384,7 +353,7 @@ int main(int argc, char *argv[]) {
 
     
     // main loop
-    while (!glfwWindowShouldClose(window)) {
+    while (!window.ShouldClose()) {
         auto t_now = std::chrono::high_resolution_clock::now();
 
         deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_prev).count();
@@ -399,9 +368,10 @@ int main(int argc, char *argv[]) {
         //Render main scene to the framebuffer's texture
         fsq.BindFramebuffer();
         
-        if (gs.hasResized) {
+        if (Window::hasResized) {
             //TODO: do this for all shaders automatically, instead of manually
-            glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)gs.WIDTH / gs.HEIGHT, 1.0f, 10.0f);
+//             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)gs.WIDTH / gs.HEIGHT, 1.0f, 10.0f);
+            glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 10.0f);
             
             glUseProgram(cubeShader.shaderProgram);
             GLint uniProj = glGetUniformLocation(cubeShader.shaderProgram, "proj");
@@ -410,6 +380,8 @@ int main(int argc, char *argv[]) {
             glUseProgram(lightShader.shaderProgram);
             GLint uniProj2 = glGetUniformLocation(lightShader.shaderProgram, "proj");
             glUniformMatrix4fv(uniProj2, 1, GL_FALSE, glm::value_ptr(proj));
+            
+            fsq.Resize();
         }
 
         glfwPollEvents();
@@ -417,7 +389,7 @@ int main(int argc, char *argv[]) {
         
         if (mouseMoved) {
             mouseMoved = false;
-            camera.Rotate(gs.pitch, gs.yaw);
+            camera.Rotate(pitch, yaw);
         }
 
         // Clear the screen to black
@@ -448,54 +420,13 @@ int main(int argc, char *argv[]) {
         //Draw the fullscreen quad
         fsq.Draw();
         
-        // Swap buffers
-        glfwSwapBuffers(window);
+        window.SwapBuffers();
     }
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(500));
     std::cout << "bye" << std::endl;
 
-    glfwTerminate();
-
     return EXIT_SUCCESS;
-}
-
-
-void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-    static bool firstMouse = true;
-    
-    auto gv = static_cast<global_values *>(glfwGetWindowUserPointer(window));
-    
-    float &lastX = gv->lastX;
-    float &lastY = gv->lastY;
-
-    mouseMoved = true;
-    if (firstMouse) {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xSensitivity = 0.2f;
-    float ySensitivity = 0.2f;
-
-    auto deltaX = lastX - xpos;
-    auto deltaY = lastY - ypos;
-
-    lastX = xpos;
-    lastY = ypos;
-
-    auto &yaw = gv->yaw;
-    auto &pitch = gv->pitch;
-    yaw -= deltaX * xSensitivity;
-    pitch += deltaY * ySensitivity;
-
-    if (pitch > 89.0f) {
-        pitch = 89.0f;
-    }
-    if (pitch < -89.0f) {
-        pitch = -89.0f;
-    }
 }
 
 // TODO: Support multiple lights and multiple types of lights
@@ -586,15 +517,4 @@ void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &c
     glUniform3f(ambientLoc, 0.1f, 0.1f, 0.1f);
     
     go.Draw(camera);
-}
-
-// TODO: Update projection matrix to allow different aspect ratios
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-    
-    auto gv = static_cast<global_values *>(glfwGetWindowUserPointer(window));
-    
-    gv->WIDTH = width;
-    gv->HEIGHT = height;
-    gv->hasResized = true;
 }

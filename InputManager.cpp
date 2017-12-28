@@ -1,5 +1,10 @@
 #include "InputManager.h"
 
+extern float lastX, lastY;
+extern double yaw, pitch;
+
+bool mouseMoved = false;
+
 bool InputManager::keys[];
 
 void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
@@ -20,12 +25,45 @@ void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int a
     }
 }
 
+void InputManager::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    static bool firstMouse = true;
+
+    mouseMoved = true;
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xSensitivity = 0.2f;
+    float ySensitivity = 0.2f;
+
+    auto deltaX = lastX - xpos;
+    auto deltaY = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
+
+    yaw -= deltaX * xSensitivity;
+    pitch += deltaY * ySensitivity;
+
+    if (pitch > 89.0f) {
+        pitch = 89.0f;
+    }
+    if (pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+}
+
+
 void InputManager::AddKeyBinding(key_t key, std::function<void()> f) {
     key_bindings.emplace_back(key, f);
 }
 
 void InputManager::HandleInput() {
-    for(const auto& [key, f] : key_bindings) {
+    for(const auto& keypair : key_bindings) {
+        auto& key = keypair.first;
+        auto& f = keypair.second;
         if(keys[key]) {
             f();
             //TODO: Remove this once key repeat is handled

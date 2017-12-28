@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-ShaderProgram::ShaderProgram(const char *vertShader, const char *fragShader, std::tuple<int, int, bool> version)
+ShaderProgram::ShaderProgram(const char *vertShader, const char *fragShader, gl_version_t version)
     : version(version), shaderProgram(ShaderProgramFromFiles(vertShader, fragShader)) {
     
 }
