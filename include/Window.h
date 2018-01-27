@@ -23,6 +23,8 @@ public:
     void SwapBuffers();
     bool ShouldClose();
     
+    void Resize(int width, int height);
+    
     // TODO: Update projection matrix to allow different aspect ratios
     static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
     

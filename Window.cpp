@@ -69,3 +69,7 @@ void Window::SwapBuffers() {
 bool Window::ShouldClose() {
     return glfwWindowShouldClose(window);
 }
+
+void Window::Resize(int width, int height) {
+    glfwSetWindowSize(window, width, height);
+}
