@@ -362,10 +362,10 @@ void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &c
                     // Set light properties
                     //TODO: Support regular spotlights and flashlights
                     //Use the spotlight's position and direction
-                    //         glUniform3f(getSpotLightUniLoc("position"), spotLights[i]->position.x, spotLights[i]->position.y,
-                    //                     spotLights[i]->position.z);
-                    //         glUniform3f(getSpotLightUniLoc("direction"), spotLights[i]->direction.x, spotLights[i]->direction.y,
-                    //                     spotLights[i]->direction.z);
+//                             glUniform3f(getLightUniLoc("position"), light->position.x, light->position.y,
+//                                         light->position.z);
+//                             glUniform3f(getLightUniLoc("direction"), light->direction.x, light->direction.y,
+//                                         light->direction.z);
                     //Set the position and direction to the camera's, like a flashlight
                     glUniform3f(getLightUniLoc("position"), camera.position.x, camera.position.y,
                     camera.position.z);
