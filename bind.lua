@@ -3,6 +3,8 @@ lastTime = 0
 RotSpeed = 0
 reverse = false
 
+lambdaCalled = false
+
 function loop()
     deltaTime = cpp.elapsedTime - lastTime
     lastTime = cpp.elapsedTime
@@ -22,6 +24,9 @@ function loop()
     end
     
     cpp.RotSpeed = RotSpeed
---     Tick()
---     LambdaTest()
+    Tick()
+    if not lambdaCalled then
+        LambdaTest()
+        lambdaCalled = true
+    end
 end
