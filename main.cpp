@@ -34,7 +34,7 @@
 
 //TODO: figure out where to put these, avoid extern in other files
 float lastX, lastY;
-double yaw, pitch;
+double yaw, pitch; 
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
@@ -75,6 +75,24 @@ int main(int argc, char *argv[]) {
         {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
     };
     
+    glfwSwapInterval(1);
+    
+    Window::hasResized = false;
+
+    int load_result = gl_es ? gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)
+                            : gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    if (!load_result) {
+        std::cerr << "Error initializing glad" << std::endl;
+        glfwTerminate();
+        return EXIT_FAILURE;
+    }
+
+    glEnable(GL_MULTISAMPLE);
+    
+    //A fullscreen quad
+    //The scene is rendered to a texture and the texture is applied to the quad
+    PostProcess& fsq = PostProcess::GetInstance();
+    
     using Direction = Camera::Direction;
     
     // Translates the camera in a certain direction
@@ -110,44 +128,33 @@ int main(int argc, char *argv[]) {
         translation = glm::translate(translation, velocity * deltaTime * vector);
         camera.Translate(translation);
     };
-    im.AddKeyBinding(GLFW_KEY_W, [&translateCamera]{
+    
+    using KeyState = InputManager::KeyState;
+    
+    //Set key bindings
+    //TODO: Set in Lua file
+    im.AddKeyBinding(KEY(W), KeyState::AnyPress, [&translateCamera]{
         translateCamera(Direction::Forward);
     });
-    im.AddKeyBinding(GLFW_KEY_A, [&translateCamera]{
+    im.AddKeyBinding(KEY(A), KeyState::AnyPress, [&translateCamera]{
         translateCamera(Direction::Left);
     });
-    im.AddKeyBinding(GLFW_KEY_S, [&translateCamera]{
+    im.AddKeyBinding(KEY(S), KeyState::AnyPress, [&translateCamera]{
         translateCamera(Direction::Backward);
     });
-    im.AddKeyBinding(GLFW_KEY_D, [&translateCamera]{
+    im.AddKeyBinding(KEY(D), KeyState::AnyPress, [&translateCamera]{
         translateCamera(Direction::Right);
     });
-    im.AddKeyBinding(GLFW_KEY_SPACE, [&translateCamera]{
+    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, [&translateCamera]{
         translateCamera(Direction::Up);
     });
-    im.AddKeyBinding(GLFW_KEY_C, [&translateCamera]{
+    im.AddKeyBinding(KEY(C), KeyState::AnyPress, [&translateCamera]{
         translateCamera(Direction::Down);
     });
-    
-    glfwSwapInterval(1);
-    
-    Window::hasResized = false;
-
-    int load_result = gl_es ? gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)
-                            : gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    if (!load_result) {
-        std::cerr << "Error initializing glad" << std::endl;
-        glfwTerminate();
-        return EXIT_FAILURE;
-    }
-
-    glEnable(GL_MULTISAMPLE);
-    
-    //A fullscreen quad
-    //The scene is rendered to a texture and the texture is applied to the quad
-    PostProcess& fsq = PostProcess::GetInstance();
-    
-    im.AddKeyBinding(GLFW_KEY_R, [&fsq, &gl_version]{
+    im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [&window]{
+        window.Close();
+    });
+    im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&fsq, &gl_version]{
         static bool toggled = false;
         if(toggled) {
             fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version);
@@ -175,7 +182,6 @@ int main(int argc, char *argv[]) {
     texman.AddTextureFromFile("container_specular", "container2_specular.png");
     texman.AddTextureFromFile("normalmaptest1", "normalmaptest1.png");
     texman.AddTextureFromFile("puppy", "sample2.png");
-
 
 
     // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse

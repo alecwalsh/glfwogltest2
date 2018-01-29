@@ -22,6 +22,8 @@ public:
     
     void SwapBuffers();
     bool ShouldClose();
+    //Calls glfwSetWindowShouldClose, will close the window on next frame
+    void Close();
     
     void Resize(int width, int height);
     

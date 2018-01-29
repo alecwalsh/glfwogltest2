@@ -5,11 +5,11 @@
 extern float lastX, lastY;
 extern double yaw, pitch;
 
-bool InputManager::keys[];
+std::array<InputManager::KeyState, GLFW_KEY_LAST> InputManager::keystates;
 bool InputManager::mouseMoved;
 
 void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
-    auto keys = InputManager::keys;
+    auto& keystates = InputManager::keystates;
     
     // Don't want to use -1 as an array index
     if(key == GLFW_KEY_UNKNOWN) {
@@ -18,14 +18,13 @@ void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int a
     }
     
     if (action == GLFW_PRESS) {
-        keys[key] = true;
+        if(keystates[key] == KeyState::NotPressed) {
+            keystates[key] = KeyState::InitialPress;
+        } else {
+            keystates[key] = KeyState::RepeatPress;
+        }
     } else if (action == GLFW_RELEASE) {
-        keys[key] = false;
-    }
-
-    // When a user presses the escape key, we set the WindowShouldClose property to true, closing the application
-    if (keys[GLFW_KEY_ESCAPE]) {
-        glfwSetWindowShouldClose(window, GL_TRUE);
+        keystates[key] = KeyState::NotPressed;
     }
 }
 
@@ -62,25 +61,27 @@ void InputManager::mouse_callback(GLFWwindow *window, double xpos, double ypos) 
 void InputManager::HandleInput() {
     glfwPollEvents();
     
-    for(const auto& keypair : key_bindings) {
-        auto& key = keypair.first;
-        auto& f = keypair.second;
-        if(keys[key]) {
-            f();
-            //TODO: Remove this once key repeat is handled
-            if(key == GLFW_KEY_R) {
-                keys[key] = false;
+    for(const auto& keybinding : key_bindings) {
+#if __cplusplus >= 201703L
+        const auto& [keycode, desired_state, func] = keybinding;
+#else
+        const auto& keycode = std::get<0>(keybinding);
+        const auto& desired_state = std::get<1>(keybinding);
+        const auto& func = std::get<2>(keybinding);
+#endif
+        auto& current_state = keystates[keycode];
+        if(desired_state == KeyState::AnyPress) {
+            if(current_state == KeyState::InitialPress || current_state == KeyState::RepeatPress) {
+                func();
             }
+        } else if(current_state == desired_state) {
+            func();
+        }
+        //After the initial press, state changes to RepeatPress
+        if(current_state == KeyState::InitialPress) {
+            current_state = KeyState::RepeatPress;
         }
     }
-}
-
-InputManager::InputManager() {
-    
-}
-
-InputManager::~InputManager() {
-    
 }
 
 InputManager& InputManager::GetInstance() {
