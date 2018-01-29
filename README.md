@@ -11,3 +11,6 @@ Builds on Linux and Windows, although I haven't tested it on Windows in a few mo
 * Assimp for importing models
 * sbt_image for loading textures
 * Lua for scripting/config files
+
+
+Includes code from https://learnopengl.com/
