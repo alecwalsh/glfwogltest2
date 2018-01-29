@@ -1,17 +1,21 @@
 #include "InputManager.h"
 
+#include <iostream>
+
 extern float lastX, lastY;
 extern double yaw, pitch;
 
-bool mouseMoved = false;
-
 bool InputManager::keys[];
+bool InputManager::mouseMoved;
 
 void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
     auto keys = InputManager::keys;
     
-    // Don't wnat to use -1 as an array index
-    if(key == GLFW_KEY_UNKNOWN) return;
+    // Don't want to use -1 as an array index
+    if(key == GLFW_KEY_UNKNOWN) {
+        std::cerr << "Unknown key pressed" << std::endl;
+        return;
+    }
     
     if (action == GLFW_PRESS) {
         keys[key] = true;
@@ -28,7 +32,7 @@ void InputManager::key_callback(GLFWwindow *window, int key, int scancode, int a
 void InputManager::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     static bool firstMouse = true;
 
-    mouseMoved = true;
+    InputManager::mouseMoved = true;
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
@@ -53,11 +57,6 @@ void InputManager::mouse_callback(GLFWwindow *window, double xpos, double ypos) 
     if (pitch < -89.0f) {
         pitch = -89.0f;
     }
-}
-
-
-void InputManager::AddKeyBinding(key_t key, std::function<void()> f) {
-    key_bindings.emplace_back(key, f);
 }
 
 void InputManager::HandleInput() {

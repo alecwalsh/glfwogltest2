@@ -272,8 +272,8 @@ int main(int argc, char *argv[]) {
         
         im.HandleInput();
         
-        if (mouseMoved) {
-            mouseMoved = false;
+        if (InputManager::mouseMoved) {
+            InputManager::mouseMoved = false;
             camera.Rotate(pitch, yaw);
         }
 
