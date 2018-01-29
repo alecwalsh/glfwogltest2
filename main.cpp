@@ -246,6 +246,10 @@ int main(int argc, char *argv[]) {
         }
     }
     
+    im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&]{
+        lights.back()->ToggleActive();
+    });
+    
     // main loop
     while (!window.ShouldClose()) {
         auto t_now = std::chrono::high_resolution_clock::now();
@@ -321,7 +325,6 @@ void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &c
     GLint numLights = glGetUniformLocation(sp.shaderProgram, "numLights");
     glUniform1i(numLights, lights.size());
 
-    // TODO: don't do this every frame
     for (size_t i = 0; i < lights.size(); i++) {
         using Type = Light::LightType;
         
@@ -332,6 +335,18 @@ void render(const GameObject &go, const vec_uniq<Light> &lights, const Camera &c
             ss << "lights[" << i << "]." << member;
             return glGetUniformLocation(sp, ss.str().c_str());
         };
+        
+        //TODO: Don't even calculate the lighting for disabled lights in shader.  Add disabled flag to Light struct in shader
+        //TODO: Don't hardcode SpotLight here, allow disabling all types of lights
+        if(!lights[i]->active) {
+            auto light = static_cast<SpotLight*>(lights[i].get());
+            glUniform1i(getLightUniLoc("type"), static_cast<int>(light->type));
+
+            //Disable light by setting diffuse and specular to 0
+            glUniform3f(getLightUniLoc("diffuse"), 0, 0, 0);
+            glUniform3f(getLightUniLoc("specular"), 0, 0, 0);
+            continue;
+        }
         
         // TODO: don't do this every frame
         switch(lights[i]->type) {

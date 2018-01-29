@@ -11,7 +11,6 @@
 
 #define KEY(k) GLFW_KEY_ ## k
 
-//TODO: Allow key binding to either repeat while the key is held down, or only fire once
 //TODO: Allow events to fire on key release
 //TODO: Handle modifier keys
 //TODO: Input key as string, eg AddKeyBinding("Ctrl-A", []{})
