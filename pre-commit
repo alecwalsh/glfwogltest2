@@ -1,0 +1,7 @@
+#!/bin/sh
+
+#git pre-commit hook
+
+clang-format -style=file -i *.cpp
+cd include
+clang-format -style=file -i $(find . -type f ! -name stb_image.h)
