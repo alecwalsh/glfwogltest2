@@ -17,10 +17,10 @@ class Camera {
     void Rotate(float pitch, float yaw);
 
     glm::vec3 position;
-//     glm::vec3 up; // Up vector for the whole scene
+    //     glm::vec3 up; // Up vector for the whole scene
 
     glm::mat4 viewMat;
-    
+
     struct vectors {
         using vec3 = glm::vec3;
         vec3 rightVector;
@@ -30,13 +30,6 @@ class Camera {
         vec3 upVector;
         vec3 downVector;
     } vectors;
-    
-    enum class Direction {
-        Forward,
-        Backward,
-        Left,
-        Right,
-        Up,
-        Down
-    };
+
+    enum class Direction { Forward, Backward, Left, Right, Up, Down };
 };

@@ -1,8 +1,8 @@
 #include "GameObject.h"
 
 // TODO: lots of parameters and long initializer list, maybe create Time object?
-GameObject::GameObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime,
-                       float &_deltaTime, TextureManager &_texman)
+GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime,
+                       float& _deltaTime, TextureManager& _texman)
     : mesh(_mesh), transform(_transform), elapsedTime(_elapsedTime), deltaTime(_deltaTime), texman(_texman),
       shaderProgram(_shaderProgram) {
     glGenVertexArrays(1, &vao);
@@ -22,12 +22,11 @@ GameObject::GameObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _tr
 
     GLint normalAttrib = 1;
     glEnableVertexAttribArray(normalAttrib);
-    glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float),
-                          (void *)(3 * sizeof(float)));
+    glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
 
     GLint texAttrib = 2;
     glEnableVertexAttribArray(texAttrib);
-    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void *)(6 * sizeof(float)));
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
     // Set up projection matrix
 
@@ -41,7 +40,7 @@ GameObject::GameObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _tr
 GameObject::~GameObject() { std::cout << "GameObject destructor\n"; }
 
 // Copy constructor
-GameObject::GameObject(const GameObject &rhs)
+GameObject::GameObject(const GameObject& rhs)
     : mesh(rhs.mesh), transform(rhs.transform), elapsedTime(rhs.elapsedTime), deltaTime(rhs.deltaTime),
       texman(rhs.texman), shaderProgram(rhs.shaderProgram) {
     std::cout << "GameObject copy constructor\n";
@@ -97,9 +96,8 @@ void GameObject::SetTransform(glm::mat4 transform_) { transform = transform_; }
 // Modifies the transform
 void GameObject::ModTransform(glm::mat4 transform_) { transform *= transform_; }
 
-
 void GameObject::LuaRegister(LuaScript& L) {
     std::cout << "Registered GameObject with Lua\n";
-    
-//     L.
+
+    //     L.
 }

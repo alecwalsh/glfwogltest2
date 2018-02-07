@@ -12,8 +12,8 @@
 
 // TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject
 class GameObject {
-protected:
-    Mesh &mesh;
+  protected:
+    Mesh& mesh;
     glm::mat4 transform;
 
     struct {
@@ -24,17 +24,18 @@ protected:
     } material;
 
     GLuint vao;
-    float &elapsedTime;
-    float &deltaTime;
-    TextureManager &texman;
-public:
+    float& elapsedTime;
+    float& deltaTime;
+    TextureManager& texman;
+
+  public:
     std::string name = "";
     std::string texture_name = "container";
     std::string spec_texture_name = "container_specular";
-    GameObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime, float &_deltaTime,
-                TextureManager &_texman);
+    GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime,
+               TextureManager& _texman);
     virtual ~GameObject();
-    GameObject(const GameObject &go);
+    GameObject(const GameObject& go);
 
     // Runs every frame
     virtual void Tick() = 0;
@@ -47,7 +48,7 @@ public:
     void SetTransform(glm::mat4 transform_);
     void ModTransform(glm::mat4 transform_);
 
-    ShaderProgram &shaderProgram;
+    ShaderProgram& shaderProgram;
 
     virtual void LuaRegister(LuaScript& L);
 };

@@ -6,16 +6,16 @@
 #include <cstring>
 
 // TODO: Support creating multiple textures at once
-void TextureManager::AddTextureFromFile(const char *id, const char *fileName) {
-    //Prepend the directory name to fileName
+void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
+    // Prepend the directory name to fileName
     const char* directoryName = "data/textures";
-    size_t fileNameLength = strlen(fileName) + strlen(directoryName) + 2; //Need room for / and null terminator
+    size_t fileNameLength = strlen(fileName) + strlen(directoryName) + 2; // Need room for / and null terminator
     char* finalFileName = (char*)malloc(fileNameLength);
     finalFileName[0] = '\0';
     strcat(finalFileName, directoryName);
     strcat(finalFileName, "/");
     strcat(finalFileName, fileName);
-    
+
     // Add a new value to the map
     textureObjects.emplace(id, 0);
     // Set the new value to a valid texture object
@@ -25,7 +25,7 @@ void TextureManager::AddTextureFromFile(const char *id, const char *fileName) {
 
     // Load texture from file and upload to GPU
     int width, height;
-    unsigned char *image;
+    unsigned char* image;
 
     // TODO: check for file existence
     image = stbi_load(finalFileName, &width, &height, 0, 3);
@@ -33,7 +33,7 @@ void TextureManager::AddTextureFromFile(const char *id, const char *fileName) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 
     stbi_image_free(image);
-    
+
     free(finalFileName);
 
     // Set texture parameters
@@ -43,7 +43,7 @@ void TextureManager::AddTextureFromFile(const char *id, const char *fileName) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-void TextureManager::AddTextureFromGLObject(const char *id, GLuint texture) {
+void TextureManager::AddTextureFromGLObject(const char* id, GLuint texture) {
     // Add the texture to the map
     textureObjects.emplace(id, texture);
 }

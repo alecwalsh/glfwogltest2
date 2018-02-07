@@ -21,10 +21,8 @@ Mesh::Mesh(std::string fileName) : usesElementArray(true) {
     UploadToGPU();
 }
 
-//TODO: delete buffers
-Mesh::~Mesh() {
-    
-}
+// TODO: delete buffers
+Mesh::~Mesh() {}
 
 // Generates buffers and uploads data to graphics card
 void Mesh::UploadToGPU() {
@@ -48,10 +46,10 @@ void Mesh::UploadToGPU() {
 }
 
 // TODO: .blend files normals are per vertex, not per face; .fbx works fine
-void Mesh::ImportMesh(const std::string &pFile) {
+void Mesh::ImportMesh(const std::string& pFile) {
     Assimp::Importer importer;
     // TODO: Change/add postprocessing flags
-    const aiScene *scene = importer.ReadFile(pFile, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+    const aiScene* scene = importer.ReadFile(pFile, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 
     // If the import failed, report it
     if (!scene) {

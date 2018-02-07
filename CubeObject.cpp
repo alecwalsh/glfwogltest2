@@ -15,7 +15,7 @@ void CubeObject::Tick() {
     } else {
         glUniform1f(uniTime, 1 - (time - floor(time)));
     }
-    
+
     glm::mat4 rotation, translation, scaling;
 
     rotation = glm::rotate(rotation, deltaTime * RotSpeed * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -44,8 +44,8 @@ void CubeObject::Draw(Camera camera) const {
     GameObject::Draw(camera);
 }
 
-CubeObject::CubeObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _transform, float &_elapsedTime,
-                       float &_deltaTime, TextureManager &_texman)
+CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime,
+                       float& _deltaTime, TextureManager& _texman)
     : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime, _texman) {
     // Sets up material properties for the cube
     material.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -54,9 +54,7 @@ CubeObject::CubeObject(Mesh &_mesh, ShaderProgram &_shaderProgram, glm::mat4 _tr
     material.shininess = 32.0f;
 }
 
-CubeObject::~CubeObject() {
-    
-}
+CubeObject::~CubeObject() {}
 
 void CubeObject::LuaRegister(LuaScript& L) {
     GameObject::LuaRegister(L);

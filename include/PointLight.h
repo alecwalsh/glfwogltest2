@@ -3,7 +3,7 @@
 #include "Light.h"
 
 class PointLight : public Light {
-public:
+  public:
     glm::vec3 position;
 
     PointLight(glm::vec3 position_, glm::vec3 diffuse_, glm::vec3 specular_);

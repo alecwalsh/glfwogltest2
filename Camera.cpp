@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up) : position(_position) {
-    //Set the front, right, up, etc vectors to their initial values
+    // Set the front, right, up, etc vectors to their initial values
     UpdateVectors(glm::normalize(_target - position), _up);
     viewMat = glm::lookAt(position, _target, vectors.upVector);
 }
@@ -25,9 +25,7 @@ void Camera::Translate(glm::mat4 _transform) {
     UpdateViewMatrix();
 }
 
-void Camera::UpdateViewMatrix() {
-    viewMat = glm::lookAt(position, position + vectors.frontVector, vectors.upVector);
-}
+void Camera::UpdateViewMatrix() { viewMat = glm::lookAt(position, position + vectors.frontVector, vectors.upVector); }
 
 void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) {
     // Calculates vectors from the perspective of the camera

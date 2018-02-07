@@ -1,28 +1,24 @@
 #include "PostProcess.h"
 
-const GLfloat vertices[20] {
-1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 
-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 
--1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 
--1.0f, 1.0f, 0.0f, 0.0f, 1.0f
-};
-    
+const GLfloat vertices[20]{1.0f,  1.0f,  0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
+                           -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f,  0.0f, 0.0f, 1.0f};
+
 const GLubyte elements[6]{0, 1, 2, 0, 2, 3};
 
 void PostProcess::Draw() {
     // Clear the screen to black
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    
-    //Depth test is unnecessary here because we are rendering a single quad
+
+    // Depth test is unnecessary here because we are rendering a single quad
     glDisable(GL_DEPTH_TEST);
-    
+
     glUseProgram(shaderProgram.shaderProgram);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fb_texture);
-    
+
     glBindVertexArray(vao);
-    
+
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 }
 
@@ -31,18 +27,14 @@ PostProcess& PostProcess::GetInstance() {
     return f;
 }
 
-void PostProcess::BindFramebuffer() {
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-}
+void PostProcess::BindFramebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, fbo); }
 
-void PostProcess::UnbindFramebuffer() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
+void PostProcess::UnbindFramebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
 void PostProcess::SetupFramebuffer() {
     glGenFramebuffers(1, &fbo);
 
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer bound" << std::endl;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -59,7 +51,7 @@ void PostProcess::SetupFramebuffer() {
 
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, Window::width, Window::height);  
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, Window::width, Window::height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
@@ -68,7 +60,8 @@ void PostProcess::SetupFramebuffer() {
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texFramebuffer"), 0);
 }
 
-PostProcess::PostProcess() : shaderProgram{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::gl_version} {
+PostProcess::PostProcess()
+    : shaderProgram{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::gl_version} {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
@@ -98,7 +91,7 @@ PostProcess::~PostProcess() {
     glDeleteFramebuffers(1, &fbo);
 }
 
-void PostProcess::ReloadShader(const char *vertShader, const char *fragShader, gl_version_t version) {
+void PostProcess::ReloadShader(const char* vertShader, const char* fragShader, gl_version_t version) {
     shaderProgram = ShaderProgram(vertShader, fragShader, version);
 }
 

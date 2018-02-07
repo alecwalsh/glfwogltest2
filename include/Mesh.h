@@ -39,5 +39,5 @@ class Mesh {
     void UploadToGPU();
 
   private:
-    void ImportMesh(const std::string &pFile);
+    void ImportMesh(const std::string& pFile);
 };

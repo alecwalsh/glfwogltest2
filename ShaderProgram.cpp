@@ -4,13 +4,11 @@
 #include <iostream>
 #include <sstream>
 
-ShaderProgram::ShaderProgram(const char *vertShader, const char *fragShader, gl_version_t version)
-    : version(version), shaderProgram(ShaderProgramFromFiles(vertShader, fragShader)) {
-    
-}
+ShaderProgram::ShaderProgram(const char* vertShader, const char* fragShader, gl_version_t version)
+    : version(version), shaderProgram(ShaderProgramFromFiles(vertShader, fragShader)) {}
 
 // TODO: Make version_string work with OpenGL below 3.3
-GLuint ShaderProgram::ShaderProgramFromFiles(const char *vertShaderFile, const char *fragShaderFile) {
+GLuint ShaderProgram::ShaderProgramFromFiles(const char* vertShaderFile, const char* fragShaderFile) {
     using std::get;
     using std::to_string;
 
@@ -79,7 +77,7 @@ void ShaderProgram::getCompileErrors(GLuint shader) {
         int logLength;
 
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-        GLchar *infoLog = new GLchar[logLength];
+        GLchar* infoLog = new GLchar[logLength];
         glGetShaderInfoLog(shader, logLength, &logLength, infoLog);
 
         printf("Compile error: %s\n", infoLog);
@@ -96,7 +94,7 @@ void ShaderProgram::getLinkErrors(GLuint shaderProgram) {
         int logLength;
 
         glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
-        GLchar *infoLog = new GLchar[logLength];
+        GLchar* infoLog = new GLchar[logLength];
         glGetProgramInfoLog(shaderProgram, logLength, &logLength, infoLog);
 
         printf("Link error: %s\n", infoLog);
@@ -105,9 +103,7 @@ void ShaderProgram::getLinkErrors(GLuint shaderProgram) {
     }
 }
 
-ShaderProgram::~ShaderProgram() {
-    glDeleteProgram(shaderProgram);
-}
+ShaderProgram::~ShaderProgram() { glDeleteProgram(shaderProgram); }
 
 ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) {
     shaderProgram = sp.shaderProgram;
