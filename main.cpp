@@ -133,14 +133,14 @@ int main(int argc, char* argv[]) {
 
     // Set key bindings
     // TODO: Set in Lua file
-    im.AddKeyBinding(KEY(W), KeyState::AnyPress, [&translateCamera] { translateCamera(Direction::Forward); });
-    im.AddKeyBinding(KEY(A), KeyState::AnyPress, [&translateCamera] { translateCamera(Direction::Left); });
-    im.AddKeyBinding(KEY(S), KeyState::AnyPress, [&translateCamera] { translateCamera(Direction::Backward); });
-    im.AddKeyBinding(KEY(D), KeyState::AnyPress, [&translateCamera] { translateCamera(Direction::Right); });
-    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, [&translateCamera] { translateCamera(Direction::Up); });
-    im.AddKeyBinding(KEY(C), KeyState::AnyPress, [&translateCamera] { translateCamera(Direction::Down); });
-    im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [&window] { window.Close(); });
-    im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&fsq, &gl_version] {
+    im.AddKeyBinding(KEY(W), KeyState::AnyPress, [&] { translateCamera(Direction::Forward); });
+    im.AddKeyBinding(KEY(A), KeyState::AnyPress, [&] { translateCamera(Direction::Left); });
+    im.AddKeyBinding(KEY(S), KeyState::AnyPress, [&] { translateCamera(Direction::Backward); });
+    im.AddKeyBinding(KEY(D), KeyState::AnyPress, [&] { translateCamera(Direction::Right); });
+    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, [&] { translateCamera(Direction::Up); });
+    im.AddKeyBinding(KEY(C), KeyState::AnyPress, [&] { translateCamera(Direction::Down); });
+    im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [&] { window.Close(); });
+    im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&] {
         static bool toggled = false;
         if (toggled) {
             fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version);
