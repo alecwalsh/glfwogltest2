@@ -2,6 +2,7 @@
 
 #include "InputManager.h"
 
+#include <iostream>
 #include <cassert>
 
 extern float lastX, lastY;
@@ -22,6 +23,12 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
 
 Window::Window(int width, int height, gl_version_t gl_version) {
     using std::get;
+    
+    glfwSetErrorCallback([](int i, const char* desc) {\
+        std::cout << "GLFW Error" << std::endl;
+        std::cout << "  Error code: 0x" << std::hex << i << std::dec << std::endl;
+        std::cout << "  Error description: " << desc << std::endl;
+    });
 
     glfwInit();
 
