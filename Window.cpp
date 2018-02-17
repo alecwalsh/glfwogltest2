@@ -3,6 +3,7 @@
 #include "InputManager.h"
 
 #include <iostream>
+#include <exception>
 #include <cassert>
 
 extern float lastX, lastY;
@@ -22,6 +23,10 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
 }
 
 Window::Window(int width, int height, gl_version_t gl_version) {
+    
+}
+
+void Window::Create() {
     using std::get;
     
     glfwSetErrorCallback([](int i, const char* desc) {\
@@ -45,6 +50,10 @@ Window::Window(int width, int height, gl_version_t gl_version) {
     glfwWindowHint(GLFW_SAMPLES, 8);
 
     window = glfwCreateWindow(width, height, "OpenGL", nullptr, nullptr); // Windowed
+    
+    if(!window) {
+        throw std::runtime_error("Error creating window");
+    }
 
     glfwMakeContextCurrent(window);
 

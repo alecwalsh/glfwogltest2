@@ -24,6 +24,9 @@ class Window {
     bool ShouldClose();
     // Calls glfwSetWindowShouldClose, will close the window on next frame
     void Close();
+    
+    // Creates the window
+    void Create();
 
     void Resize(int width, int height);
 

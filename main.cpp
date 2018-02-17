@@ -64,8 +64,13 @@ int main(int argc, char* argv[]) {
     Window::gl_version = {gl_major_version, gl_minor_version, gl_es};
 
     Window& window = Window::GetInstance();
-
-    const auto& gl_version = Window::gl_version;
+    
+    try {
+        window.Create();
+    } catch(std::exception& e) {
+        std::cout << e.what();
+        return 1;
+    }
 
     InputManager& im = InputManager::GetInstance();
 
@@ -143,18 +148,18 @@ int main(int argc, char* argv[]) {
     im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&] {
         static bool toggled = false;
         if (toggled) {
-            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", gl_version);
+            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::gl_version);
             toggled = false;
         } else {
-            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl", gl_version);
+            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl", Window::gl_version);
             toggled = true;
         }
     });
 
     // TODO: Add AssetManager, like TextureManager but for all assets
     // Compile and link shaders
-    ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", gl_version};
-    ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", gl_version};
+    ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", Window::gl_version};
+    ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version};
 
     // TODO: use .blend files
     Mesh floorMesh{"data/floor.fbx"};
