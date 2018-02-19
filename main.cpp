@@ -32,6 +32,8 @@
 #include "Window.h"
 // TODO: clean up duplicate includes
 
+#include "version.h"
+
 // TODO: figure out where to put these, avoid extern in other files
 float lastX, lastY;
 double yaw, pitch;
