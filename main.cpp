@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     auto gl_minor_version = 3;
     bool gl_es = false;
 
-    Window::gl_version = {gl_major_version, gl_minor_version, gl_es};
+    Window::gl_version = cm.gl_version;//{gl_major_version, gl_minor_version, gl_es};
 
     Window& window = Window::GetInstance();
     

@@ -50,6 +50,14 @@ int ConfigManager::getHeight() const {
 }
 
 void ConfigManager::LoadVars() {
+    table_t table = get_lua_table(*this, "gl_version");
+    
+    auto get_int_index = [&](int i){
+        return table[LuaValue{LUA_TNUMBER, static_cast<double>(i+1)}].value;
+    };
+    gl_version = {any_cast<LUA_NUMBER>(get_int_index(0)), any_cast<LUA_NUMBER>(get_int_index(1)), any_cast<bool>(get_int_index(2))};
+//     std::cout << std::get<0>(gl_version) << std::get<1>(gl_version) << std::get<2>(gl_version) << std::endl;
+    
     width = getWidth();
     height = getHeight();
 }

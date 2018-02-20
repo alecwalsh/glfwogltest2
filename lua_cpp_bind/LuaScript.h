@@ -3,6 +3,8 @@
 #include <functional>
 #include <utility>
 
+#include <cassert>
+
 #include <lua.hpp>
 
 //Use these at the beginning and end of function to make sure you left Lua's stack the way you found it
@@ -25,14 +27,15 @@ int get_cpp(lua_State* L);
 
 class LuaScript {
 protected:
-    lua_State* L;
 public:
+    lua_State* L;
     //The integer and float types are LUA_INTEGER and LUA_NUMBER from luaconf.h, make sure to use the right types(e.g. Don't use double instead of float)
     enum class Type {
         Integer,
         Float,
         String,
-        Bool
+        Bool,
+        Table
     };
     //Pointer to a member function
     template<typename R, typename T> using mptr_t = R(T::*);
