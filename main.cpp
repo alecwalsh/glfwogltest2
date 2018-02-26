@@ -192,6 +192,7 @@ int main(int argc, char* argv[]) {
     go->LuaRegister(ls);
 
     ls.Register("Tick", [&go] { go->Tick(); });
+    ls.Register("SetRotSpeed", [&go](double a) { go->RotSpeed = a; });
     ls.Register("LambdaTest", [] { std::cout << "Lambda called from Lua\n" << std::endl; });
     ls.Register("elapsedTime", &elapsedTime, LuaScript::Type::Float);
     ls.Register("RotSpeed", &go->RotSpeed, LuaScript::Type::Float);

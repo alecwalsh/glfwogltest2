@@ -3,6 +3,8 @@
 #include <sstream>
 #include <string>
 
+#include <cstdint>
+
 #include "Mesh.h"
 
 Mesh::Mesh(std::vector<Vertex> vertices) : usesElementArray(false) {
@@ -64,7 +66,7 @@ void Mesh::ImportMesh(const std::string& pFile) {
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < mesh->mNumFaces; i++) {
+    for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
         auto face = mesh->mFaces[i];
         // TODO: Add error handling / support more than just triangles
         if (face.mNumIndices != 3) {
@@ -72,12 +74,12 @@ void Mesh::ImportMesh(const std::string& pFile) {
             exit(1);
         }
 
-        for (auto j = 0; j < face.mNumIndices; j++) {
+        for (uint32_t j = 0; j < face.mNumIndices; j++) {
             elements.push_back(face.mIndices[j]);
         }
     }
 
-    for (int i = 0; i < mesh->mNumVertices; i++) {
+    for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
         auto v = mesh->mVertices[i];
         auto n = mesh->mNormals[i];
 

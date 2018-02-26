@@ -2,7 +2,7 @@
 
 #include "LuaScript.h"
 #include "LuaTable.h"
-#include "LuaValue2.h"
+#include "LuaValue.h"
 
 #include <tuple>
 

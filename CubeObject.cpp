@@ -2,20 +2,6 @@
 
 // Runs every frame
 void CubeObject::Tick() {
-    // TODO: move glGetUniformLocation calls outside of tick function; they only need to be called once per shader
-    GLint uniTime = glGetUniformLocation(shaderProgram.shaderProgram, "time");
-
-    float time = elapsedTime;
-
-    bool ascending = ((int)time / 5) % 2 == 0;
-
-    time = time / 5;
-    if (ascending) {
-        glUniform1f(uniTime, time - floor(time));
-    } else {
-        glUniform1f(uniTime, 1 - (time - floor(time)));
-    }
-
     glm::mat4 rotation, translation, scaling;
 
     rotation = glm::rotate(rotation, deltaTime * RotSpeed * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
