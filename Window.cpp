@@ -2,9 +2,9 @@
 
 #include "InputManager.h"
 
-#include <iostream>
-#include <exception>
 #include <cassert>
+#include <exception>
+#include <iostream>
 
 extern float lastX, lastY;
 
@@ -22,14 +22,12 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
     Window::hasResized = true;
 }
 
-Window::Window(int width, int height, gl_version_t gl_version) {
-    
-}
+Window::Window(int width, int height, gl_version_t gl_version) {}
 
 void Window::Create() {
     using std::get;
-    
-    glfwSetErrorCallback([](int i, const char* desc) {\
+
+    glfwSetErrorCallback([](int i, const char* desc) {
         std::cout << "GLFW Error" << std::endl;
         std::cout << "  Error code: 0x" << std::hex << i << std::dec << std::endl;
         std::cout << "  Error description: " << desc << std::endl;
@@ -50,8 +48,8 @@ void Window::Create() {
     glfwWindowHint(GLFW_SAMPLES, 8);
 
     window = glfwCreateWindow(width, height, "OpenGL", nullptr, nullptr); // Windowed
-    
-    if(!window) {
+
+    if (!window) {
         throw std::runtime_error("Error creating window");
     }
 

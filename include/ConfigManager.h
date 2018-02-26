@@ -1,7 +1,8 @@
 #pragma once
 
-#include "lua_cpp_bind/LuaScript.h"
-#include "lua_cpp_bind/LuaValue.h"
+#include "LuaScript.h"
+#include "LuaTable.h"
+#include "LuaValue2.h"
 
 #include <tuple>
 

@@ -58,18 +58,13 @@ int main(int argc, char* argv[]) {
     Window::width = cm.width;
     Window::height = cm.height;
 
-    // TODO: Switch between GL and GLES with command line switch
-    auto gl_major_version = 3;
-    auto gl_minor_version = 3;
-    bool gl_es = false;
-
-    Window::gl_version = cm.gl_version;//{gl_major_version, gl_minor_version, gl_es};
+    Window::gl_version = cm.gl_version;
 
     Window& window = Window::GetInstance();
-    
+
     try {
         window.Create();
-    } catch(std::exception& e) {
+    } catch (std::exception& e) {
         std::cout << e.what();
         return 1;
     }
@@ -86,8 +81,8 @@ int main(int argc, char* argv[]) {
 
     Window::hasResized = false;
 
-    int load_result = gl_es ? gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)
-                            : gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    int load_result = std::get<2>(Window::gl_version) ? gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)
+                                                      : gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!load_result) {
         std::cerr << "Error initializing glad" << std::endl;
         glfwTerminate();
@@ -150,10 +145,12 @@ int main(int argc, char* argv[]) {
     im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&] {
         static bool toggled = false;
         if (toggled) {
-            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::gl_version);
+            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl",
+                             Window::gl_version);
             toggled = false;
         } else {
-            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl", Window::gl_version);
+            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl",
+                             Window::gl_version);
             toggled = true;
         }
     });
@@ -194,7 +191,7 @@ int main(int argc, char* argv[]) {
     go->SetupTextures();
     go->LuaRegister(ls);
 
-    ls.Register("Tick", &CubeObject::Tick, go.get());
+    ls.Register("Tick", [&go] { go->Tick(); });
     ls.Register("LambdaTest", [] { std::cout << "Lambda called from Lua\n" << std::endl; });
     ls.Register("elapsedTime", &elapsedTime, LuaScript::Type::Float);
     ls.Register("RotSpeed", &go->RotSpeed, LuaScript::Type::Float);

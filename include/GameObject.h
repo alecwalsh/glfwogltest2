@@ -5,10 +5,10 @@
 #include <iostream>
 
 #include "Camera.h"
+#include "LuaScript.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "TextureManager.h"
-#include "lua_cpp_bind/LuaScript.h"
 
 // TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject
 class GameObject {
