@@ -210,13 +210,20 @@ int main(int argc, char* argv[]) {
     auto pointLight2 = std::make_unique<PointLight>(glm::vec3(-6.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
     lights.push_back(std::move(pointLight));
     lights.push_back(std::move(pointLight2));
+    
+    ls.Register("AddCube", [&]{
+        auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(1.5f), glm::vec3(0.5f));
+        lights.push_back(std::move(dirLight));
+    });
 
-    auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(1.5f), glm::vec3(0.5f));
-    lights.push_back(std::move(dirLight));
+//     auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(1.5f), glm::vec3(0.5f));
+//     lights.push_back(std::move(dirLight));
 
     auto spotLight = std::make_unique<SpotLight>(glm::vec3(3.0f, 0.75f, 0.0f), glm::vec3(-1.0f, -0.25f, 0.0f),
                                                  glm::vec3(3.0f), glm::vec3(3.0f), glm::cos(glm::radians(15.5f)));
     lights.push_back(std::move(spotLight));
+    
+    size_t flashlight_idx = lights.size()-1;
 
     // TODO: Create LightObject class
     // The white cubes that represent lights
@@ -237,8 +244,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&] { lights.back()->ToggleActive(); });
+    im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&] { lights[flashlight_idx]->ToggleActive(); });
 
+    ls.exec("init()");
+    
     // main loop
     while (!window.ShouldClose()) {
         auto t_now = std::chrono::high_resolution_clock::now();
