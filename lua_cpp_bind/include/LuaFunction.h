@@ -11,19 +11,10 @@
 #include <memory>
 #include <cassert>
 
-#include "lua.hpp"
 #include "LuaTypes.h"
 #include "LuaValue.h"
 
 #include "function_type_utils.h"
-
-// template<typename...>
-// struct apply_tail;
-// 
-// template<typename Head, typename... Tail>
-// struct apply_tail {
-//     
-// };
 
 struct LuaFunctionBase {
     virtual void apply(lua_State* L) = 0;
@@ -70,13 +61,11 @@ private:
         //So we need to start at 2
         args_array = {{LuaValue{L, ((int)I)+2}...}};
 
-        f(std::any_cast<pack_element_t<I, std::decay_t<P>>>(args_array[I].value)...);
+        f(any_cast<pack_element_t<I, std::decay_t<P>>>(args_array[I].value)...);
     }
 public:
     template<typename F>
-    LuaFunction(F&& f) : f(std::forward<F>(f)) {
-        
-    }
+    LuaFunction(F&& f) : f(std::forward<F>(f)) {}
     
     void apply(lua_State* L) {
         apply_impl<pack<Args...>>(L, std::make_index_sequence<sizeof...(Args)>{});

@@ -5,10 +5,7 @@
 #include <utility>
 #include <tuple>
 #include <memory>
-
 #include <cassert>
-
-#include <lua.hpp>
 
 #include "LuaTypes.h"
 #include "LuaFunction.h"
@@ -69,6 +66,7 @@ void LuaScript::Register(std::string name, T ptr, Type type) {
     propertyMap.insert({name, {ptr, type}});
 }
 
+
 template<typename R, typename... Args>
 std::unique_ptr<LuaFunctionAndTypes> createLuaFunctionAndTypes(std::function<R(Args...)> f) {
     using args_type = typename function_type<decltype(f)>::args_type;
@@ -79,7 +77,7 @@ std::unique_ptr<LuaFunctionAndTypes> createLuaFunctionAndTypes(std::function<R(A
 template<typename F>
 void LuaScript::Register(std::string name, F&& f) {
     LUA_STACK_CHECK_START
-    methodMap.insert({name, createLuaFunctionAndTypes(std::function(f))});
+    methodMap.insert({name, createLuaFunctionAndTypes(std::function<function_type_t<F>>(f))});
     
     //Create a table
     lua_createtable(L, 0, 0);

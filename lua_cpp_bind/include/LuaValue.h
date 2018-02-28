@@ -5,12 +5,20 @@ using std::any;
 using std::any_cast;
 #else
 #include <boost/any.hpp>
-using boost::any;
 using boost::any_cast;
+
+struct my_any : public boost::any {
+    using any::any;
+    bool has_value() const noexcept {
+        return !empty();
+    }
+};
+using any = my_any;
 #endif
 
 #include <lua.hpp>
-#include <iostream>
+
+#include <ostream>
 #include <unordered_map>
 #include <string>
 
