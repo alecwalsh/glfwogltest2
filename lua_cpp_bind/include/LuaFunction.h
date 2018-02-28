@@ -29,12 +29,9 @@ struct LuaFunctionBase {
     virtual void apply(lua_State* L) = 0;
 };
 
-//Stores a LuaFunction, its return type, and its argument types
+//Stores a LuaFunction and its argument types
 struct LuaFunctionAndTypes {
-//     LuaFunctionAndTypes(std::unique_ptr<LuaFunctionBase> func, LuaType return_type, std::vector<LuaType> args_types) : func(std::move(func)), return_type(return_type), args_types(args_types) {}
-//     LuaFunctionAndTypes() = default;
     std::unique_ptr<LuaFunctionBase> func;
-//     LuaType return_type;
     std::vector<LuaType> args_types;
 };
 
@@ -62,8 +59,6 @@ private:
         
         //The argument types this was called with
         std::vector<LuaType> args_types = {static_cast<LuaType>(lua_type(L, I+2))...};
-        
-//         assert(get_lua_types(pack<Args...>{}) == args_types);
         
         //Compare the argument types this was called with with the expected argument types
         if(get_lua_types<pack<Args...>>() != args_types) {
