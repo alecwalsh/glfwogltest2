@@ -194,8 +194,8 @@ int main(int argc, char* argv[]) {
     ls.Register("Tick", [&go] { go->Tick(); });
     ls.Register("SetRotSpeed", [&go](double a) { go->RotSpeed = a; });
     ls.Register("LambdaTest", [] { std::cout << "Lambda called from Lua\n" << std::endl; });
-    ls.Register("elapsedTime", &elapsedTime, LuaScript::Type::Float);
-    ls.Register("RotSpeed", &go->RotSpeed, LuaScript::Type::Float);
+    ls.Register("elapsedTime", elapsedTime, LuaScript::Type::Float);
+    ls.Register("RotSpeed", go->RotSpeed, LuaScript::Type::Float);
 
     glm::mat4 floorTransform = glm::translate(glm::mat4(), {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
