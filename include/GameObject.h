@@ -45,8 +45,8 @@ class GameObject {
     void BindFramebufferTexture() const;
     void BindTextures() const;
 
-    void SetTransform(glm::mat4 transform_);
-    void ModTransform(glm::mat4 transform_);
+    void SetTransform(const glm::mat4& transform_);
+    void ModTransform(const glm::mat4& transform_);
 
     ShaderProgram& shaderProgram;
 

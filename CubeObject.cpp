@@ -7,8 +7,6 @@ void CubeObject::Tick() {
     rotation = glm::rotate(rotation, deltaTime * RotSpeed * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     this->ModTransform(translation * rotation * scaling);
-
-    // std::cout << "Elapsed time:" << elapsedTime << std::endl;
 }
 
 void CubeObject::Draw(Camera camera) const {

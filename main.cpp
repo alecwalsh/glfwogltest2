@@ -254,6 +254,8 @@ int main(int argc, char* argv[]) {
         t_prev = t_now;
 
         elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
+        
+        // std::cout << "Elapsed time:" << elapsedTime << std::endl;
 
         // Enable depth test when rendering main scene
         glEnable(GL_DEPTH_TEST);

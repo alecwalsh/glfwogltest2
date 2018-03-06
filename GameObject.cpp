@@ -56,9 +56,8 @@ void GameObject::Draw(Camera camera) const {
 
     glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(transform));
 
-    auto view = camera.viewMat;
     GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(camera.viewMat));
 
     if (mesh.usesElementArray) {
         // TODO: Use indexes from imported mesh as element buffer
@@ -74,7 +73,6 @@ void GameObject::SetupTextures() const {
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 0);
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texSpecMap"), 1);
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texNormalMap"), 2);
-    glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 3);
 }
 
 void GameObject::BindTextures() const {
@@ -84,17 +82,13 @@ void GameObject::BindTextures() const {
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texman.textureObjects[spec_texture_name]);
-
-    // Bind framebuffer texture object to texture unit
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, texman.textureObjects[texture_name]);
 }
 
 // Sets the transform
-void GameObject::SetTransform(glm::mat4 transform_) { transform = transform_; }
+void GameObject::SetTransform(const glm::mat4& transform_) { transform = transform_; }
 
 // Modifies the transform
-void GameObject::ModTransform(glm::mat4 transform_) { transform *= transform_; }
+void GameObject::ModTransform(const glm::mat4& transform_) { transform *= transform_; }
 
 void GameObject::LuaRegister(LuaScript& L) {
     std::cout << "Registered GameObject with Lua\n";
