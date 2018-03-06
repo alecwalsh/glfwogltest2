@@ -19,18 +19,12 @@ end
 checkEvents = setmetatable({}, {__call=function() for k,v in ipairs(checkEvents) do v() end end})
 
 function init()
-    runAtTime(5, AddCube)
+    runAtTime(5, AddDirLight)
 end
--- runAtTime(5, AddCube)
 
-function loop()
+function tick()
     deltaTime = cpp.elapsedTime - lastTime
     lastTime = cpp.elapsedTime
-    
---     if cpp.elapsedTime > 10 and not cubeAdded then
---         cubeAdded = true
---         AddCube()
---     end
     
     
     if not reverse then

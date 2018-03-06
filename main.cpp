@@ -211,13 +211,10 @@ int main(int argc, char* argv[]) {
     lights.push_back(std::move(pointLight));
     lights.push_back(std::move(pointLight2));
     
-    ls.Register("AddCube", [&]{
+    ls.Register("AddDirLight", [&]{
         auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(1.5f), glm::vec3(0.5f));
         lights.push_back(std::move(dirLight));
     });
-
-//     auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(1.5f), glm::vec3(0.5f));
-//     lights.push_back(std::move(dirLight));
 
     auto spotLight = std::make_unique<SpotLight>(glm::vec3(3.0f, 0.75f, 0.0f), glm::vec3(-1.0f, -0.25f, 0.0f),
                                                  glm::vec3(3.0f), glm::vec3(3.0f), glm::cos(glm::radians(15.5f)));
@@ -246,6 +243,7 @@ int main(int argc, char* argv[]) {
 
     im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&] { lights[flashlight_idx]->ToggleActive(); });
 
+    //Perform any setup needed by the Lua script
     ls.exec("init()");
     
     // main loop
@@ -289,14 +287,16 @@ int main(int argc, char* argv[]) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        ls.exec("loop()");
+        //Run any per frame Lua code
+        ls.exec("tick()");
 
         render(*go, lights, camera);
         render(*floor, lights, camera);
 
-        for (size_t i = 0; i < lightObjects.size(); i++) {
-            lightObjects[i]->Tick();
-            render(*lightObjects[i], lights, camera);
+        //Render all of the lights
+        for (auto& lo : lightObjects) {
+            lo->Tick();
+            render(*lo, lights, camera);
         }
 
         // Unbind the framebuffer and draw the fullscreen quad with the main scene as the texture
@@ -307,9 +307,6 @@ int main(int argc, char* argv[]) {
 
         window.SwapBuffers();
     }
-
-    // std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    std::cout << "bye" << std::endl;
 
     return EXIT_SUCCESS;
 }

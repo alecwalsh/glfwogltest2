@@ -81,3 +81,7 @@ bool Window::ShouldClose() { return glfwWindowShouldClose(window); }
 void Window::Close() { glfwSetWindowShouldClose(window, true); }
 
 void Window::Resize(int width, int height) { glfwSetWindowSize(window, width, height); }
+
+void Window::releaseMouse() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
+
+void Window::captureMouse() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }

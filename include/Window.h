@@ -32,6 +32,9 @@ class Window {
 
     // TODO: Update projection matrix to allow different aspect ratios
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    
+    void releaseMouse();
+    void captureMouse();
 
   private:
     Window(int width, int height, gl_version_t gl_version);
