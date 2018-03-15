@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.8.0) # 3.8 for cxx_standard
 
 project(glfwogltest2 VERSION 0.0.0.1)
 
@@ -9,7 +9,7 @@ set(SOURCES ${SOURCES} glad/glad.c)
 
 add_executable(glfwogltest2 ${SOURCES})
 
-target_compile_features(glfwogltest2 PUBLIC cxx_std_14)
+target_compile_features(glfwogltest2 PUBLIC cxx_std_17)
 set_target_properties(glfwogltest2 PROPERTIES CXX_STANDARD_REQUIRED true)
 set_target_properties(glfwogltest2 PROPERTIES CXX_EXTENSIONS false)
 
