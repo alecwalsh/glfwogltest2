@@ -1,3 +1,3 @@
 [submodule "lua_cpp_bind"]
 	path = lua_cpp_bind
-	url = git@github.com:alecwalsh/lua_cpp_bind.git
+	url = https://github.com/alecwalsh/lua_cpp_bind.git
