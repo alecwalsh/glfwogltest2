@@ -1,21 +1,32 @@
-cmake_minimum_required(VERSION 3.8.0) # 3.8 for cxx_standard
+cmake_minimum_required(VERSION 3.7.0)
 
 project(glfwogltest2 VERSION 0.0.0.1)
 
 add_subdirectory(lua_cpp_bind)
 
+set(BASE "/build")
+
 file(GLOB SOURCES "*.cpp")
 set(SOURCES ${SOURCES} glad/glad.c)
 
+link_directories(${BASE}/lib)
+
 add_executable(glfwogltest2 ${SOURCES})
 
-target_compile_features(glfwogltest2 PUBLIC cxx_std_17)
+#target_compile_features(glfwogltest2 PUBLIC cxx_std_17)
 set_target_properties(glfwogltest2 PROPERTIES CXX_STANDARD_REQUIRED true)
 set_target_properties(glfwogltest2 PROPERTIES CXX_EXTENSIONS false)
 
 target_compile_options(glfwogltest2 PRIVATE "-Wall")
 target_include_directories(glfwogltest2 PUBLIC "include" ".")
-target_link_libraries(glfwogltest2 GL glfw assimp dl lua lua_cpp_bind)
+
+if(UNIX)
+    target_link_libraries(glfwogltest2 GL glfw assimp dl lua lua_cpp_bind)
+elseif(MINGW)
+    set_target_properties(glfwogltest2 PROPERTIES LINK_FLAGS "-static")
+    target_include_directories(glfwogltest2 PUBLIC ${BASE}/include)
+    target_link_libraries(glfwogltest2 opengl32 glfw3 assimp IrrXML zlib lua_cpp_bind)
+endif()
 
 configure_file(include/version.h.in version.h)
 target_include_directories(glfwogltest2 PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
