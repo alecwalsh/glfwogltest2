@@ -6,6 +6,8 @@
 
 #include <tuple>
 
+using namespace LuaCppBind;
+
 class ConfigManager : public LuaScript {
   private:
     void LoadVars();

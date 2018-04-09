@@ -10,6 +10,8 @@
 #include "ShaderProgram.h"
 #include "TextureManager.h"
 
+using namespace LuaCppBind;
+
 // TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject
 class GameObject {
   protected:
