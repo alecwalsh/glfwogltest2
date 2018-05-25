@@ -9,7 +9,7 @@ void CubeObject::Tick() {
     this->ModTransform(translation * rotation * scaling);
 }
 
-void CubeObject::Draw(Camera camera) const {
+void CubeObject::Draw(const Camera& camera) const {
     // Set material properties
     GLint matAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.ambient");
     GLint matDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.diffuse");
@@ -28,9 +28,9 @@ void CubeObject::Draw(Camera camera) const {
     GameObject::Draw(camera);
 }
 
-CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime,
-                       float& _deltaTime, TextureManager& _texman)
-    : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime, _texman) {
+CubeObject::CubeObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime,
+                       float& deltaTime, TextureManager& texman)
+    : GameObject(mesh, shaderProgram, transform, elapsedTime, deltaTime, texman) {
     // Sets up material properties for the cube
     material.ambient = glm::vec3{1.0f, 0.5f, 0.31f};
     material.diffuse = glm::vec3{1.0f, 0.5f, 0.31f};

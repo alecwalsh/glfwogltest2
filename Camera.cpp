@@ -1,25 +1,25 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up) : position(_position) {
+Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up) : position(position) {
     // Set the front, right, up, etc vectors to their initial values
-    UpdateVectors(glm::normalize(_target - position), _up);
-    viewMat = glm::lookAt(position, _target, vectors.upVector);
+    UpdateVectors(glm::normalize(target - position), up);
+    viewMat = glm::lookAt(position, target, vectors.upVector);
 }
 
-void Camera::SetPosition(glm::vec3 _position) {
-    position = _position;
+void Camera::SetPosition(glm::vec3 position) {
+    position = position;
     UpdateViewMatrix();
 }
 
-void Camera::ModPosition(glm::mat4 _transform) {
+void Camera::ModPosition(glm::mat4 transform) {
     // Converts position to vec4, applies transform, then converts back to vec3
-    position = glm::vec3{_transform * glm::vec4(position, 1.0f)};
+    position = glm::vec3{transform * glm::vec4(position, 1.0f)};
     UpdateViewMatrix();
 }
 
-void Camera::Translate(glm::mat4 _transform) {
+void Camera::Translate(glm::mat4 transform) {
     // Converts position to vec4, applies transform, then converts back to vec3
-    position = glm::vec3{_transform * glm::vec4(position, 1.0f)};
+    position = glm::vec3{transform * glm::vec4(position, 1.0f)};
 
     UpdateViewMatrix();
 }

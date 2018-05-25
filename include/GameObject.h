@@ -35,21 +35,21 @@ class GameObject {
     std::string name = "";
     std::string texture_name = "container";
     std::string spec_texture_name = "container_specular";
-    GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime, float& _deltaTime,
-               TextureManager& _texman);
+    GameObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime, float& deltaTime,
+               TextureManager& texman);
     virtual ~GameObject();
     GameObject(const GameObject& go);
 
     // Runs every frame
     virtual void Tick() = 0;
     // Renders the object
-    virtual void Draw(Camera camera) const;
+    virtual void Draw(const Camera& camera) const;
     void SetupTextures() const;
     void BindFramebufferTexture() const;
     void BindTextures() const;
 
-    void SetTransform(const glm::mat4& transform_);
-    void ModTransform(const glm::mat4& transform_);
+    void SetTransform(const glm::mat4& transform);
+    void ModTransform(const glm::mat4& transform);
 
     ShaderProgram& shaderProgram;
 

@@ -30,9 +30,9 @@ class Mesh {
     } buffers;
 
     // TODO: copy/move constructors
-    Mesh(std::vector<Vertex> vertices);
-    Mesh(std::vector<Vertex> vertices, std::vector<GLuint> elements);
-    Mesh(std::string fileName); // Reads vertex data from text file
+    Mesh(const std::vector<Vertex>& vertices);
+    Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& elements);
+    Mesh(const std::string& fileName); // Reads vertex data from text file
     ~Mesh();
 
     // Generates buffers and uploads data to graphics card

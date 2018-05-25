@@ -1,10 +1,10 @@
 #include "GameObject.h"
 
 // TODO: lots of parameters and long initializer list, maybe create Time object?
-GameObject::GameObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _transform, float& _elapsedTime,
-                       float& _deltaTime, TextureManager& _texman)
-    : mesh(_mesh), transform(_transform), elapsedTime(_elapsedTime), deltaTime(_deltaTime), texman(_texman),
-      shaderProgram(_shaderProgram) {
+GameObject::GameObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime,
+                       float& deltaTime, TextureManager& texman)
+    : mesh(mesh), transform(transform), elapsedTime(elapsedTime), deltaTime(deltaTime), texman(texman),
+      shaderProgram(shaderProgram) {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);
@@ -47,7 +47,7 @@ GameObject::GameObject(const GameObject& rhs)
 }
 
 // Renders the object
-void GameObject::Draw(Camera camera) const {
+void GameObject::Draw(const Camera& camera) const {
     // Make sure the right vertex array is bound
     glBindVertexArray(vao);
     BindTextures();
@@ -85,10 +85,10 @@ void GameObject::BindTextures() const {
 }
 
 // Sets the transform
-void GameObject::SetTransform(const glm::mat4& transform_) { transform = transform_; }
+void GameObject::SetTransform(const glm::mat4& transform) { this->transform = transform; }
 
 // Modifies the transform
-void GameObject::ModTransform(const glm::mat4& transform_) { transform *= transform_; }
+void GameObject::ModTransform(const glm::mat4& transform) { this->transform *= transform; }
 
 void GameObject::LuaRegister(LuaScript& L) {
     std::cout << "Registered GameObject with Lua\n";

@@ -1,8 +1,8 @@
 #include "SpotLight.h"
 
-SpotLight::SpotLight(glm::vec3 position_, glm::vec3 direction_, glm::vec3 diffuse_, glm::vec3 specular_,
-                     float cutoffAngle_)
-    : Light(diffuse_, specular_, LightType::Spot), position(position_), direction(direction_),
-      cutoffAngle(cutoffAngle_) {}
+SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular,
+                     float cutoffAngle)
+    : Light{diffuse, specular, LightType::Spot}, position(position), direction(direction),
+      cutoffAngle(cutoffAngle) {}
 
 SpotLight::~SpotLight() {}

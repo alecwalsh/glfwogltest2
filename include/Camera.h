@@ -9,12 +9,12 @@ class Camera {
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector);
 
   public:
-    Camera(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up);
+    Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up);
 
-    void SetPosition(glm::vec3 _position);
-    void ModPosition(glm::mat4 _transform);
+    void SetPosition(glm::vec3 position);
+    void ModPosition(glm::mat4 transform);
 
-    void Translate(glm::mat4 _transform);
+    void Translate(glm::mat4 transform);
     void Rotate(float pitch, float yaw);
 
     glm::vec3 position{0.0f};

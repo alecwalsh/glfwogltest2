@@ -6,6 +6,6 @@ class PointLight : public Light {
   public:
     glm::vec3 position;
 
-    PointLight(glm::vec3 position_, glm::vec3 diffuse_, glm::vec3 specular_);
+    PointLight(glm::vec3 position, glm::vec3 diffuse, glm::vec3 specular);
     virtual ~PointLight() override;
 };

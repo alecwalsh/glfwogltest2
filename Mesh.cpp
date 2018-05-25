@@ -7,18 +7,15 @@
 
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<Vertex> vertices) : usesElementArray(false) {
-    this->vertices = vertices;
+Mesh::Mesh(const std::vector<Vertex>& vertices) : vertices(vertices), usesElementArray(false) {
     UploadToGPU();
 }
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> elements) : usesElementArray(true) {
-    this->vertices = vertices;
-    this->elements = elements;
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& elements) : vertices(vertices), elements(elements), usesElementArray(true) {
     UploadToGPU();
 }
 
-Mesh::Mesh(std::string fileName) : usesElementArray(true) {
+Mesh::Mesh(const std::string& fileName) : usesElementArray(true) {
     ImportMesh(fileName);
     UploadToGPU();
 }

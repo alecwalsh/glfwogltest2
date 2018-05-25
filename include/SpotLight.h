@@ -9,6 +9,6 @@ class SpotLight : public Light {
     glm::vec3 direction;
     float cutoffAngle;
 
-    SpotLight(glm::vec3 position_, glm::vec3 direction_, glm::vec3 diffuse_, glm::vec3 specular_, float cutoffAngle);
+    SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular, float cutoffAngle);
     virtual ~SpotLight() override;
 };

@@ -93,7 +93,7 @@ PostProcess::~PostProcess() {
 }
 
 void PostProcess::ReloadShader(const char* vertShader, const char* fragShader, gl_version_t version) {
-    shaderProgram = ShaderProgram(vertShader, fragShader, version);
+    shaderProgram = ShaderProgram{vertShader, fragShader, version};
 }
 
 void PostProcess::Resize() {
