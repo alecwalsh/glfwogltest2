@@ -7,20 +7,19 @@ Camera::Camera(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up) : position
 }
 
 void Camera::SetPosition(glm::vec3 _position) {
-
     position = _position;
     UpdateViewMatrix();
 }
 
 void Camera::ModPosition(glm::mat4 _transform) {
     // Converts position to vec4, applies transform, then converts back to vec3
-    position = glm::vec3(_transform * glm::vec4(position, 1.0f));
+    position = glm::vec3{_transform * glm::vec4(position, 1.0f)};
     UpdateViewMatrix();
 }
 
 void Camera::Translate(glm::mat4 _transform) {
     // Converts position to vec4, applies transform, then converts back to vec3
-    position = glm::vec3(_transform * glm::vec4(position, 1.0f));
+    position = glm::vec3{_transform * glm::vec4(position, 1.0f)};
 
     UpdateViewMatrix();
 }
@@ -39,7 +38,7 @@ void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) {
 }
 
 void Camera::Rotate(float pitch, float yaw) {
-    glm::vec3 front;
+    glm::vec3 front{0.0f};
     front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     front.y = sin(glm::radians(pitch));
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));

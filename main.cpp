@@ -1,7 +1,6 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
-#define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 
 #include <cstdio>
@@ -102,7 +101,7 @@ int main(int argc, char* argv[]) {
     auto translateCamera = [&camera, &deltaTime](Direction d) {
         // TODO: Get key bindings from files
         // TODO: Figure out how to use control key
-        glm::vec3 vector;
+        glm::vec3 vector{0.0f};
 
         switch (d) {
         case Direction::Forward:
@@ -127,7 +126,7 @@ int main(int argc, char* argv[]) {
         // TODO: set this elsewhere
         float velocity = 2.5f;
 
-        glm::mat4 translation;
+        glm::mat4 translation{1.0f};
         translation = glm::translate(translation, velocity * deltaTime * vector);
         camera.Translate(translation);
     };
@@ -186,7 +185,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Creates a CubeObject
-    glm::mat4 transform;
+    glm::mat4 transform{1.0f};
     auto go = std::make_unique<CubeObject>(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
     go->name = "cube1";
     go->SetupTextures();
@@ -198,7 +197,7 @@ int main(int argc, char* argv[]) {
     ls.Register("elapsedTime", elapsedTime, LuaScript::Type::Float);
     ls.Register("RotSpeed", go->RotSpeed, LuaScript::Type::Float);
 
-    glm::mat4 floorTransform = glm::translate(glm::mat4(), {0.0f, -1.5f, 0.0f});
+    glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
     floorTransform = glm::scale(floorTransform, {5.0f, 5.0f, 1.0f});
     auto floor = std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, elapsedTime, deltaTime, texman);
@@ -207,18 +206,18 @@ int main(int argc, char* argv[]) {
 
     vec_uniq<Light> lights;
 
-    auto pointLight = std::make_unique<PointLight>(glm::vec3(3.0f, 1.0f, 2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
-    auto pointLight2 = std::make_unique<PointLight>(glm::vec3(-6.0f, 1.0f, -2.0f), glm::vec3(0.5f), glm::vec3(1.0f));
+    auto pointLight = std::make_unique<PointLight>(glm::vec3{3.0f, 1.0f, 2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f});
+    auto pointLight2 = std::make_unique<PointLight>(glm::vec3{-6.0f, 1.0f, -2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f});
     lights.push_back(std::move(pointLight));
     lights.push_back(std::move(pointLight2));
     
     ls.Register("AddDirLight", [&]{
-        auto dirLight = std::make_unique<DirLight>(glm::vec3(0.0f, -0.75f, 1.0f), glm::vec3(1.5f), glm::vec3(0.5f));
+        auto dirLight = std::make_unique<DirLight>(glm::vec3{0.0f, -0.75f, 1.0f}, glm::vec3{1.5f}, glm::vec3{0.5f});
         lights.push_back(std::move(dirLight));
     });
 
-    auto spotLight = std::make_unique<SpotLight>(glm::vec3(3.0f, 0.75f, 0.0f), glm::vec3(-1.0f, -0.25f, 0.0f),
-                                                 glm::vec3(3.0f), glm::vec3(3.0f), glm::cos(glm::radians(15.5f)));
+    auto spotLight = std::make_unique<SpotLight>(glm::vec3{3.0f, 0.75f, 0.0f}, glm::vec3{-1.0f, -0.25f, 0.0f},
+                                                 glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)));
     lights.push_back(std::move(spotLight));
     
     size_t flashlight_idx = lights.size()-1;
@@ -231,11 +230,11 @@ int main(int argc, char* argv[]) {
     for (size_t i = 0; i < lights.size(); i++) {
         if (lights[i]->type == Light::LightType::Point) {
             auto light = static_cast<PointLight*>(lights[i].get());
-            glm::mat4 lightTransform;
+            glm::mat4 lightTransform{1.0f};
             lightTransform =
-                glm::translate(glm::scale(lightTransform, glm::vec3(0.5f)),
-                               glm::vec3(light->position.x, light->position.y,
-                                         light->position.z)); // Scale by 0.5 then translate to correct position
+                glm::translate(glm::scale(lightTransform, glm::vec3{0.5f}),
+                               glm::vec3{light->position.x, light->position.y,
+                                         light->position.z}); // Scale by 0.5 then translate to correct position
             auto lo =
                 std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
             lightObjects.push_back(std::move(lo));

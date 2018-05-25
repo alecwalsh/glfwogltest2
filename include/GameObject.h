@@ -1,6 +1,5 @@
 #pragma once
 
-#define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -18,7 +17,7 @@ using namespace LuaCppBind;
 class GameObject {
   protected:
     Mesh& mesh;
-    glm::mat4 transform;
+    glm::mat4 transform{1.0f};
 
     struct {
         glm::vec3 ambient;

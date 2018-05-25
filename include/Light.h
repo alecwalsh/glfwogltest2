@@ -1,6 +1,5 @@
 #pragma once
 
-#define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 
 class Light {
@@ -12,8 +11,8 @@ class Light {
     };
     const LightType type;
 
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    glm::vec3 diffuse{0.0f};
+    glm::vec3 specular{0.0f};
 
     bool active = true;
 

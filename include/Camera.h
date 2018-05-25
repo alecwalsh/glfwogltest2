@@ -1,6 +1,5 @@
 #pragma once
 
-#define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -18,19 +17,19 @@ class Camera {
     void Translate(glm::mat4 _transform);
     void Rotate(float pitch, float yaw);
 
-    glm::vec3 position;
-    //     glm::vec3 up; // Up vector for the whole scene
+    glm::vec3 position{0.0f};
+    //     glm::vec3 up{0.0f}; // Up vector for the whole scene
 
-    glm::mat4 viewMat;
+    glm::mat4 viewMat{1.0f};
 
     struct vectors {
         using vec3 = glm::vec3;
-        vec3 rightVector;
-        vec3 leftVector;
-        vec3 frontVector;
-        vec3 backVector;
-        vec3 upVector;
-        vec3 downVector;
+        vec3 rightVector{0.0f};
+        vec3 leftVector{0.0f};
+        vec3 frontVector{0.0f};
+        vec3 backVector{0.0f};
+        vec3 upVector{0.0f};
+        vec3 downVector{0.0f};
     } vectors;
 
     enum class Direction { Forward, Backward, Left, Right, Up, Down };

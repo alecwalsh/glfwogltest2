@@ -2,9 +2,9 @@
 
 // Runs every frame
 void CubeObject::Tick() {
-    glm::mat4 rotation, translation, scaling;
+    glm::mat4 rotation{1.0f}, translation{1.0f}, scaling{1.0f};
 
-    rotation = glm::rotate(rotation, deltaTime * RotSpeed * glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    rotation = glm::rotate(rotation, deltaTime * RotSpeed * glm::radians(180.0f), glm::vec3{0.0f, 1.0f, 0.0f});
 
     this->ModTransform(translation * rotation * scaling);
 }
@@ -32,9 +32,9 @@ CubeObject::CubeObject(Mesh& _mesh, ShaderProgram& _shaderProgram, glm::mat4 _tr
                        float& _deltaTime, TextureManager& _texman)
     : GameObject(_mesh, _shaderProgram, _transform, _elapsedTime, _deltaTime, _texman) {
     // Sets up material properties for the cube
-    material.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
-    material.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-    material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+    material.ambient = glm::vec3{1.0f, 0.5f, 0.31f};
+    material.diffuse = glm::vec3{1.0f, 0.5f, 0.31f};
+    material.specular = glm::vec3{1.0f, 1.0f, 1.0f};
     material.shininess = 32.0f;
 }
 
