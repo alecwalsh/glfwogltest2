@@ -86,8 +86,8 @@ void calculateLighting(Light light, vec3 norm, out vec3 diffuse, out vec3 specul
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     
-    diffuse += light.diffuse * (diff * material.diffuse) * texture2D(texDiffuseMap, Texcoord).rgb * attenuation;
-    specular += light.specular * (spec * material.specular) * texture2D(texSpecMap, Texcoord).rgb * attenuation;
+    diffuse += light.diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Texcoord).rgb * attenuation;
+    specular += light.specular * (spec * material.specular) * texture(texSpecMap, Texcoord).rgb * attenuation;
 }
 
 
@@ -105,7 +105,7 @@ void main() {
         calculateLighting(lights[i], norm, diffuse, specular);
     }
 
-    vec3 ambient = uniAmbient * texture2D(texDiffuseMap, Texcoord).rgb;
+    vec3 ambient = uniAmbient * texture(texDiffuseMap, Texcoord).rgb;
 
     vec3 result = (ambient + diffuse + specular) * objectColor;
 
