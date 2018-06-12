@@ -13,7 +13,6 @@ bool Window::hasResized = false;
 
 gl_version_t Window::gl_version;
 
-// TODO: Update projection matrix to allow different aspect ratios
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 
