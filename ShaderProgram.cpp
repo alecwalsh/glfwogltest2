@@ -39,6 +39,7 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const char* vertShaderFile, const c
     glBindAttribLocation(shaderProgram, 1, "normal");
     glBindAttribLocation(shaderProgram, 2, "texcoord");
     glBindAttribLocation(shaderProgram, 3, "color");
+    glBindAttribLocation(shaderProgram, 4, "weight");
 
     // Create and compile the vertex shader
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);

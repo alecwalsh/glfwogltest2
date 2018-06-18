@@ -161,7 +161,7 @@ int main(int argc, char* argv[]) {
     ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version};
 
     // TODO: use .blend files
-    Mesh floorMesh{"data/floor.fbx"};
+    Mesh floorMesh{"data/skeletontest1.dae"};
     Mesh mesh{"data/cube_irreg.fbx"};
     Mesh lightMesh{"data/cube.fbx"};
 

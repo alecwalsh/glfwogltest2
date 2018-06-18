@@ -6,6 +6,7 @@ in vec3 Color;
 in vec3 Normal;
 in vec3 FragPos;
 in vec2 Texcoord;
+in vec3 Weight;
 
 out vec4 outColor;
 
@@ -110,4 +111,5 @@ void main() {
     vec3 result = (ambient + diffuse + specular) * objectColor;
 
     outColor = vec4(result, 1.0f);
+//     outColor = vec4(vec3(Weight), 1.0f);
 }

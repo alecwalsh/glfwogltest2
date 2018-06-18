@@ -8,8 +8,8 @@
 #include <assimp/scene.h>       // Output data structure
 
 #include <vector>
-
-#define VERTEX_SIZE 8
+#include <array>
+#include <utility>
 
 class Mesh {
   public:
@@ -17,6 +17,7 @@ class Mesh {
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 texcoord;
+        std::array<float, 3> weights;
     };
 
     std::vector<Vertex> vertices;
@@ -41,3 +42,5 @@ class Mesh {
   private:
     void ImportMesh(const std::string& pFile);
 };
+
+constexpr int VERTEX_SIZE  = sizeof(Mesh::Vertex)/sizeof(float);

@@ -27,6 +27,10 @@ GameObject::GameObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 trans
     GLint texAttrib = 2;
     glEnableVertexAttribArray(texAttrib);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
+    
+    GLint weightAttrib = 4;
+    glEnableVertexAttribArray(weightAttrib);
+    glVertexAttribPointer(weightAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(8 * sizeof(float)));
 
     // Set up projection matrix
 

@@ -54,7 +54,7 @@ void Mesh::ImportMesh(const std::string& pFile) {
 
     // If the import failed, report it
     if (!scene) {
-        std::cout << importer.GetErrorString() << std::endl;
+        std::cerr << importer.GetErrorString() << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -63,6 +63,10 @@ void Mesh::ImportMesh(const std::string& pFile) {
     if (!mesh->HasNormals()) {
         std::cerr << "Mesh doesn't have normals." << std::endl;
         exit(EXIT_FAILURE);
+    }
+    
+    if (mesh->HasBones()) {
+        std::cout << mesh->mNumVertices << " vertices" << std::endl;
     }
 
     for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
@@ -93,7 +97,22 @@ void Mesh::ImportMesh(const std::string& pFile) {
         vertices.push_back({
             {v.x / 2, v.y / 2, v.z / 2}, // Position
             {n.x, n.y, n.z},             // Normals
-            texcoords                    // Texture coordinates
+            texcoords,                    // Texture coordinates
+            {1.0f, 1.0f, 1.0f}
         });
     }
+    
+    if(mesh->HasBones()) {
+        for(uint32_t i = 0; i < 3/*mesh->mNumBones*/; i++) {
+            auto bones = mesh->mBones;
+            for(uint32_t j = 0; j < bones[i]->mNumWeights; j++) {
+                auto weight = bones[i]->mWeights[j];
+                vertices[weight.mVertexId].weights[i] = weight.mWeight;
+    //             std::cout << "Bone " << i << " Weight " << j << " " << weight.mWeight << std::endl;
+                std::cout << "Bone " << i << " has a weight of " << weight.mWeight << " for vertex " << weight.mVertexId << std::endl;
+            }
+        }
+    }
+    
+    std::cout << "vertices.size() = " << vertices.size() << std::endl;
 }
