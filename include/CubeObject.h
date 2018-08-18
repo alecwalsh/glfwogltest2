@@ -9,6 +9,4 @@ class CubeObject : public GameObject {
     virtual ~CubeObject() override;
     void Tick() override;
     void Draw(const Camera& camera) const override;
-
-    void LuaRegister(LuaScript& L) override;
 };

@@ -71,8 +71,6 @@ int main(int argc, char* argv[]) {
 
     InputManager& im = InputManager::GetInstance();
 
-    LuaScript ls{"bind.lua"};
-
     Camera camera{
         {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
     };
@@ -189,13 +187,6 @@ int main(int argc, char* argv[]) {
     auto go = std::make_unique<CubeObject>(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
     go->name = "cube1";
     go->SetupTextures();
-    go->LuaRegister(ls);
-
-    ls.Register("Tick", [&go] { go->Tick(); });
-    ls.Register("SetRotSpeed", [&go](double a) { go->RotSpeed = a; });
-    ls.Register("LambdaTest", [] { std::cout << "Lambda called from Lua\n" << std::endl; });
-    ls.Register("elapsedTime", elapsedTime, LuaScript::Type::Float);
-    ls.Register("RotSpeed", go->RotSpeed, LuaScript::Type::Float);
 
     glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
@@ -210,11 +201,6 @@ int main(int argc, char* argv[]) {
     auto pointLight2 = std::make_unique<PointLight>(glm::vec3{-6.0f, 1.0f, -2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f});
     lights.push_back(std::move(pointLight));
     lights.push_back(std::move(pointLight2));
-    
-    ls.Register("AddDirLight", [&]{
-        auto dirLight = std::make_unique<DirLight>(glm::vec3{0.0f, -0.75f, 1.0f}, glm::vec3{1.5f}, glm::vec3{0.5f});
-        lights.push_back(std::move(dirLight));
-    });
 
     auto spotLight = std::make_unique<SpotLight>(glm::vec3{3.0f, 0.75f, 0.0f}, glm::vec3{-1.0f, -0.25f, 0.0f},
                                                  glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)));
@@ -242,9 +228,6 @@ int main(int argc, char* argv[]) {
     }
 
     im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&] { lights[flashlight_idx]->ToggleActive(); });
-
-    //Perform any setup needed by the Lua script
-    ls.exec("init()");
     
     // main loop
     while (!window.ShouldClose()) {
@@ -288,9 +271,6 @@ int main(int argc, char* argv[]) {
         // Clear the screen to black
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //Run any per frame Lua code
-        ls.exec("tick()");
 
         render(*go, lights, camera);
         render(*floor, lights, camera);
