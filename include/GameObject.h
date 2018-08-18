@@ -6,12 +6,9 @@
 #include <iostream>
 
 #include "Camera.h"
-#include "LuaScript.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "TextureManager.h"
-
-using namespace LuaCppBind;
 
 // TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject
 class GameObject {
@@ -52,6 +49,4 @@ class GameObject {
     void ModTransform(const glm::mat4& transform);
 
     ShaderProgram& shaderProgram;
-
-    virtual void LuaRegister(LuaScript& L);
 };

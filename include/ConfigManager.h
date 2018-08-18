@@ -1,14 +1,8 @@
 #pragma once
 
-#include "LuaScript.h"
-#include "LuaTable.h"
-#include "LuaValue.h"
-
 #include <tuple>
 
-using namespace LuaCppBind;
-
-class ConfigManager : public LuaScript {
+class ConfigManager {
   private:
     void LoadVars();
     int getWidth() const;
@@ -17,7 +11,6 @@ class ConfigManager : public LuaScript {
   public:
     ConfigManager();
     ConfigManager(const char* fileName);
-    virtual ~ConfigManager() override;
 
     int width = 800, height = 600;
     std::tuple<int, int, bool> gl_version;

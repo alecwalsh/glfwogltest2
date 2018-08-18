@@ -39,8 +39,3 @@ CubeObject::CubeObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 trans
 }
 
 CubeObject::~CubeObject() {}
-
-void CubeObject::LuaRegister(LuaScript& L) {
-    GameObject::LuaRegister(L);
-    std::cout << "Registered CubeObject with Lua\n";
-}
