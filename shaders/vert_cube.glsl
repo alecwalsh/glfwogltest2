@@ -6,20 +6,41 @@ in vec3 position;
 in vec3 color;
 in vec3 normal;
 in vec2 texcoord;
-in vec3 weight;
+in vec4 weight;
 
 out vec3 Color;
 out vec3 Normal;
 out vec3 FragPos;
 out vec2 Texcoord;
-out vec3 Weight;
+out vec4 Weight;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
+uniform float time;
+
+#define MAX_BONES 5
+uniform mat4 bone_matrices[MAX_BONES];
+
+
+mat4 rotationMatrix(vec3 axis, float angle)
+{
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+    
+    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
+                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+                0.0,                                0.0,                                0.0,                                1.0);
+}
+
 void main() {
     Color = color;
+    
+    mat4 rotm = rotationMatrix(vec3(0.0,1.0,0.0), time*weight.x);
 
     //Normal matrix
     Normal = mat3(transpose(inverse(model))) * normal; //TODO: This is inefficient, should calculate on CPU
@@ -27,6 +48,8 @@ void main() {
     FragPos = vec3(model * vec4(position, 1.0f)); //Calculate worldspace position
     Texcoord = texcoord;
     Weight = weight;
-    vec4 position_tmp = proj * view * model * vec4(position, 1.0);
-    gl_Position = vec4(position_tmp.x, position_tmp.y + weight.b*3, position_tmp.zw);
+    
+    mat4 m_tmp = bone_matrices[0] * bone_matrices[1];
+    
+    gl_Position = inverse(m_tmp) * m_tmp * proj * view * model * rotm * vec4(position, 1.0);
 }

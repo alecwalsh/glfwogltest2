@@ -32,7 +32,9 @@ void Window::Create() {
         std::cout << "  Error description: " << desc << std::endl;
     });
 
-    glfwInit();
+    if(!glfwInit()) {
+        throw std::runtime_error("Error initializing GLFW");
+    }
 
     auto gl_major_version = get<0>(gl_version);
     auto gl_minor_version = get<1>(gl_version);

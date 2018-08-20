@@ -30,10 +30,9 @@ GameObject::GameObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 trans
     
     GLint weightAttrib = 4;
     glEnableVertexAttribArray(weightAttrib);
-    glVertexAttribPointer(weightAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(8 * sizeof(float)));
+    glVertexAttribPointer(weightAttrib, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(8 * sizeof(float)));
 
     // Set up projection matrix
-
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
     GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));

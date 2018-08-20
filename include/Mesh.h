@@ -10,6 +10,9 @@
 #include <vector>
 #include <array>
 #include <utility>
+#include <unordered_map>
+
+#define MAX_BONES 10
 
 class Mesh {
   public:
@@ -17,11 +20,20 @@ class Mesh {
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 texcoord;
-        std::array<float, 3> weights;
+        std::array<float, MAX_BONES> weights;
+    };
+    
+    struct Bone {
+        
     };
 
     std::vector<Vertex> vertices;
     std::vector<GLuint> elements;
+    
+    std::array<glm::mat4, MAX_BONES> bone_matrices;
+    std::unordered_map<std::string, uint32_t> bone_names;
+    
+    uint32_t num_bones;
 
     const bool usesElementArray; // Set to true or false depending on which constructor is called
 
@@ -38,9 +50,15 @@ class Mesh {
 
     // Generates buffers and uploads data to graphics card
     void UploadToGPU();
+    
+    void print_bone_transforms();
 
   private:
-    void ImportMesh(const std::string& pFile);
+    Assimp::Importer importer;
+    glm::mat4 root_transform;
+    
+    void ImportMesh(const std::string& fileName);
+    void GetBoneWeights();
 };
 
-constexpr int VERTEX_SIZE  = sizeof(Mesh::Vertex)/sizeof(float);
+constexpr size_t VERTEX_SIZE  = sizeof(Mesh::Vertex)/sizeof(float);

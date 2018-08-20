@@ -19,7 +19,7 @@ void Camera::ModPosition(glm::mat4 transform) {
 
 void Camera::Translate(glm::mat4 transform) {
     // Converts position to vec4, applies transform, then converts back to vec3
-    position = glm::vec3{transform * glm::vec4(position, 1.0f)};
+    position = glm::vec3{transform * glm::vec4{position, 1.0f}};
 
     UpdateViewMatrix();
 }

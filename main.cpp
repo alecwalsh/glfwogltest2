@@ -159,7 +159,7 @@ int main(int argc, char* argv[]) {
     ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version};
 
     // TODO: use .blend files
-    Mesh floorMesh{"data/skeletontest1.dae"};
+    Mesh floorMesh{"data/skeletontest2.dae"};
     Mesh mesh{"data/cube_irreg.fbx"};
     Mesh lightMesh{"data/cube.fbx"};
 
@@ -189,8 +189,8 @@ int main(int argc, char* argv[]) {
     go->SetupTextures();
 
     glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
-    floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
-    floorTransform = glm::scale(floorTransform, {5.0f, 5.0f, 1.0f});
+//     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
+//     floorTransform = glm::scale(floorTransform, {5.0f, 5.0f, 1.0f});
     auto floor = std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, elapsedTime, deltaTime, texman);
     floor->texture_name = "container";
     floor->spec_texture_name = "container_specular";
@@ -242,6 +242,10 @@ int main(int argc, char* argv[]) {
 
         // Enable depth test when rendering main scene
         glEnable(GL_DEPTH_TEST);
+        
+        glUseProgram(cubeShader.shaderProgram);
+        GLint uniTime = glGetUniformLocation(cubeShader.shaderProgram, "time");
+        glUniform1f(uniTime, elapsedTime);
 
         // Render main scene to the framebuffer's texture
         fsq.BindFramebuffer();
@@ -272,6 +276,8 @@ int main(int argc, char* argv[]) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        go->Tick();
+        floor->Tick();
         render(*go, lights, camera);
         render(*floor, lights, camera);
 
@@ -374,7 +380,8 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
     GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
 
     // TODO: Don't hardcode ambient value
-    glUniform3f(ambientLoc, 0.1f, 0.1f, 0.1f);
+//     glUniform3f(ambientLoc, 0.1f, 0.1f, 0.1f);
+    glUniform3f(ambientLoc, 0.5f, 0.5f, 0.5f);
 
     go.Draw(camera);
 }

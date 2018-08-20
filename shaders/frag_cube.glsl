@@ -6,7 +6,7 @@ in vec3 Color;
 in vec3 Normal;
 in vec3 FragPos;
 in vec2 Texcoord;
-in vec3 Weight;
+in vec4 Weight;
 
 out vec4 outColor;
 
@@ -14,7 +14,7 @@ uniform sampler2D texDiffuseMap; //diffuse map
 uniform sampler2D texSpecMap;
 uniform sampler2D texNormalMap;
 uniform sampler2D texFramebuffer;
-uniform float time;
+// uniform float time;
 
 uniform vec3 cameraPos;
 
@@ -111,5 +111,4 @@ void main() {
     vec3 result = (ambient + diffuse + specular) * objectColor;
 
     outColor = vec4(result, 1.0f);
-//     outColor = vec4(vec3(Weight), 1.0f);
 }
