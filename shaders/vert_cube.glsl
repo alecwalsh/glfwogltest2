@@ -39,17 +39,20 @@ mat4 rotationMatrix(vec3 axis, float angle)
 
 void main() {
     Color = color;
-    
-    mat4 rotm = rotationMatrix(vec3(0.0,1.0,0.0), time*weight.x);
 
     //Normal matrix
     Normal = mat3(transpose(inverse(model))) * normal; //TODO: This is inefficient, should calculate on CPU
-
-    FragPos = vec3(model * vec4(position, 1.0f)); //Calculate worldspace position
+    
     Texcoord = texcoord;
     Weight = weight;
     
-    mat4 m_tmp = bone_matrices[0] * bone_matrices[1];
+    //Set the rotation amount using  the time and weight for bone 0
+    mat4 rotm = rotationMatrix(vec3(0.0,0.0,1.0), time*weight.x);
     
-    gl_Position = inverse(m_tmp) * m_tmp * proj * view * model * rotm * vec4(position, 1.0);
+    //Apply the rotation
+    vec4 transformed_position = inverse(bone_matrices[0]) * rotm * bone_matrices[0] * vec4(position, 1.0);
+    
+    FragPos = vec3(model * transformed_position); //Calculate worldspace position
+    
+    gl_Position = proj * view * model * transformed_position;
 }
