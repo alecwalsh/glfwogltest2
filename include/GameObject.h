@@ -40,10 +40,10 @@ class GameObject {
     // Runs every frame
     virtual void Tick() = 0;
     // Renders the object
-    virtual void Draw(const Camera& camera) const;
-    void SetupTextures() const;
-    void BindFramebufferTexture() const;
-    void BindTextures() const;
+    virtual void Draw(const Camera& camera);
+    void SetupTextures();
+    void BindFramebufferTexture();
+    void BindTextures();
 
     void SetTransform(const glm::mat4& transform);
     void ModTransform(const glm::mat4& transform);

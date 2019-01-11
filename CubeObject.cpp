@@ -33,7 +33,7 @@ void CubeObject::Tick() {
     this->ModTransform(translation * rotation * scaling);
 }
 
-void CubeObject::Draw(const Camera& camera) const {
+void CubeObject::Draw(const Camera& camera) {
     // Set material properties
     GLint matAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.ambient");
     GLint matDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.diffuse");
@@ -59,8 +59,19 @@ CubeObject::CubeObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 trans
         GLint bone_matrix_loc = glGetUniformLocation(shaderProgram.shaderProgram, ss.str().c_str());
         assert(bone_matrix_loc != -1);
         glUniformMatrix4fv(bone_matrix_loc, 1, GL_FALSE, glm::value_ptr(mesh.bone_matrices[i]));
+        
     }
 
+
+    for(uint32_t i = 0; i < mesh.num_bones; i++) {
+        std::stringstream ss;
+        ss << "bone_transforms[" << i << ']';
+        std::cout << ss.str().c_str() << std::endl;
+        GLint bone_transform_loc = glGetUniformLocation(shaderProgram.shaderProgram, ss.str().c_str());
+//         assert(bone_transform_loc != -1);
+        glUniformMatrix4fv(bone_transform_loc, 1, GL_FALSE, glm::value_ptr(mesh.bone_transforms[i]));
+    }
+    
     
     // Sets up material properties for the cube
     material.ambient = glm::vec3{1.0f, 0.5f, 0.31f};

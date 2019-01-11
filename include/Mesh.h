@@ -31,6 +31,7 @@ class Mesh {
     std::vector<GLuint> elements;
     
     std::array<glm::mat4, MAX_BONES> bone_matrices;
+    std::array<glm::mat4, MAX_BONES> bone_transforms;
     std::unordered_map<std::string, uint32_t> bone_names;
     
     uint32_t num_bones;
@@ -51,7 +52,7 @@ class Mesh {
     // Generates buffers and uploads data to graphics card
     void UploadToGPU();
     
-    void print_bone_transforms();
+    void print_bone_transforms() const;
 
   private:
     Assimp::Importer importer;

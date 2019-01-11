@@ -50,7 +50,7 @@ GameObject::GameObject(const GameObject& rhs)
 }
 
 // Renders the object
-void GameObject::Draw(const Camera& camera) const {
+void GameObject::Draw(const Camera& camera) {
     // Make sure the right vertex array is bound
     glBindVertexArray(vao);
     BindTextures();
@@ -63,7 +63,6 @@ void GameObject::Draw(const Camera& camera) const {
     glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(camera.viewMat));
 
     if (mesh.usesElementArray) {
-        // TODO: Use indexes from imported mesh as element buffer
         glDrawElements(GL_TRIANGLES, mesh.elements.size(), GL_UNSIGNED_INT, 0);
     } else {
         glDrawArrays(GL_TRIANGLES, 0, mesh.vertices.size() / VERTEX_SIZE);
@@ -71,14 +70,14 @@ void GameObject::Draw(const Camera& camera) const {
 }
 
 // TODO: this should be called once per shader, not once per object
-void GameObject::SetupTextures() const {
+void GameObject::SetupTextures() {
     // Set sampler uniforms
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 0);
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texSpecMap"), 1);
     glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texNormalMap"), 2);
 }
 
-void GameObject::BindTextures() const {
+void GameObject::BindTextures() {
     // Bind texture objects to texture units
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texman.textureObjects[texture_name]);

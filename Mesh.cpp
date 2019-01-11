@@ -18,7 +18,7 @@ void print_mat4(const glm::mat4& m) {
     printf("] \n");
 }
 
-void Mesh::print_bone_transforms() {
+void Mesh::print_bone_transforms() const {
     for(uint32_t j = 0; j < num_bones; j++) {
         auto transformed_pos = bone_matrices[j] * glm::vec4{0.0f, 0.0f, 1.0f, 1.0f} * root_transform;
         transformed_pos *= 2;
@@ -44,7 +44,7 @@ glm::mat4 assimp_to_glm(const aiMatrix4x4& m) {
         m[3][0], m[3][1], m[3][2], m[3][3]
     };
     return glm::transpose(glm_mat);
-// //     return glm_mat;
+//     return glm_mat;
 }
 
 Mesh::Mesh(const std::vector<Vertex>& vertices) : vertices(vertices), usesElementArray(false) {
@@ -174,27 +174,21 @@ void Mesh::GetBoneWeights() {
             auto weight = bone->mWeights[j];
             vertices[weight.mVertexId].weights[i] = weight.mWeight;
         }
-        
-//         auto node = importer.GetScene()->mRootNode->FindNode(bone->mName);
-//         const aiNode* tempNode = node;
-//         while(tempNode) {
-// //             aiMatrix4x4 m = tempNode->mTransformation;
-//             bone_matrices[i] = assimp_to_glm(tempNode->mTransformation) * bone_matrices[i];
-//             tempNode = tempNode->mParent;
-//         }
-//         bone_matrices[i] = assimp_to_glm(importer.GetScene()->mRootNode->mTransformation) * bone_matrices[i];
     }
     
     print_bone_transforms();
     
-    for(auto& v : vertices) {
-        for(uint32_t i = 0; i < 1; i++) {
-            auto weight = v.weights[i];
-//             printf("%f\n", weight);
-            auto transformed_pos = bone_matrices[i] * glm::vec4{v.position, 1.0f};
-            auto m = glm::rotate(glm::mat4{1.0f}, glm::radians(45.0f*weight), glm::vec3{0.0f, 1.0f, 0.0f});
-            transformed_pos = m * transformed_pos;
-//             v.position = glm::inverse(bone_matrices[i]) * transformed_pos;
-        }
-    }
+//     for(auto& v : vertices) {
+//         for(uint32_t i = 0; i < 1; i++) {
+//             auto weight = v.weights[i];
+// //             printf("%f\n", weight);
+//             auto transformed_pos = bone_matrices[i] * glm::vec4{v.position, 1.0f};
+//             auto m = glm::rotate(glm::mat4{1.0f}, glm::radians(45.0f*weight), glm::vec3{0.0f, 1.0f, 0.0f});
+//             transformed_pos = m * transformed_pos;
+// //             v.position = glm::inverse(bone_matrices[i]) * transformed_pos;
+//         }
+//     }
+    
+    bone_transforms[0] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f});
+    bone_transforms[1] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f});//glm::mat4{1.0f};
 }

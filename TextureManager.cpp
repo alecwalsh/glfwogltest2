@@ -4,15 +4,16 @@
 #include "stb_image.h"
 
 #include <cstring>
+#include <algorithm>
 
 // TODO: Support creating multiple textures at once
+// TODO: Maintain map between textures and shader attribute names
 void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
     // Prepend the directory name to fileName
-    const char* directoryName = "data/textures";
-    size_t fileNameLength = strlen(fileName) + strlen(directoryName) + 2; // Need room for / and null terminator
-    char* finalFileName = (char*)malloc(fileNameLength);
-    finalFileName[0] = '\0';
-    strcat(finalFileName, directoryName);
+    const char* directory_name = "data/textures";
+    size_t fileNameLength = strlen(fileName) + strlen(directory_name) + 2; // Need room for / and null terminator
+    char* finalFileName = new char[fileNameLength];
+    strcpy(finalFileName, directory_name);
     strcat(finalFileName, "/");
     strcat(finalFileName, fileName);
 
@@ -34,7 +35,7 @@ void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
 
     stbi_image_free(image);
 
-    free(finalFileName);
+    delete[] finalFileName;
 
     // Set texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -48,10 +49,8 @@ void TextureManager::AddTextureFromGLObject(const char* id, GLuint texture) {
     textureObjects.emplace(id, texture);
 }
 
-TextureManager::TextureManager() {}
-
 TextureManager::~TextureManager() {
-    for (auto& it : textureObjects) {
+    for(const auto& it : textureObjects) {
         glDeleteTextures(1, &it.second);
     }
 }

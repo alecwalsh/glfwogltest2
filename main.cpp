@@ -40,7 +40,7 @@ double yaw, pitch;
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
-void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& camera);
+void render(GameObject& go, const vec_uniq<Light>& lights, const Camera& camera);
 
 int main(int argc, char* argv[]) {
 #ifdef __unix__
@@ -300,7 +300,7 @@ int main(int argc, char* argv[]) {
 }
 
 // TODO: Support multiple lights and multiple types of lights
-void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& camera) {
+void render(GameObject& go, const vec_uniq<Light>& lights, const Camera& camera) {
     const auto& sp = go.shaderProgram;
 
     glUseProgram(sp.shaderProgram);

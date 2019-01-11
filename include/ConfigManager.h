@@ -9,9 +9,10 @@ class ConfigManager {
     int getHeight() const;
 
   public:
-    ConfigManager();
+    ConfigManager() = default;
     ConfigManager(const char* fileName);
 
-    int width = 800, height = 600;
-    std::tuple<int, int, bool> gl_version;
+    int width = 800;
+    int height = 600;
+    std::tuple<int, int, bool> gl_version = {3, 3, false};
 };

@@ -8,5 +8,5 @@ class CubeObject : public GameObject {
                TextureManager& texman);
     virtual ~CubeObject() override;
     void Tick() override;
-    void Draw(const Camera& camera) const override;
+    void Draw(const Camera& camera) override;
 };
