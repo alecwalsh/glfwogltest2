@@ -44,6 +44,10 @@ void CubeObject::Draw(const Camera& camera) {
     glUniform3f(matDiffuseLoc, material.diffuse.r, material.diffuse.g, material.diffuse.b);
     glUniform3f(matSpecularLoc, material.specular.r, material.specular.g, material.specular.b);
     glUniform1f(matShineLoc, material.shininess);
+    
+    // Sets up cameraPos uniform then calls base class method
+    GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
+    glUniform3f(uniCameraPos, camera.position.x, camera.position.y, camera.position.z);
 
     GameObject::Draw(camera);
 }
