@@ -21,26 +21,25 @@ uniform mat4 proj;
 uniform float time;
 
 #define MAX_BONES 5
-uniform mat4 bone_matrices[MAX_BONES];
 uniform mat4 bone_transforms[MAX_BONES];
 
 
 mat4 rotationMatrix(vec3 axis, float theta) {
-	vec3 a = normalize(axis);
-	
-	float x = a.x;
-	float y = a.y;
-	float z = a.z;
+    vec3 a = normalize(axis);
 
-	float s = sin(theta);
-	float c = cos(theta);
+    float x = a.x;
+    float y = a.y;
+    float z = a.z;
 
-	return mat4(
-	            x * x * (1-c) + c,        x * y * (1-c) - z * s,   x * z * (1-c) + y * s, 0,
-	            x * y * (1-c) + z * s,    y * y * (1-c) + c,       y * z * (1-c) - x * s, 0,
-				x * z * (1-c) - y * s,    y * z * (1-c) + x * s,   z * z * (1-c) + c,     0,
-				0,                        0,                       0,                     1
-	);
+    float s = sin(theta);
+    float c = cos(theta);
+
+    return mat4(
+                x * x * (1-c) + c,        x * y * (1-c) - z * s,   x * z * (1-c) + y * s, 0,
+                x * y * (1-c) + z * s,    y * y * (1-c) + c,       y * z * (1-c) - x * s, 0,
+                x * z * (1-c) - y * s,    y * z * (1-c) + x * s,   z * z * (1-c) + c,     0,
+                0,                        0,                       0,                     1
+    );
 
 }
 
@@ -56,17 +55,26 @@ void main() {
     //Set the rotation amount using  the time and weight for bone 0
     mat4 rotm = mat4(1);//rotationMatrix(vec3(0.0,0.0,1.0), weight.x);
     
-    vec4 transformed_position;
+    vec4 transformed_position = vec4(position, 1.0);
     
     //Bone 0 is more significant
-    if(weight.x > weight.y) {
-        transformed_position = inverse(bone_matrices[0]) * bone_transforms[0] * bone_matrices[0] * vec4(position, 1.0);
+    if(weight.x > weight.y && weight.x > weight.z) {
+        transformed_position = bone_transforms[0] * vec4(position, 1.0);
+//         transformed_position = bone_transforms[1] * transformed_position;
+//         transformed_position = bone_transforms[2] * transformed_position;
     }
     
     //Bone 1 is more significant
-    if(weight.y > weight.x) {
-        transformed_position = inverse(bone_matrices[0]) * bone_transforms[0] * bone_matrices[0] * vec4(position, 1.0);
-        transformed_position = inverse(bone_matrices[1]) * bone_transforms[1] * bone_matrices[1] * transformed_position;
+    if(weight.y > weight.x && weight.y > weight.z) {
+        transformed_position = bone_transforms[0] * vec4(position, 1.0);
+        transformed_position = bone_transforms[1] * transformed_position;
+//         transformed_position = bone_transforms[2] * transformed_position;
+    }
+    
+    if(weight.z > weight.x && weight.z > weight.y) {
+        transformed_position = bone_transforms[0] * vec4(position, 1.0);
+        transformed_position = bone_transforms[1] * transformed_position;
+        transformed_position = bone_transforms[2] * transformed_position;
     }
     
     //Apply the rotation

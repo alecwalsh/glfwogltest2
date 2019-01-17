@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-ShaderProgram::ShaderProgram(const char* vertShader, const char* fragShader, gl_version_t version)
+ShaderProgram::ShaderProgram(const char* vertShader, const char* fragShader, const gl_version_t& version)
     : version(version), shaderProgram(ShaderProgramFromFiles(vertShader, fragShader)) {}
 
 // TODO: Make version_string work with OpenGL below 3.3

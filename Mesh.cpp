@@ -90,6 +90,12 @@ void Mesh::ImportMesh(const std::string& fileName) {
     // TODO: Change/add postprocessing flags
     const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
     
+	// If the import failed, report it
+    if (!scene) {
+        std::cerr << importer.GetErrorString() << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
     auto root_node = scene->mRootNode;
     root_transform = assimp_to_glm(root_node->mTransformation.Inverse());
     printf("%s has %d children\n", root_node->mName.C_Str(), root_node->mNumChildren);
@@ -100,12 +106,6 @@ void Mesh::ImportMesh(const std::string& fileName) {
             const auto& node2 = node->mChildren[i];
             printf("Node %s has %d children\n", node2->mName.C_Str(), node2->mNumChildren);
         }
-    }
-
-    // If the import failed, report it
-    if (!scene) {
-        std::cerr << importer.GetErrorString() << std::endl;
-        exit(EXIT_FAILURE);
     }
 
     const auto& mesh = scene->mMeshes[0];
@@ -142,8 +142,8 @@ void Mesh::ImportMesh(const std::string& fileName) {
         vertices.push_back({
             {v.x / 2, v.y / 2, v.z / 2}, // Position
             {n.x, n.y, n.z},             // Normals
-            texcoords,                    // Texture coordinates,
-            {1.0f, 1.0f, 1.0f}
+            texcoords,                   // Texture coordinates,
+            {0.0f, 0.0f, 0.0f}
         });
     }
     
@@ -178,17 +178,15 @@ void Mesh::GetBoneWeights() {
     
     print_bone_transforms();
     
-//     for(auto& v : vertices) {
-//         for(uint32_t i = 0; i < 1; i++) {
-//             auto weight = v.weights[i];
-// //             printf("%f\n", weight);
-//             auto transformed_pos = bone_matrices[i] * glm::vec4{v.position, 1.0f};
-//             auto m = glm::rotate(glm::mat4{1.0f}, glm::radians(45.0f*weight), glm::vec3{0.0f, 1.0f, 0.0f});
-//             transformed_pos = m * transformed_pos;
-// //             v.position = glm::inverse(bone_matrices[i]) * transformed_pos;
-//         }
-//     }
+    for(auto& bt : bone_transforms) {
+        bt = glm::mat4{1.0f};
+    }
     
     bone_transforms[0] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f});
-    bone_transforms[1] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f});//glm::mat4{1.0f};
+    bone_transforms[1] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f}); // glm::mat4{1.0f};
+    bone_transforms[2] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f}); // glm::mat4{1.0f};
+    
+    for(int i = 0; i < bone_transforms.size(); i++) {
+        bone_transforms[i] = glm::inverse(bone_matrices[i]) * bone_transforms[i] * bone_matrices[i];
+    }
 }

@@ -15,7 +15,7 @@ class ShaderProgram {
 
   public:
     GLuint shaderProgram;
-    ShaderProgram(const char* vertShader, const char* fragShader, std::tuple<int, int, bool> version);
+    ShaderProgram(const char* vertShader, const char* fragShader, const gl_version_t& version);
     ShaderProgram& operator=(ShaderProgram&& sp);
     ShaderProgram& operator=(ShaderProgram& sp);
     ~ShaderProgram();

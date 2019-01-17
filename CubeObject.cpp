@@ -51,16 +51,6 @@ void CubeObject::Draw(const Camera& camera) {
 CubeObject::CubeObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime,
                        float& deltaTime, TextureManager& texman)
     : GameObject(mesh, shaderProgram, transform, elapsedTime, deltaTime, texman) {
-    
-    for(uint32_t i = 0; i < mesh.num_bones; i++) {
-        std::stringstream ss;
-        ss << "bone_matrices[" << i << ']';
-        std::cout << ss.str().c_str() << std::endl;
-        GLint bone_matrix_loc = glGetUniformLocation(shaderProgram.shaderProgram, ss.str().c_str());
-        assert(bone_matrix_loc != -1);
-        glUniformMatrix4fv(bone_matrix_loc, 1, GL_FALSE, glm::value_ptr(mesh.bone_matrices[i]));
-        
-    }
 
 
     for(uint32_t i = 0; i < mesh.num_bones; i++) {
@@ -68,7 +58,7 @@ CubeObject::CubeObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 trans
         ss << "bone_transforms[" << i << ']';
         std::cout << ss.str().c_str() << std::endl;
         GLint bone_transform_loc = glGetUniformLocation(shaderProgram.shaderProgram, ss.str().c_str());
-//         assert(bone_transform_loc != -1);
+        assert(bone_transform_loc != -1);
         glUniformMatrix4fv(bone_transform_loc, 1, GL_FALSE, glm::value_ptr(mesh.bone_transforms[i]));
     }
     

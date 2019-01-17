@@ -7,7 +7,7 @@
 #ifdef __unix__
 #include <unistd.h>
 #elif _WIN32
-#include <direct.h>
+#include <windows.h>
 #endif
 
 #include <chrono>
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 #ifdef __unix__
     chdir(".."); // Data files and shaders are in parent directory
 #elif _WIN32
-    _chdir("..");
+    SetCurrentDirectory("..");
 #endif
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_prev = t_start;
