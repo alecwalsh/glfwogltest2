@@ -197,14 +197,17 @@ int main(int argc, char* argv[]) {
 
     vec_uniq<Light> lights;
 
-    auto pointLight = std::make_unique<PointLight>(glm::vec3{3.0f, 1.0f, 2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f});
-    auto pointLight2 = std::make_unique<PointLight>(glm::vec3{-6.0f, 1.0f, -2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f});
-    lights.push_back(std::move(pointLight));
-    lights.push_back(std::move(pointLight2));
-
-    auto spotLight = std::make_unique<SpotLight>(glm::vec3{3.0f, 0.75f, 0.0f}, glm::vec3{-1.0f, -0.25f, 0.0f},
-                                                 glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)));
-    lights.push_back(std::move(spotLight));
+    lights.push_back(
+        std::make_unique<PointLight>(glm::vec3{3.0f, 1.0f, 2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f})
+    );
+    lights.push_back(
+        std::make_unique<PointLight>(glm::vec3{-6.0f, 1.0f, -2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f})
+    );
+    
+    lights.push_back(
+        std::make_unique<SpotLight>(glm::vec3{3.0f, 0.75f, 0.0f}, glm::vec3{-1.0f, -0.25f, 0.0f},
+                                    glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)))
+    );
     
     size_t flashlight_idx = lights.size()-1;
 
@@ -221,9 +224,9 @@ int main(int argc, char* argv[]) {
                 glm::translate(glm::scale(lightTransform, glm::vec3{0.5f}),
                                glm::vec3{light->position.x, light->position.y,
                                          light->position.z}); // Scale by 0.5 then translate to correct position
-            auto lo =
-                std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
-            lightObjects.push_back(std::move(lo));
+            lightObjects.push_back(
+                std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman)
+            );
         }
     }
 
