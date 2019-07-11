@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7.0)
+cmake_minimum_required(VERSION 3.8.0)
 
 project(glfwogltest2 VERSION 0.0.0.1)
 
@@ -12,11 +12,11 @@ set(BASE "/build")
 file(GLOB SOURCES "*.cpp")
 set(SOURCES ${SOURCES} glad/glad.c)
 
-link_directories(${BASE}/lib)
-
 add_executable(glfwogltest2 ${SOURCES})
 
-#target_compile_features(glfwogltest2 PUBLIC cxx_std_17)
+target_link_directories(glfwogltest2 PUBLIC ${BASE}/lib)
+
+target_compile_features(glfwogltest2 PUBLIC cxx_std_17)
 set_target_properties(glfwogltest2 PROPERTIES CXX_STANDARD_REQUIRED true)
 set_target_properties(glfwogltest2 PROPERTIES CXX_EXTENSIONS false)
 
