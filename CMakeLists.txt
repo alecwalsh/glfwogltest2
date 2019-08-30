@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.8.0)
 project(glfwogltest2 VERSION 0.0.0.1)
 
 #TODO: Shouldn't hardcode library versions
-set(GLM_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glm" CACHE PATH "")
-set(GLFW_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glfw-3.2.1" CACHE PATH "")
+set(GLM_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glm-0.9.9.5" CACHE PATH "")
+set(GLFW_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glfw-3.3" CACHE PATH "")
 set(ASSIMP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/assimp-4.1.0" CACHE PATH "")
 
 set(BASE "/build")
@@ -26,7 +26,8 @@ target_include_directories(glfwogltest2 PUBLIC "include" ".")
 if(UNIX)
     target_link_libraries(glfwogltest2 GL glfw assimp dl)
 elseif(MINGW)
-    set_target_properties(glfwogltest2 PROPERTIES LINK_FLAGS "-static")
+    #TODO: Assimp doesn't work with static linking
+    #set_target_properties(glfwogltest2 PROPERTIES LINK_FLAGS "-static")
     target_link_libraries(glfwogltest2 opengl32 glfw3 assimp IrrXML z)
 elseif(WIN32)
     add_library(glfw3 STATIC IMPORTED)
@@ -38,8 +39,14 @@ elseif(WIN32)
     target_include_directories(assimp INTERFACE ${ASSIMP_PATH}/include ${ASSIMP_PATH}/build/include)
 
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT glfwogltest2)
-    target_include_directories(glfwogltest2 PUBLIC ${GLM_PATH})
+    target_include_directories(glfwogltest2 PUBLIC ${GLM_PATH}/glm)
     target_link_libraries(glfwogltest2 opengl32 glfw3 assimp)
+    
+    # Copy Assimp dll to output directory
+    add_custom_command(TARGET glfwogltest2 POST_BUILD 
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different
+               ${ASSIMP_PATH}/build/code/debug/assimp-vc140-mt.dll
+               $<TARGET_FILE_DIR:glfwogltest2>)
 endif()
 
 configure_file(include/version.h.in version.h)
