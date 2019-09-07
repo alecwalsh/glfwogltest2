@@ -4,11 +4,6 @@
 #include <glm/glm.hpp>
 
 #include <cstdio>
-#ifdef __unix__
-#include <unistd.h>
-#elif _WIN32
-#include <direct.h>
-#endif
 
 #include <chrono>
 #include <functional>
@@ -17,6 +12,7 @@
 #include <sstream>
 #include <tuple>
 #include <vector>
+#include <filesystem>
 
 #include "Camera.h"
 #include "ConfigManager.h"
@@ -26,7 +22,7 @@
 #include "InputManager.h"
 #include "PointLight.h"
 #include "PostProcess.h"
-#include "ShaderProgram.h"
+#include "ShaderManager.h"
 #include "SpotLight.h"
 #include "TextureManager.h"
 #include "Window.h"
@@ -43,11 +39,8 @@ template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& camera);
 
 int main(int argc, char* argv[]) {
-#ifdef __unix__
-    chdir(".."); // Data files and shaders are in parent directory
-#elif _WIN32
-    _chdir("..");
-#endif
+    std::filesystem::current_path("..");
+
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_prev = t_start;
     float elapsedTime = 0.0f;
@@ -151,14 +144,15 @@ int main(int argc, char* argv[]) {
                              Window::gl_version);
             toggled = true;
         }
-    });
+    });	
 
     // TODO: Add AssetManager, like TextureManager but for all assets
-    // Compile and link shaders
-    ShaderProgram cubeShader{"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", Window::gl_version};
-    ShaderProgram lightShader{"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version};
+    // Compile and link shaders    
+    ShaderProgram& cubeShader = shaderManager.addShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", Window::gl_version});
+    ShaderProgram& lightShader =
+        shaderManager.addShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version});
 
-    // TODO: use .blend files
+    // TODO: use different format
     Mesh floorMesh{"data/floor.fbx"};
     Mesh mesh{"data/cube_irreg.fbx"};
     Mesh lightMesh{"data/cube.fbx"};

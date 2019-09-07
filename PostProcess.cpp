@@ -62,7 +62,9 @@ void PostProcess::SetupFramebuffer() {
 }
 
 PostProcess::PostProcess()
-    : shaderProgram{"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::gl_version} {
+    : shaderProgram{
+		shaderManager.addShader({"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::gl_version})
+	} {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
@@ -93,7 +95,8 @@ PostProcess::~PostProcess() {
 }
 
 void PostProcess::ReloadShader(const char* vertShader, const char* fragShader, gl_version_t version) {
-    shaderProgram = ShaderProgram{vertShader, fragShader, version};
+    ShaderManager& sm = ShaderManager::GetInstance();
+    shaderProgram = sm.addShader({vertShader, fragShader, version});
 }
 
 void PostProcess::Resize() {

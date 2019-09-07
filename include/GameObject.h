@@ -7,7 +7,7 @@
 
 #include "Camera.h"
 #include "Mesh.h"
-#include "ShaderProgram.h"
+#include "ShaderManager.h"
 #include "TextureManager.h"
 
 // TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject

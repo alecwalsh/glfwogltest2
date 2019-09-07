@@ -2,7 +2,7 @@
 
 #include "glad/glad.h"
 
-#include "ShaderProgram.h"
+#include "ShaderManager.h"
 #include "Window.h"
 
 // Used for postprocessing effects

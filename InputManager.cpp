@@ -62,13 +62,7 @@ void InputManager::HandleInput() {
     glfwPollEvents();
 
     for (const auto& keybinding : key_bindings) {
-#if __cplusplus >= 201703L
         const auto & [ keycode, desired_state, func ] = keybinding;
-#else
-        const auto& keycode = std::get<0>(keybinding);
-        const auto& desired_state = std::get<1>(keybinding);
-        const auto& func = std::get<2>(keybinding);
-#endif
         auto& current_state = keystates[keycode];
         if (desired_state == KeyState::AnyPress) {
             if (current_state == KeyState::InitialPress || current_state == KeyState::RepeatPress) {

@@ -1,14 +1,17 @@
-#include "ShaderProgram.h"
+#include "ShaderManager.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-ShaderProgram::ShaderProgram(const char* vertShader, const char* fragShader, gl_version_t version)
-    : version(version), shaderProgram(ShaderProgramFromFiles(vertShader, fragShader)) {}
+ShaderProgram::ShaderProgram(const std::string& vertShader, const std::string& fragShader, gl_version_t version)
+    : ShaderProgram{ShaderIdentifier{vertShader, fragShader, version}} {}
+
+ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
+    : version{id.version}, shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
 
 // TODO: Make version_string work with OpenGL below 3.3
-GLuint ShaderProgram::ShaderProgramFromFiles(const char* vertShaderFile, const char* fragShaderFile) {
+GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile) {
     using std::get;
     using std::to_string;
 
@@ -105,16 +108,41 @@ void ShaderProgram::getLinkErrors(GLuint shaderProgram) {
 
 ShaderProgram::~ShaderProgram() { glDeleteProgram(shaderProgram); }
 
-ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) {
+ShaderProgram::ShaderProgram(ShaderProgram&& sp) noexcept {
     shaderProgram = sp.shaderProgram;
+    sp.shaderProgram = 0;
+    version = std::move(sp.version);
+}
+
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
+    shaderProgram = std::move(sp.shaderProgram);
     sp.shaderProgram = 0;
     version = std::move(sp.version);
     return *this;
 }
 
-ShaderProgram& ShaderProgram::operator=(ShaderProgram& sp) {
-    shaderProgram = sp.shaderProgram;
-    sp.shaderProgram = 0;
+ShaderProgram& ShaderProgram::operator=(const ShaderProgram& sp) noexcept {
+    shaderProgram = std::move(sp.shaderProgram);
     version = sp.version;
     return *this;
+}
+
+bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
+    return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
+}
+
+ShaderProgram& ShaderManager::addShader(const ShaderIdentifier& id) {
+    auto shaderIter = shaderMap.find(id);
+    if (shaderIter == std::end(shaderMap)) {
+        // Shader is not already in shaderMap, so add it
+        const auto& [newShaderIter, b] = shaderMap.emplace(id, ShaderIdentifier{id});
+        return newShaderIter->second;
+    }
+
+    return shaderIter->second;
+}
+
+ShaderManager& ShaderManager::GetInstance() {
+    static ShaderManager sm{};
+    return sm;
 }
