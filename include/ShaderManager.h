@@ -36,8 +36,6 @@ class ShaderProgram {
     void getCompileErrors(GLuint shader);
     void getLinkErrors(GLuint shaderProgram);
     gl_version_t version;
-
-	ShaderProgram(const std::string& vertShader, const std::string& fragShader, gl_version_t version);
   public:
     GLuint shaderProgram;
 

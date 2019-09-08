@@ -4,9 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-ShaderProgram::ShaderProgram(const std::string& vertShader, const std::string& fragShader, gl_version_t version)
-    : ShaderProgram{ShaderIdentifier{vertShader, fragShader, version}} {}
-
 ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
     : version{id.version}, shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
 
