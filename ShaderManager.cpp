@@ -106,7 +106,7 @@ void ShaderProgram::getLinkErrors(GLuint shaderProgram) {
 ShaderProgram::~ShaderProgram() { glDeleteProgram(shaderProgram); }
 
 ShaderProgram::ShaderProgram(ShaderProgram&& sp) noexcept {
-    shaderProgram = sp.shaderProgram;
+    shaderProgram = std::move(sp.shaderProgram);
     sp.shaderProgram = 0;
     version = std::move(sp.version);
 }
@@ -115,12 +115,6 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
     shaderProgram = std::move(sp.shaderProgram);
     sp.shaderProgram = 0;
     version = std::move(sp.version);
-    return *this;
-}
-
-ShaderProgram& ShaderProgram::operator=(const ShaderProgram& sp) noexcept {
-    shaderProgram = std::move(sp.shaderProgram);
-    version = sp.version;
     return *this;
 }
 

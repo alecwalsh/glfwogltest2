@@ -41,12 +41,12 @@ class ShaderProgram {
 
     ShaderProgram(const ShaderIdentifier& id);
     
-	// Copy constructor can be defaulted, move constructor needs to set shaderProgram to 0
-	ShaderProgram(const ShaderProgram& sp) = default;
+	// Copy constructor and assignment can be defaulted, move constructor and assignment need to set shaderProgram to 0
+	ShaderProgram(const ShaderProgram& sp) noexcept = default;
 	ShaderProgram(ShaderProgram&& sp) noexcept;
-    
+
+	ShaderProgram& operator=(const ShaderProgram& sp) noexcept = default;
 	ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
-    ShaderProgram& operator=(const ShaderProgram& sp) noexcept;
     
 	~ShaderProgram();
 };
