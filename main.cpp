@@ -228,7 +228,7 @@ int main(int argc, char* argv[]) {
         if (Window::hasResized) {
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 10.0f);
 
-            for (const auto& [id, sp] : shaderManager.shaderMap) {
+            for (const auto& [id, sp] : shaderManager.getMap()) {
                 glUseProgram(sp.shaderProgram);
                 GLint uniProj = glGetUniformLocation(sp.shaderProgram, "proj");
                 glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));

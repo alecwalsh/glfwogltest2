@@ -140,3 +140,5 @@ ShaderManager& ShaderManager::GetInstance() {
     static ShaderManager sm{};
     return sm;
 }
+
+const std::unordered_map<ShaderIdentifier, ShaderProgram>& ShaderManager::getMap() { return shaderMap; }
