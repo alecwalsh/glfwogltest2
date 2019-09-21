@@ -34,10 +34,9 @@ void Window::Create() {
 
     glfwInit();
 
-    auto gl_major_version = get<0>(gl_version);
-    auto gl_minor_version = get<1>(gl_version);
+	auto [gl_major_version, gl_minor_version, uses_gles] = gl_version;
 
-    int gl_api = get<2>(gl_version) ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API;
+    int gl_api = uses_gles ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API;
 
     glfwWindowHint(GLFW_CLIENT_API, gl_api);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major_version);

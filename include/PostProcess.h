@@ -35,7 +35,6 @@ struct PostProcess {
 
   public:
     // TODO: Support multiple postprocess effects
-    // TODO: Don't immediately delete shaders, they might be used later
     // Replaces the current postprocess shader with a different shader
     void ReloadShader(const char* vertShader, const char* fragShader, gl_version_t version);
     // Resize framebuffer texture and renderbuffer to match the current window size

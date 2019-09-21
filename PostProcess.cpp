@@ -95,8 +95,7 @@ PostProcess::~PostProcess() {
 }
 
 void PostProcess::ReloadShader(const char* vertShader, const char* fragShader, gl_version_t version) {
-    ShaderManager& sm = ShaderManager::GetInstance();
-    shaderProgram = sm.addShader({vertShader, fragShader, version});
+    shaderProgram = shaderManager.addShader({vertShader, fragShader, version});
 }
 
 void PostProcess::Resize() {

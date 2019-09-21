@@ -6,13 +6,13 @@
 #include <cstdio>
 
 #include <chrono>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <sstream>
 #include <tuple>
 #include <vector>
-#include <filesystem>
 
 #include "Camera.h"
 #include "ConfigManager.h"
@@ -92,28 +92,13 @@ int main(int argc, char* argv[]) {
     auto translateCamera = [&camera, &deltaTime](Direction d) {
         // TODO: Get key bindings from files
         // TODO: Figure out how to use control key
-        glm::vec3 vector{0.0f};
 
-        switch (d) {
-        case Direction::Forward:
-            vector = camera.vectors.frontVector;
-            break;
-        case Direction::Backward:
-            vector = camera.vectors.backVector;
-            break;
-        case Direction::Left:
-            vector = camera.vectors.leftVector;
-            break;
-        case Direction::Right:
-            vector = camera.vectors.rightVector;
-            break;
-        case Direction::Up:
-            vector = camera.vectors.upVector;
-            break;
-        case Direction::Down:
-            vector = camera.vectors.downVector;
-            break;
-        }
+        const auto& [front, back, right, left, up, down] = camera.vectors;
+
+        glm::vec3 vectors[]{front, back, right, left, up, down};
+
+        glm::vec3 vector = vectors[static_cast<int>(d)];
+
         // TODO: set this elsewhere
         float velocity = 2.5f;
 
@@ -144,11 +129,12 @@ int main(int argc, char* argv[]) {
                              Window::gl_version);
             toggled = true;
         }
-    });	
+    });
 
     // TODO: Add AssetManager, like TextureManager but for all assets
-    // Compile and link shaders    
-    ShaderProgram& cubeShader = shaderManager.addShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", Window::gl_version});
+    // Compile and link shaders
+    ShaderProgram& cubeShader =
+        shaderManager.addShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", Window::gl_version});
     ShaderProgram& lightShader =
         shaderManager.addShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version});
 
@@ -177,8 +163,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Creates a CubeObject
-    glm::mat4 transform{1.0f};
-    auto go = std::make_unique<CubeObject>(mesh, cubeShader, transform, elapsedTime, deltaTime, texman);
+    auto go = std::make_unique<CubeObject>(mesh, cubeShader, glm::mat4{1.0f}, elapsedTime, deltaTime, texman);
     go->name = "cube1";
     go->SetupTextures();
 
@@ -199,8 +184,8 @@ int main(int argc, char* argv[]) {
     auto spotLight = std::make_unique<SpotLight>(glm::vec3{3.0f, 0.75f, 0.0f}, glm::vec3{-1.0f, -0.25f, 0.0f},
                                                  glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)));
     lights.push_back(std::move(spotLight));
-    
-    size_t flashlight_idx = lights.size()-1;
+
+    size_t flashlight_idx = lights.size() - 1;
 
     // TODO: Create LightObject class
     // The white cubes that represent lights
@@ -222,7 +207,7 @@ int main(int argc, char* argv[]) {
     }
 
     im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&] { lights[flashlight_idx]->ToggleActive(); });
-    
+
     // main loop
     while (!window.ShouldClose()) {
         auto t_now = std::chrono::high_resolution_clock::now();
@@ -231,7 +216,7 @@ int main(int argc, char* argv[]) {
         t_prev = t_now;
 
         elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
-        
+
         // std::cout << "Elapsed time:" << elapsedTime << std::endl;
 
         // Enable depth test when rendering main scene
@@ -241,16 +226,13 @@ int main(int argc, char* argv[]) {
         fsq.BindFramebuffer();
 
         if (Window::hasResized) {
-            // TODO: do this for all shaders automatically, instead of manually
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 10.0f);
 
-            glUseProgram(cubeShader.shaderProgram);
-            GLint uniProj = glGetUniformLocation(cubeShader.shaderProgram, "proj");
-            glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
-
-            glUseProgram(lightShader.shaderProgram);
-            GLint uniProj2 = glGetUniformLocation(lightShader.shaderProgram, "proj");
-            glUniformMatrix4fv(uniProj2, 1, GL_FALSE, glm::value_ptr(proj));
+            for (const auto& [id, sp] : shaderManager.shaderMap) {
+                glUseProgram(sp.shaderProgram);
+                GLint uniProj = glGetUniformLocation(sp.shaderProgram, "proj");
+                glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+            }
 
             fsq.Resize();
         }
@@ -269,7 +251,7 @@ int main(int argc, char* argv[]) {
         render(*go, lights, camera);
         render(*floor, lights, camera);
 
-        //Render all of the lights
+        // Render all of the lights
         for (auto& lo : lightObjects) {
             lo->Tick();
             render(*lo, lights, camera);
@@ -300,7 +282,7 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
         using Type = Light::LightType;
 
         auto getLightUniLoc =
-            [ sp = sp.shaderProgram, i ](const char* member) // Gets the uniform location for light struct members
+            [sp = sp.shaderProgram, i](const char* member) // Gets the uniform location for light struct members
         {
             std::stringstream ss;
             ss << "lights[" << i << "]." << member;

@@ -24,13 +24,14 @@ class Camera {
 
     struct vectors {
         using vec3 = glm::vec3;
+
+		vec3 frontVector{0.0f};
+        vec3 backVector{0.0f};
         vec3 rightVector{0.0f};
         vec3 leftVector{0.0f};
-        vec3 frontVector{0.0f};
-        vec3 backVector{0.0f};
         vec3 upVector{0.0f};
         vec3 downVector{0.0f};
     } vectors;
 
-    enum class Direction { Forward, Backward, Left, Right, Up, Down };
+    enum class Direction { Forward, Backward, Right, Left, Up, Down };
 };

@@ -66,9 +66,9 @@ class ShaderManager {
     ShaderManager(const ShaderManager&) = delete;
     ShaderManager& operator=(const ShaderManager&) = delete;
 
+	std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
   private:
     ShaderManager() = default;
-    std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
 };
 
 inline ShaderManager& shaderManager = ShaderManager::GetInstance();
