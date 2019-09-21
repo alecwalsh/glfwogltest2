@@ -103,7 +103,10 @@ void ShaderProgram::getLinkErrors(GLuint shaderProgram) {
     }
 }
 
-ShaderProgram::~ShaderProgram() { glDeleteProgram(shaderProgram); }
+ShaderProgram::~ShaderProgram() {
+    std::cout << "Deleting shader program " << shaderProgram << std::endl;
+    glDeleteProgram(shaderProgram);
+}
 
 ShaderProgram::ShaderProgram(ShaderProgram&& sp) noexcept {
     shaderProgram = std::move(sp.shaderProgram);

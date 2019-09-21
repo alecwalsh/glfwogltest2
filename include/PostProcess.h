@@ -18,7 +18,7 @@ struct PostProcess {
     void operator=(const PostProcess&) = delete;
 
   private:
-    ShaderProgram shaderProgram;
+    std::reference_wrapper<ShaderProgram> shaderProgram;
     GLuint vao;
     struct buffers {
         GLuint vbo;

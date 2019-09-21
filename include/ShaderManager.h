@@ -21,12 +21,17 @@ bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexce
 namespace std {
 template <> struct hash<ShaderIdentifier> {
 	std::size_t operator()(const ShaderIdentifier& id) const {
-			std::string concat = id.vertShader + id.fragShader;
-            concat += std::to_string(std::get<0>(id.version));
-            concat += std::to_string(std::get<1>(id.version));
-			concat += std::to_string(std::get<2>(id.version));
+		using std::to_string;
+		
+		std::string concat = id.vertShader + id.fragShader;
+            
+		auto [major, minor, es] = id.version;
+            
+		concat += to_string(major);
+        concat += to_string(minor);
+        concat += to_string(es);
 
-			return std::hash<std::string>{}(concat);
+		return std::hash<std::string>{}(concat);
 	}
 };
 } // namespace std
@@ -41,12 +46,13 @@ class ShaderProgram {
 
     ShaderProgram(const ShaderIdentifier& id);
     
-	// Copy constructor and assignment can be defaulted, move constructor and assignment need to set shaderProgram to 0
-	ShaderProgram(const ShaderProgram& sp) noexcept = default;
+	// Move constructor and assignment need to set shaderProgram to 0	
 	ShaderProgram(ShaderProgram&& sp) noexcept;
+    ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
 
-	ShaderProgram& operator=(const ShaderProgram& sp) noexcept = default;
-	ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
+	// Copy constructor and assignment are deleted because you can't copy OpenGL objects
+    ShaderProgram(const ShaderProgram& sp) noexcept = delete;
+	ShaderProgram& operator=(const ShaderProgram& sp) noexcept = delete;
     
 	~ShaderProgram();
 };
