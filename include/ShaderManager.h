@@ -8,7 +8,15 @@
 #include <tuple>
 #include <unordered_map>
 
-using gl_version_t = std::tuple<int, int, bool>;
+struct gl_version_t {
+    int major;
+    int minor;
+    bool is_gles; // OpenGL or OpenGL ES
+};
+
+constexpr bool operator==(const gl_version_t& lhs, const gl_version_t& rhs) noexcept {
+    return lhs.major == rhs.major && lhs.minor == rhs.minor && lhs.is_gles == rhs.is_gles;
+}
 
 struct ShaderIdentifier {
     const std::string vertShader;
@@ -16,23 +24,25 @@ struct ShaderIdentifier {
     const gl_version_t version;
 };
 
-bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept;
+inline bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
+    return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
+}
 
 namespace std {
 template <> struct hash<ShaderIdentifier> {
-	std::size_t operator()(const ShaderIdentifier& id) const {
-		using std::to_string;
-		
-		std::string concat = id.vertShader + id.fragShader;
+    std::size_t operator()(const ShaderIdentifier& id) const {
+        using std::to_string;
+
+        std::string concat = id.vertShader + id.fragShader;
             
-		auto [major, minor, es] = id.version;
+        auto [major, minor, es] = id.version;
             
-		concat += to_string(major);
+        concat += to_string(major);
         concat += to_string(minor);
         concat += to_string(es);
 
-		return std::hash<std::string>{}(concat);
-	}
+        return std::hash<std::string>{}(concat);
+    }
 };
 } // namespace std
 
@@ -46,15 +56,15 @@ class ShaderProgram {
 
     ShaderProgram(const ShaderIdentifier& id);
     
-	// Move constructor and assignment need to set shaderProgram to 0	
-	ShaderProgram(ShaderProgram&& sp) noexcept;
+    // Move constructor and assignment need to set shaderProgram to 0	
+    ShaderProgram(ShaderProgram&& sp) noexcept;
     ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
 
-	// Copy constructor and assignment are deleted because you can't copy OpenGL objects
+    // Copy constructor and assignment are deleted because you can't copy OpenGL objects
     ShaderProgram(const ShaderProgram& sp) noexcept = delete;
-	ShaderProgram& operator=(const ShaderProgram& sp) noexcept = delete;
-    
-	~ShaderProgram();
+    ShaderProgram& operator=(const ShaderProgram& sp) noexcept = delete;
+
+    ~ShaderProgram();
 };
 
 class ShaderManager {
@@ -66,7 +76,7 @@ class ShaderManager {
     ShaderManager(const ShaderManager&) = delete;
     ShaderManager& operator=(const ShaderManager&) = delete;
 
-	const std::unordered_map<ShaderIdentifier, ShaderProgram>& getMap();
+    const std::unordered_map<ShaderIdentifier, ShaderProgram>& getMap();
   private:
     std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
     ShaderManager() = default;

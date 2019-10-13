@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tuple>
+#include "ShaderManager.h"
 
 class ConfigManager {
   private:
@@ -13,5 +13,5 @@ class ConfigManager {
     ConfigManager(const char* fileName);
 
     int width = 800, height = 600;
-    std::tuple<int, int, bool> gl_version;
+    gl_version_t gl_version;
 };

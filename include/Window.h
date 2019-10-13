@@ -1,11 +1,8 @@
 #pragma once
 
+#include "ShaderManager.h"
+
 #include <GLFW/glfw3.h>
-
-#include <tuple>
-
-// Major version, minor version, OpenGL or OpenGL ES
-using gl_version_t = std::tuple<int, int, bool>;
 
 class Window {
   public:

@@ -71,10 +71,10 @@ int main(int argc, char* argv[]) {
     glfwSwapInterval(1);
 
     Window::hasResized = false;
+    
+    int load_result = (Window::gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
 
-    int load_result = std::get<2>(Window::gl_version) ? gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)
-                                                      : gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    if (!load_result) {
+    if (load_result == 0) {
         std::cerr << "Error initializing glad" << std::endl;
         glfwTerminate();
         return EXIT_FAILURE;

@@ -9,13 +9,12 @@ ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
 
 // TODO: Make version_string work with OpenGL below 3.3
 GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile) {
-    using std::get;
     using std::to_string;
 
     // std::string version = "#version 300 es\n";
     std::string version_string = "#version ";
-    version_string += to_string(get<0>(version)) + to_string(get<1>(version)) + '0';
-    version_string += get<2>(version) ? " es" : "";
+    version_string += to_string(version.major) + to_string(version.minor) + '0';
+    version_string += version.is_gles ? " es" : "";
     version_string += '\n';
 
     auto getSource = [version_string](auto shaderFile) {
@@ -121,9 +120,9 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
     return *this;
 }
 
-bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
-    return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
-}
+// bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
+//     return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
+// }
 
 ShaderProgram& ShaderManager::addShader(const ShaderIdentifier& id) {
     auto shaderIter = shaderMap.find(id);
