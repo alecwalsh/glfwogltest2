@@ -3,14 +3,8 @@
 
 #include <glm/glm.hpp>
 
-#include <cstdio>
-#ifdef __unix__
-#include <unistd.h>
-#elif _WIN32
-#include <windows.h>
-#endif
-
 #include <chrono>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -43,11 +37,8 @@ template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 void render(GameObject& go, const vec_uniq<Light>& lights, const Camera& camera);
 
 int main(int argc, char* argv[]) {
-#ifdef __unix__
-    chdir(".."); // Data files and shaders are in parent directory
-#elif _WIN32
-    SetCurrentDirectory("..");
-#endif
+    std::filesystem::current_path("..");
+    
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_prev = t_start;
     float elapsedTime = 0.0f;

@@ -3,20 +3,15 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include <cstring>
-#include <algorithm>
+#include <filesystem>
 
 // TODO: Support creating multiple textures at once
 // TODO: Maintain map between textures and shader attribute names
 void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
-    // Prepend the directory name to fileName
-    const char* directory_name = "data/textures";
-    size_t fileNameLength = strlen(fileName) + strlen(directory_name) + 2; // Need room for / and null terminator
-    char* finalFileName = new char[fileNameLength];
-    strcpy(finalFileName, directory_name);
-    strcat(finalFileName, "/");
-    strcat(finalFileName, fileName);
-
+    std::filesystem::path finalFileName = "data/textures";
+    
+    finalFileName /= fileName;
+    
     // Add a new value to the map
     textureObjects.emplace(id, 0);
     // Set the new value to a valid texture object
@@ -29,13 +24,13 @@ void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
     unsigned char* image;
 
     // TODO: check for file existence
-    image = stbi_load(finalFileName, &width, &height, 0, 3);
+    image = stbi_load(finalFileName.string().c_str(), &width, &height, 0, 3);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 
     stbi_image_free(image);
 
-    delete[] finalFileName;
+//     delete[] finalFileName;
 
     // Set texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
