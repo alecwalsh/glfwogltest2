@@ -48,3 +48,18 @@ void Camera::Rotate(float pitch, float yaw) {
     UpdateViewMatrix();
     UpdateVectors(vectors.frontVector, vectors.upVector);
 }
+
+
+// Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
+// for the first time
+// This is just the inverse of the code in Camera::Rotate
+void Camera::SetInitialPitchYaw(double& pitch, double& yaw) {
+    const auto& cf = vectors.frontVector;
+
+    pitch = glm::degrees(asin(cf.y));
+    yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
+
+    if (cf.z < 0) {
+        yaw = -yaw;
+    }
+}

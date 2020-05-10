@@ -161,17 +161,7 @@ int main(int argc, char* argv[]) {
     texman.AddTextureFromFile("normalmaptest1", "normalmaptest1.png");
     texman.AddTextureFromFile("puppy", "sample2.png");
 
-    // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
-    // for the first time
-    // This is just the inverse of the code in Camera::Rotate
-    auto& cf = camera.vectors.frontVector;
-
-    pitch = glm::degrees(asin(cf.y));
-    yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
-
-    if (cf.z < 0) {
-        yaw = -yaw;
-    }
+    camera.SetInitialPitchYaw(pitch, yaw);
 
     // Creates a CubeObject
     glm::mat4 transform{1.0f};
