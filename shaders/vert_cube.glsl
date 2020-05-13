@@ -57,25 +57,12 @@ void main() {
     
     vec4 transformed_position = vec4(position, 1.0);
     
-    //Bone 0 is more significant
-    if(weight.x > weight.y && weight.x > weight.z) {
-        transformed_position = bone_transforms[0] * vec4(position, 1.0);
-//         transformed_position = bone_transforms[1] * transformed_position;
-//         transformed_position = bone_transforms[2] * transformed_position;
-    }
+    mat4 bone_transform = bone_transforms[0] * weight.x;
+    bone_transform += bone_transforms[1] * weight.y;
+    bone_transform += bone_transforms[2] * weight.z;
+    bone_transform += bone_transforms[3] * weight.w;
     
-    //Bone 1 is more significant
-    if(weight.y > weight.x && weight.y > weight.z) {
-        transformed_position = bone_transforms[0] * vec4(position, 1.0);
-        transformed_position = bone_transforms[1] * transformed_position;
-//         transformed_position = bone_transforms[2] * transformed_position;
-    }
-    
-    if(weight.z > weight.x && weight.z > weight.y) {
-        transformed_position = bone_transforms[0] * vec4(position, 1.0);
-        transformed_position = bone_transforms[1] * transformed_position;
-        transformed_position = bone_transforms[2] * transformed_position;
-    }
+    transformed_position = bone_transform * transformed_position;
     
     //Apply the rotation
     transformed_position = rotm * vec4(transformed_position.xyz, 1.0);

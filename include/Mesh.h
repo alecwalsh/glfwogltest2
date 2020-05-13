@@ -22,10 +22,15 @@ class Mesh {
         glm::vec2 texcoord;
         std::array<float, MAX_BONES> weights;
     };
-    
-    struct Bone {
-        
+
+    struct KeyFrame {
+        double time;
+        aiVector3D pos;
+        aiVector3D scale;
+        aiQuaternion rot;
     };
+
+    std::vector<KeyFrame> key_frames;
 
     std::vector<Vertex> vertices;
     std::vector<GLuint> elements;
@@ -54,12 +59,20 @@ class Mesh {
     
     void print_bone_transforms() const;
 
+    //Upload the bone transforms for this frame
+    void UploadFrameTransforms(float time);
+
   private:
     Assimp::Importer importer;
+    const aiScene* scene;
     glm::mat4 root_transform;
     
     void ImportMesh(const std::string& fileName);
     void GetBoneWeights();
+
+    void ReadNodes(aiNode* node, glm::mat4 parent_transform, float time);
+
+    aiBone** bones;
 };
 
 constexpr size_t VERTEX_SIZE  = sizeof(Mesh::Vertex)/sizeof(float);

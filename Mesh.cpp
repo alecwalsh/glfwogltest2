@@ -88,7 +88,7 @@ void Mesh::UploadToGPU() {
 
 void Mesh::ImportMesh(const std::string& fileName) {
     // TODO: Change/add postprocessing flags
-    const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+    scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
     
 	// If the import failed, report it
     if (!scene) {
@@ -98,15 +98,6 @@ void Mesh::ImportMesh(const std::string& fileName) {
 
     auto root_node = scene->mRootNode;
     root_transform = assimp_to_glm(root_node->mTransformation.Inverse());
-    printf("%s has %d children\n", root_node->mName.C_Str(), root_node->mNumChildren);
-    
-    if(root_node->mChildren[0]->mNumChildren > 0) {
-        const auto& node = root_node->mChildren[0];
-        for(unsigned int i = 0; i < node->mNumChildren; i++) {
-            const auto& node2 = node->mChildren[i];
-            printf("Node %s has %d children\n", node2->mName.C_Str(), node2->mNumChildren);
-        }
-    }
 
     const auto& mesh = scene->mMeshes[0];
 
@@ -153,6 +144,51 @@ void Mesh::ImportMesh(const std::string& fileName) {
     GetBoneWeights();
 }
 
+void Mesh::ReadNodes(aiNode* node, glm::mat4 parent_transform, float time) {
+    const char* name = node->mName.C_Str();
+
+    glm::mat4 transform{1.0f};
+
+
+    auto keyFrame = static_cast<int>(time * 25) % 250;
+    //printf("%d\n", keyFrame);
+
+
+    if (bone_names.find(name) != bone_names.end()) {
+        uint32_t idx = bone_names[name];
+
+        //printf("found bone with index %u\n", idx);
+
+        aiBone* bone = bones[idx];
+
+        //printf("Bone name: %s\n", bone->mName.C_Str());
+        //print_mat4(assimp_to_glm(bone->mOffsetMatrix));
+
+        //auto res = assimp_to_glm(bone->mOffsetMatrix) * glm::vec4{1.0f, 2.0f, 3, 4};
+        //printf("%f %f %f %f\n", res.x, res.y, res.z, res.w);
+
+        //print_mat4(glm::translate(glm::mat4{1.0f}, glm::vec3{1.0f, 2.0f, 3.0f}));
+
+        auto v = key_frames[keyFrame].pos;
+        auto posVec = glm::vec3{v.x, v.y, v.z};
+
+        printf("%f %f %f\n", v.x, v.y, v.z);
+
+        //transform = glm::translate(transform, posVec);
+        
+        //transform = parent_transform * transform;
+
+        bone_transforms[idx] = transform;
+    }
+    
+    for (unsigned int i = 0; i < node->mNumChildren; i++) {
+
+        ReadNodes(node->mChildren[i], transform, time);
+    }
+}
+
+void Mesh::UploadFrameTransforms(float time) { ReadNodes(scene->mRootNode, glm::mat4{1.0f}, time); }
+
 void Mesh::GetBoneWeights() {
     const auto& mesh = importer.GetScene()->mMeshes[0];
     
@@ -163,10 +199,12 @@ void Mesh::GetBoneWeights() {
     
     num_bones = mesh->mNumBones;
     assert(num_bones <= MAX_BONES);
-    auto bones = mesh->mBones;
+    bones = mesh->mBones;
+
     printf("%d bones\n", num_bones);
+
     for(uint32_t i = 0; i < num_bones; i++) {
-        auto bone = bones[i];
+        auto* bone = bones[i];
         bone_names.insert({bone->mName.C_Str(), i});
         
         bone_matrices[i] = assimp_to_glm(bone->mOffsetMatrix);
@@ -176,17 +214,42 @@ void Mesh::GetBoneWeights() {
         }
     }
     
-    print_bone_transforms();
+    //print_bone_transforms();
+
+    if (scene->HasAnimations()) {
+        printf("%d animations\n", scene->mNumAnimations);
+        aiAnimation* const anim = scene->mAnimations[0];
+
+        printf("%d animation channels\n", anim->mNumChannels);
+
+        for (int i = 0; i < anim->mNumChannels; i++) {
+            aiNodeAnim* const animChannel = anim->mChannels[i];
+            printf("animChannel %s\n", animChannel->mNodeName.C_Str());
+
+            printf("mNumPositionKeys %u\n", animChannel->mNumPositionKeys);
+
+            for (int j = 0; j < animChannel->mNumPositionKeys; j++) {
+
+                auto posKey = animChannel->mPositionKeys[j];
+                auto scaleKey = animChannel->mScalingKeys[j];
+                auto rotKey = animChannel->mRotationKeys[j];
+
+                key_frames.push_back({posKey.mTime, posKey.mValue, scaleKey.mValue, rotKey.mValue});
+            }
+        }
+    }
+
+    UploadFrameTransforms(0);
     
-    for(auto& bt : bone_transforms) {
-        bt = glm::mat4{1.0f};
+    for (auto& bt : bone_transforms) {
+        //bt = glm::mat4{1.0f};
     }
     
-    bone_transforms[0] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f});
-    bone_transforms[1] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f}); // glm::mat4{1.0f};
-    bone_transforms[2] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f}); // glm::mat4{1.0f};
+    //bone_transforms[0] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f});
+    //bone_transforms[1] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f}); // glm::mat4{1.0f};
+    //bone_transforms[2] = glm::rotate(glm::mat4{1}, glm::radians(45.0f), glm::vec3{1.0f, 0.0f, 0.0f}); // glm::mat4{1.0f};
     
     for(int i = 0; i < bone_transforms.size(); i++) {
-        bone_transforms[i] = glm::inverse(bone_matrices[i]) * bone_transforms[i] * bone_matrices[i];
+        //bone_transforms[i] = glm::inverse(bone_matrices[i]) * bone_transforms[i] * bone_matrices[i];
     }
 }
