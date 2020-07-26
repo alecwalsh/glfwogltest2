@@ -28,7 +28,7 @@ void CubeObject::Draw(const Camera& camera) const {
     GameObject::Draw(camera);
 }
 
-CubeObject::CubeObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime,
+CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime,
                        float& deltaTime, TextureManager& texman)
     : GameObject(mesh, shaderProgram, transform, elapsedTime, deltaTime, texman) {
     // Sets up material properties for the cube

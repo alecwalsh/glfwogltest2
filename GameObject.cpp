@@ -1,7 +1,7 @@
 #include "GameObject.h"
 
 // TODO: lots of parameters and long initializer list, maybe create Time object?
-GameObject::GameObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime,
+GameObject::GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime,
                        float& deltaTime, TextureManager& texman)
     : mesh(mesh), transform(transform), elapsedTime(elapsedTime), deltaTime(deltaTime), texman(texman),
       shaderProgram(shaderProgram) {
@@ -63,7 +63,7 @@ void GameObject::Draw(const Camera& camera) const {
         // TODO: Use indexes from imported mesh as element buffer
         glDrawElements(GL_TRIANGLES, mesh.elements.size(), GL_UNSIGNED_INT, 0);
     } else {
-        glDrawArrays(GL_TRIANGLES, 0, mesh.vertices.size() / VERTEX_SIZE);
+        glDrawArrays(GL_TRIANGLES, 0, mesh.vertices.size());
     }
 }
 

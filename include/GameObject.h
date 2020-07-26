@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "Camera.h"
+#include "MeshBase.h"
 #include "Mesh.h"
 #include "ShaderManager.h"
 #include "TextureManager.h"
@@ -13,7 +14,7 @@
 // TODO: Move rendering code from GameObject into RenderableObject subclass;  Make Camera a subclass of GameObject
 class GameObject {
   protected:
-    Mesh& mesh;
+    MeshBase& mesh;
     glm::mat4 transform{1.0f};
 
     struct {
@@ -32,7 +33,8 @@ class GameObject {
     std::string name = "";
     std::string texture_name = "container";
     std::string spec_texture_name = "container_specular";
-    GameObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime, float& deltaTime,
+    
+    GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime, float& deltaTime,
                TextureManager& texman);
     virtual ~GameObject();
     GameObject(const GameObject& go);

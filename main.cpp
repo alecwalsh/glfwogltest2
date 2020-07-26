@@ -28,6 +28,9 @@
 #include "Window.h"
 // TODO: clean up duplicate includes
 
+#include "MeshBase.h"
+#include "ProceduralMesh.h"
+
 #include "version.h"
 
 // TODO: figure out where to put these, avoid extern in other files
@@ -143,6 +146,8 @@ int main(int argc, char* argv[]) {
     Mesh mesh{"data/cube_irreg.fbx"};
     Mesh lightMesh{"data/cube.fbx"};
 
+    ProceduralMesh procMesh{};
+
     // Create textures
     TextureManager texman;
     texman.AddTextureFromFile("container", "container2.png");
@@ -166,6 +171,11 @@ int main(int argc, char* argv[]) {
     auto go = std::make_unique<CubeObject>(mesh, cubeShader, glm::mat4{1.0f}, elapsedTime, deltaTime, texman);
     go->name = "cube1";
     go->SetupTextures();
+
+    auto go2 = std::make_unique<CubeObject>(procMesh, lightShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 1.0f}),
+                                           elapsedTime, deltaTime, texman);
+    go2->name = "cube1";
+    go2->SetupTextures();
 
     glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
@@ -249,6 +259,7 @@ int main(int argc, char* argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         render(*go, lights, camera);
+        render(*go2, lights, camera);
         render(*floor, lights, camera);
 
         // Render all of the lights

@@ -4,7 +4,7 @@
 class CubeObject : public GameObject {
   public:
     float RotSpeed = 0;
-    CubeObject(Mesh& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime, float& deltaTime,
+    CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime, float& deltaTime,
                TextureManager& texman);
     virtual ~CubeObject() override;
     void Tick() override;
