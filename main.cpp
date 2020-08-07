@@ -172,9 +172,9 @@ int main(int argc, char* argv[]) {
     go->name = "cube1";
     go->SetupTextures();
 
-    auto go2 = std::make_unique<CubeObject>(procMesh, lightShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 1.0f}),
+    auto go2 = std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 1.0f}),
                                            elapsedTime, deltaTime, texman);
-    go2->name = "cube1";
+    go2->name = "sphere1";
     go2->SetupTextures();
 
     glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
