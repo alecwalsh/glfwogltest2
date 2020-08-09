@@ -2,16 +2,18 @@
 
 #include "ShaderManager.h"
 
+#include <exception>
+
 class ConfigManager {
-  private:
-    void LoadVars();
-    int getWidth() const;
-    int getHeight() const;
-
   public:
-    ConfigManager();
-    ConfigManager(const char* fileName);
+    ConfigManager() = default;
 
-    int width = 800, height = 600;
-    gl_version_t gl_version;
+    // TODO: Read values from file
+    ConfigManager(const char* fileName) : ConfigManager{} {
+        throw std::exception{"Not implemented yet"};
+    }
+
+    int width = 800;
+    int height = 600;
+    const gl_version_t gl_version = {3, 3, false};
 };
