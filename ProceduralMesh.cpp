@@ -22,7 +22,7 @@ std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
 }
 
 vec3 SphericalToCartesian(double r, double theta, double phi) {
-    return static_cast<vec3::value_type>(r) * vec3{sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
+    return static_cast<vec3::value_type>(r) * vec3{sin(theta) * sin(phi), cos(theta), sin(theta) * cos(phi)};
 }
 
 std::vector<MeshBase::Vertex> GenerateSphereVertices() {
