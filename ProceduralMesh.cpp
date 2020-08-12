@@ -21,29 +21,56 @@ std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
     };
 }
 
+// Theta is polar angle, measured clockwise from {0, 1, 0}
+// Phi is azimuthal angle, measured counterclockwise from {0, 0, 1}
 vec3 SphericalToCartesian(double r, double theta, double phi) {
     return static_cast<vec3::value_type>(r) * vec3{sin(theta) * sin(phi), cos(theta), sin(theta) * cos(phi)};
 }
 
-std::vector<MeshBase::Vertex> GenerateSphereVertices() {
-    std::vector<MeshBase::Vertex> vertices;
+std::vector<MeshBase::Vertex> GenerateUVSphereVertices() { // TODO: Generate UV coordinates
+    constexpr double M_PI = 3.14159265358979323846;
 
-    int slices = 20;
+    std::vector<MeshBase::Vertex> vertices;
 
     double radius = 1;
 
-    double M_PI = 3.14159265358979323846;
+    int slices = 20;
 
-    double theta = 1 / M_PI;
-    double phi = 2 / (2 * M_PI);
+    int latSlices = slices/2;
+    int longSlices = slices;
 
-    for (int i = 1; i < slices; i++) { //TODO: handle top and bottom slices separately
-        double theta = i * 2 * M_PI / slices; //Angle from top
-        double theta2 = theta + 2 * M_PI / slices;
+    for (int j = 0; j < longSlices; j++) { // Create top and bottom cap
+        double theta = M_PI / latSlices; // Angle for top of second slice
+        double theta2 = M_PI - M_PI / latSlices; // Angle for bottom of second to last slice
 
-        for (int j = 0; j < slices; j++) {
-            double phi = j * 2 * M_PI / slices; // Angle from top
-            double phi2 = phi + 2 * M_PI / slices;
+        double phi = j * (2 * M_PI / longSlices); // Angle from {0, 0, 1}
+        double phi2 = phi + 2 * M_PI / longSlices;
+
+        std::array capVertices = {
+            vec3{0, 1, 0},
+            SphericalToCartesian(radius, theta, phi2),
+            SphericalToCartesian(radius, theta, phi),
+
+            vec3{0, -1, 0},
+            SphericalToCartesian(radius, theta2, phi2),
+            SphericalToCartesian(radius, theta2, phi),
+        };
+
+        for (const vec3& v : capVertices) {
+            vertices.push_back({
+                v,
+                v,
+            });
+        }
+    }
+
+    for (int i = 1; i < latSlices-1; i++) {
+        double theta = i * M_PI / latSlices; // Angle from top ({0, 1, 0})
+        double theta2 = theta + M_PI / latSlices;
+
+        for (int j = 0; j < longSlices; j++) {
+            double phi = j * (2 * M_PI / longSlices); // Angle from {0, 0, 1}
+            double phi2 = phi + 2 * M_PI / longSlices;
 
             std::array faceVertices = {
                 SphericalToCartesian(radius, theta, phi),
@@ -136,7 +163,7 @@ std::vector<MeshBase::Vertex> GenerateCubeVertices() {
 }
 
 ProceduralMesh::ProceduralMesh() {
-    // vertices = GenerateSphereVertices();
+    // vertices = GenerateUVSphereVertices();
     vertices = GenerateCubeVertices();
 
     UploadToGPU();
