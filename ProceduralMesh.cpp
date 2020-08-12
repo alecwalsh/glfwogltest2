@@ -22,12 +22,12 @@ std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
 }
 
 vec3 SphericalToCartesian(double r, double theta, double phi) {
-    return (float)r * vec3{sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
+    return static_cast<vec3::value_type>(r) * vec3{sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
 }
 
 std::vector<MeshBase::Vertex> GenerateSphereVertices() {
     std::vector<MeshBase::Vertex> vertices;
-    
+
     int slices = 20;
 
     double radius = 1;
@@ -40,8 +40,7 @@ std::vector<MeshBase::Vertex> GenerateSphereVertices() {
     for (int i = 1; i < slices; i++) { //TODO: handle top and bottom slices separately
         double theta = i * 2 * M_PI / slices; //Angle from top
         double theta2 = theta + 2 * M_PI / slices;
-        
-        
+
         for (int j = 0; j < slices; j++) {
             double phi = j * 2 * M_PI / slices; // Angle from top
             double phi2 = phi + 2 * M_PI / slices;
@@ -65,8 +64,80 @@ std::vector<MeshBase::Vertex> GenerateSphereVertices() {
     return vertices;
 }
 
+//TODO: Support cuboids
+std::vector<MeshBase::Vertex> GenerateCubeVertices() {
+    std::vector<MeshBase::Vertex> vertices;
+
+    float size = 1.0f;
+
+    vec3 topRightFront{1.0f, 1.0f, 1.0f};
+
+    vec3 bottomLeftBack = topRightFront - vec3{size};
+
+    std::array topFace = {
+        topRightFront,
+        topRightFront - vec3{size, 0, 0},
+        topRightFront - vec3{size, 0, size},
+        topRightFront - vec3{0, 0, size},
+    };
+
+    std::array bottomFace = {
+        bottomLeftBack,
+        bottomLeftBack + vec3{size, 0, 0},
+        bottomLeftBack + vec3{size, 0, size},
+        bottomLeftBack + vec3{0, 0, size},
+    };
+
+    std::array frontFace = {
+        topRightFront - vec3{0, 0, 0},
+        topRightFront - vec3{size, 0, 0},
+        topRightFront - vec3{size, size, 0},
+        topRightFront - vec3{0, size, 0},
+    };
+
+    std::array backFace = {
+        bottomLeftBack + vec3{0, 0, 0},
+        bottomLeftBack + vec3{size, 0, 0},
+        bottomLeftBack + vec3{size, size, 0},
+        bottomLeftBack + vec3{0, size, 0},
+    };
+
+    std::array rightFace = {
+        topRightFront,
+        topRightFront - vec3{0, 0, size},
+        topRightFront - vec3{0, size, size},
+        topRightFront - vec3{0, size, 0},
+    };
+
+    std::array leftFace = {
+        bottomLeftBack,
+        bottomLeftBack + vec3{0, 0, size},
+        bottomLeftBack + vec3{0, size, size},
+        bottomLeftBack + vec3{0, size, 0},
+    };
+
+    using T = std::pair<std::array<vec3, 4>, vec3>;
+    std::vector<T> faces = {
+        {topFace, vec3{0, 1, 0}},
+        {bottomFace, vec3{0, -1, 0}},
+        {frontFace, vec3{0, 0, 1}},
+        {backFace, vec3{0, 0, -1}},
+        {rightFace, vec3{1, 0, 0}},
+        {leftFace, vec3{-1, 0, 0}}
+    };
+
+    for (const auto& [face, normal] : faces) {
+        for (const vec3& v : QuadToTris(face)) {
+            vertices.push_back({v, normal});
+        }
+    }
+
+    return vertices;
+}
+
 ProceduralMesh::ProceduralMesh() {
-    vertices = GenerateSphereVertices();
+    // vertices = GenerateSphereVertices();
+    vertices = GenerateCubeVertices();
 
     UploadToGPU();
 }
