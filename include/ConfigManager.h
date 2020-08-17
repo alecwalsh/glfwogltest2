@@ -2,7 +2,7 @@
 
 #include "ShaderManager.h"
 
-#include <exception>
+#include <stdexcept>
 
 class ConfigManager {
   public:
@@ -10,7 +10,7 @@ class ConfigManager {
 
     // TODO: Read values from file
     ConfigManager(const char* fileName) : ConfigManager{} {
-        throw std::exception{"Not implemented yet"};
+        throw std::runtime_error{"Not implemented yet"};
     }
 
     int width = 800;
