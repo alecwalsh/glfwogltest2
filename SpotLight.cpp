@@ -4,5 +4,3 @@ SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 diffuse,
                      float cutoffAngle)
     : Light{diffuse, specular, LightType::Spot}, position(position), direction(direction),
       cutoffAngle(cutoffAngle) {}
-
-SpotLight::~SpotLight() {}

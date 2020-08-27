@@ -18,7 +18,7 @@ class Light {
 
     void ToggleActive() { active = !active; }
 
-    virtual ~Light() = 0;
+    virtual ~Light() = default;
 
   protected:
     Light(glm::vec3 diffuse_, glm::vec3 specular_, LightType type_);

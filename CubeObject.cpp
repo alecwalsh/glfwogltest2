@@ -37,5 +37,3 @@ CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 t
     material.specular = glm::vec3{1.0f, 1.0f, 1.0f};
     material.shininess = 32.0f;
 }
-
-CubeObject::~CubeObject() {}

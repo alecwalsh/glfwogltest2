@@ -6,7 +6,6 @@ class CubeObject : public GameObject {
     float RotSpeed = 0;
     CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime, float& deltaTime,
                TextureManager& texman);
-    virtual ~CubeObject() override;
     void Tick() override;
     void Draw(const Camera& camera) const override;
 };
