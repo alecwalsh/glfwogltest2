@@ -21,8 +21,6 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
     Window::hasResized = true;
 }
 
-Window::Window(int width, int height, gl_version_t gl_version) {}
-
 void Window::Create() {
     using std::get;
 
@@ -68,7 +66,7 @@ Window::~Window() { glfwTerminate(); }
 Window& Window::GetInstance() {
     assert(height != 0 && width != 0);
     // TODO: check if gl_version is valid
-    static Window w{Window::width, Window::height, Window::gl_version};
+    static Window w{};
     return w;
 }
 

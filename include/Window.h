@@ -34,7 +34,7 @@ class Window {
     void captureMouse();
 
   private:
-    Window(int width, int height, gl_version_t gl_version);
+    Window() = default;
     ~Window();
 
     GLFWwindow* window;
