@@ -20,10 +20,10 @@ class MeshBase {
 
     bool usesElementArray = false; // Set to true or false depending on which constructor is called
 
-    struct buffers {
+    struct {
         GLuint vbo;
         GLuint ebo;
-    } buffers;
+    } buffers = {};
 
     // TODO: copy/move constructors
     MeshBase() = default;
