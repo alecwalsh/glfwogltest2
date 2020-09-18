@@ -3,22 +3,35 @@
 #include <array>
 #include <utility>
 #include <optional>
+#include <stdexcept>
 
 #include <cstdint>
 
+#ifdef __cpp_lib_math_constants
+#include <numbers>
+using std::numbers::pi;
+#else
+constexpr double pi = 3.14159265358979323846;
+#endif
+
 using vec3 = glm::vec3;
+
+// TODO: Doesn't work right if the vertices aren't in order
+constexpr std::array<GLuint, 6> QuadToTrisElements(std::array<vec3, 4> vertices) {
+    return {0, 1, 2, 2, 3, 0};
+}
 
 //TODO: Doesn't work right if the vertices aren't in order
 std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
-    return {
-        vertices[0], 
-        vertices[1],
-        vertices[2],
+    std::array<vec3, 6> result;
 
-        vertices[2],
-        vertices[3],
-        vertices[0],
-    };
+    auto elements = QuadToTrisElements(vertices);
+
+    for (std::size_t i = 0; i < result.size(); i++) {
+        result[i] = vertices[elements[i]];
+    }
+
+    return result;
 }
 
 // Theta is polar angle, measured clockwise from {0, 1, 0}
@@ -28,23 +41,22 @@ vec3 SphericalToCartesian(double r, double theta, double phi) {
 }
 
 std::vector<MeshBase::Vertex> GenerateUVSphereVertices() { // TODO: Generate UV coordinates
-    constexpr double M_PI = 3.14159265358979323846;
-
     std::vector<MeshBase::Vertex> vertices;
 
     double radius = 1;
 
+    //Slices must be at least 4
     int slices = 20;
 
     int latSlices = slices/2;
     int longSlices = slices;
 
     for (int j = 0; j < longSlices; j++) { // Create top and bottom cap
-        double theta = M_PI / latSlices; // Angle for top of second slice
-        double theta2 = M_PI - M_PI / latSlices; // Angle for bottom of second to last slice
+        double theta = pi / latSlices; // Angle for top of second slice
+        double theta2 = pi - pi / latSlices; // Angle for bottom of second to last slice
 
-        double phi = j * (2 * M_PI / longSlices); // Angle from {0, 0, 1}
-        double phi2 = phi + 2 * M_PI / longSlices;
+        double phi = j * (2 * pi / longSlices); // Angle from {0, 0, 1}
+        double phi2 = phi + 2 * pi / longSlices;
 
         std::array capVertices = {
             vec3{0, 1, 0},
@@ -65,12 +77,12 @@ std::vector<MeshBase::Vertex> GenerateUVSphereVertices() { // TODO: Generate UV 
     }
 
     for (int i = 1; i < latSlices-1; i++) {
-        double theta = i * M_PI / latSlices; // Angle from top ({0, 1, 0})
-        double theta2 = theta + M_PI / latSlices;
+        double theta = i * pi / latSlices; // Angle from top ({0, 1, 0})
+        double theta2 = theta + pi / latSlices;
 
         for (int j = 0; j < longSlices; j++) {
-            double phi = j * (2 * M_PI / longSlices); // Angle from {0, 0, 1}
-            double phi2 = phi + 2 * M_PI / longSlices;
+            double phi = j * (2 * pi / longSlices); // Angle from {0, 0, 1}
+            double phi2 = phi + 2 * pi / longSlices;
 
             std::array faceVertices = {
                 SphericalToCartesian(radius, theta, phi),
@@ -91,9 +103,13 @@ std::vector<MeshBase::Vertex> GenerateUVSphereVertices() { // TODO: Generate UV 
     return vertices;
 }
 
-//TODO: Support cuboids
-std::vector<MeshBase::Vertex> GenerateCubeVertices() {
+// TODO: Support cuboids, subdivision
+std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>> GenerateCubeVertices() {
     std::vector<MeshBase::Vertex> vertices;
+    std::vector<GLuint> elements;
+
+    vertices.reserve(36);
+    elements.reserve(24);
 
     float size = 1.0f;
 
@@ -116,14 +132,14 @@ std::vector<MeshBase::Vertex> GenerateCubeVertices() {
     };
 
     std::array frontFace = {
-        topRightFront - vec3{0, 0, 0},
+        topRightFront,
         topRightFront - vec3{size, 0, 0},
         topRightFront - vec3{size, size, 0},
         topRightFront - vec3{0, size, 0},
     };
 
     std::array backFace = {
-        bottomLeftBack + vec3{0, 0, 0},
+        bottomLeftBack,
         bottomLeftBack + vec3{size, 0, 0},
         bottomLeftBack + vec3{size, size, 0},
         bottomLeftBack + vec3{0, size, 0},
@@ -150,21 +166,31 @@ std::vector<MeshBase::Vertex> GenerateCubeVertices() {
         {frontFace, vec3{0, 0, 1}},
         {backFace, vec3{0, 0, -1}},
         {rightFace, vec3{1, 0, 0}},
-        {leftFace, vec3{-1, 0, 0}}
+        {leftFace, vec3{-1, 0, 0}},
     };
 
+    GLuint index = 0;
+
     for (const auto& [face, normal] : faces) {
-        for (const vec3& v : QuadToTris(face)) {
+        for (const auto& v : face) {
             vertices.push_back({v, normal});
         }
+        for (const auto& e : QuadToTrisElements(face)) {
+            elements.push_back(e + 4*index);
+        }
+        index++;
     }
 
-    return vertices;
+    return {vertices, elements};
 }
 
 ProceduralMesh::ProceduralMesh() {
-    // vertices = GenerateUVSphereVertices();
-    vertices = GenerateCubeVertices();
+    //vertices = GenerateUVSphereVertices();
+
+    auto cube = GenerateCubeVertices();
+    vertices = cube.first;
+    elements = cube.second;
+    usesElementArray = true;
 
     UploadToGPU();
 }
