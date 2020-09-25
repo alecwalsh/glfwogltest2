@@ -10,7 +10,7 @@ set(BASE "/build")
 
 file(GLOB SOURCES "*.cpp")
 file(GLOB_RECURSE HEADERS "include/*.h")
-set(SOURCES ${SOURCES} ${HEADERS} glad/glad.c)
+set(SOURCES ${SOURCES} ${HEADERS} glad/glad.c imgui/imgui.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp imgui/imgui_demo.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp)
 
 link_directories(${BASE}/lib)
 
@@ -21,7 +21,7 @@ set_target_properties(glfwogltest2 PROPERTIES CXX_STANDARD_REQUIRED true)
 set_target_properties(glfwogltest2 PROPERTIES CXX_EXTENSIONS false)
 
 target_compile_options(glfwogltest2 PRIVATE "-Wall")
-target_include_directories(glfwogltest2 PUBLIC "include" ".")
+target_include_directories(glfwogltest2 PUBLIC "include" "." "imgui")
 
 if(UNIX)
     target_link_libraries(glfwogltest2 GL glfw assimp dl)
@@ -39,8 +39,8 @@ elseif(WIN32)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT glfwogltest2)
     target_include_directories(glfwogltest2 PUBLIC ${GLM_PATH}/glm)
     target_link_libraries(glfwogltest2 opengl32 glfw3 assimp)
-	
-	add_custom_command(TARGET glfwogltest2 POST_BUILD 
+    
+    add_custom_command(TARGET glfwogltest2 POST_BUILD 
                COMMAND ${CMAKE_COMMAND} -E copy_if_different
                ${ASSIMP_PATH}/build/code/debug/assimp-vc140-mt.dll
                $<TARGET_FILE_DIR:glfwogltest2>)

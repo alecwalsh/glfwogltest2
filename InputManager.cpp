@@ -6,7 +6,8 @@ extern float lastX, lastY;
 extern double yaw, pitch;
 
 std::array<InputManager::KeyState, GLFW_KEY_LAST> InputManager::keystates;
-bool InputManager::mouseMoved;
+bool InputManager::mouseMoved = false;
+bool InputManager::firstMouse = true;
 
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
     auto& keystates = InputManager::keystates;
@@ -29,32 +30,32 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 }
 
 void InputManager::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    static bool firstMouse = true;
+    if (InputManager::GetInstance().mouseEnabled) {
+        InputManager::mouseMoved = true;
+        if (firstMouse) {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
 
-    InputManager::mouseMoved = true;
-    if (firstMouse) {
+        float xSensitivity = 0.2f;
+        float ySensitivity = 0.2f;
+
+        auto deltaX = lastX - xpos;
+        auto deltaY = lastY - ypos;
+
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
-    }
 
-    float xSensitivity = 0.2f;
-    float ySensitivity = 0.2f;
+        yaw -= deltaX * xSensitivity;
+        pitch += deltaY * ySensitivity;
 
-    auto deltaX = lastX - xpos;
-    auto deltaY = lastY - ypos;
-
-    lastX = xpos;
-    lastY = ypos;
-
-    yaw -= deltaX * xSensitivity;
-    pitch += deltaY * ySensitivity;
-
-    if (pitch > 89.0f) {
-        pitch = 89.0f;
-    }
-    if (pitch < -89.0f) {
-        pitch = -89.0f;
+        if (pitch > 89.0f) {
+            pitch = 89.0f;
+        }
+        if (pitch < -89.0f) {
+            pitch = -89.0f;
+        }
     }
 }
 
@@ -62,7 +63,7 @@ void InputManager::HandleInput() {
     glfwPollEvents();
 
     for (const auto& keybinding : key_bindings) {
-        const auto & [ keycode, desired_state, func ] = keybinding;
+        const auto& [keycode, desired_state, func] = keybinding;
         auto& current_state = keystates[keycode];
         if (desired_state == KeyState::AnyPress) {
             if (current_state == KeyState::InitialPress || current_state == KeyState::RepeatPress) {
@@ -77,6 +78,9 @@ void InputManager::HandleInput() {
         }
     }
 }
+
+void InputManager::DisableMouseInput() { mouseEnabled = false; }
+void InputManager::EnableMouseInput() { mouseEnabled = true; }
 
 InputManager& InputManager::GetInstance() {
     static InputManager im{};

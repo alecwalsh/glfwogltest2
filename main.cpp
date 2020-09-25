@@ -1,3 +1,8 @@
+#include "imgui.h"
+
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
@@ -82,6 +87,8 @@ int main(int argc, char* argv[]) {
         glfwTerminate();
         return EXIT_FAILURE;
     }
+    
+    window.InitGui();
 
     glEnable(GL_MULTISAMPLE);
 
@@ -91,35 +98,37 @@ int main(int argc, char* argv[]) {
 
     using Direction = Camera::Direction;
 
-    // Translates the camera in a certain direction
-    auto translateCamera = [&camera, &deltaTime](Direction d) {
-        // TODO: Get key bindings from files
-        // TODO: Figure out how to use control key
+    // Create a lambda that translates the camera in a certain direction
+    auto translateCamera = [&camera, &deltaTime](Direction d){
+        return [&, d] {
+            // TODO: Get key bindings from files
+            // TODO: Figure out how to use control key
 
-        const auto& [front, back, right, left, up, down] = camera.vectors;
+            const auto& [front, back, right, left, up, down] = camera.vectors;
 
-        glm::vec3 vectors[]{front, back, right, left, up, down};
+            glm::vec3 vectors[]{front, back, right, left, up, down};
 
-        glm::vec3 vector = vectors[static_cast<int>(d)];
+            glm::vec3 vector = vectors[static_cast<int>(d)];
 
-        // TODO: set this elsewhere
-        float velocity = 2.5f;
+            // TODO: set this elsewhere
+            float velocity = 2.5f;
 
-        glm::mat4 translation{1.0f};
-        translation = glm::translate(translation, velocity * deltaTime * vector);
-        camera.Translate(translation);
+            glm::mat4 translation{1.0f};
+            translation = glm::translate(translation, velocity * deltaTime * vector);
+            camera.Translate(translation);
+        };
     };
 
     using KeyState = InputManager::KeyState;
 
     // Set key bindings
     // TODO: Set in Lua file
-    im.AddKeyBinding(KEY(W), KeyState::AnyPress, [&] { translateCamera(Direction::Forward); });
-    im.AddKeyBinding(KEY(A), KeyState::AnyPress, [&] { translateCamera(Direction::Left); });
-    im.AddKeyBinding(KEY(S), KeyState::AnyPress, [&] { translateCamera(Direction::Backward); });
-    im.AddKeyBinding(KEY(D), KeyState::AnyPress, [&] { translateCamera(Direction::Right); });
-    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, [&] { translateCamera(Direction::Up); });
-    im.AddKeyBinding(KEY(C), KeyState::AnyPress, [&] { translateCamera(Direction::Down); });
+    im.AddKeyBinding(KEY(W), KeyState::AnyPress, translateCamera(Direction::Forward));
+    im.AddKeyBinding(KEY(A), KeyState::AnyPress, translateCamera(Direction::Left));
+    im.AddKeyBinding(KEY(S), KeyState::AnyPress, translateCamera(Direction::Backward));
+    im.AddKeyBinding(KEY(D), KeyState::AnyPress, translateCamera(Direction::Right));
+    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, translateCamera(Direction::Up));
+    im.AddKeyBinding(KEY(C), KeyState::AnyPress, translateCamera(Direction::Down));
     im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [&] { window.Close(); });
     im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&] {
         static bool toggled = false;
@@ -130,6 +139,20 @@ int main(int argc, char* argv[]) {
         } else {
             fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl",
                              Window::gl_version);
+            toggled = true;
+        }
+    });
+    
+    im.AddKeyBinding(KEY(U), KeyState::InitialPress, [&window, &im] {
+        static bool toggled = false;
+        if (toggled) {
+            window.CaptureMouse();
+            im.EnableMouseInput();
+            InputManager::firstMouse = true;
+            toggled = false;
+        } else {
+            window.ReleaseMouse();
+            im.DisableMouseInput();
             toggled = true;
         }
     });
@@ -273,6 +296,19 @@ int main(int argc, char* argv[]) {
 
         // Draw the fullscreen quad
         fsq.Draw();
+        
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        
+        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+        
+        ImGui::End();
+        
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         window.SwapBuffers();
     }

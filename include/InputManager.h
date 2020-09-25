@@ -22,6 +22,7 @@ class InputManager {
 
     static std::array<KeyState, GLFW_KEY_LAST> keystates;
     static bool mouseMoved;
+    static bool firstMouse;
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -29,6 +30,9 @@ class InputManager {
     template <typename F> void AddKeyBinding(InputManager::keycode_t key, KeyState state, F&& f);
 
     void HandleInput();
+
+    void DisableMouseInput();
+    void EnableMouseInput();
 
     static InputManager& GetInstance();
     // Deleted to prevent copies
@@ -38,6 +42,8 @@ class InputManager {
   private:
     InputManager() = default;
     ~InputManager() = default;
+
+    bool mouseEnabled = true;
 
     std::vector<std::tuple<keycode_t, KeyState, std::function<void()>>> key_bindings;
 };

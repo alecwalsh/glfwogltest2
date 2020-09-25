@@ -1,6 +1,7 @@
 #include "Window.h"
 
 #include "InputManager.h"
+#include "UIManager.h"
 
 #include <cassert>
 #include <exception>
@@ -51,7 +52,7 @@ void Window::Create() {
 
     glfwMakeContextCurrent(window);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    CaptureMouse();
 
     glfwSetKeyCallback(window, InputManager::key_callback);
     glfwSetCursorPosCallback(window, InputManager::mouse_callback);
@@ -61,7 +62,15 @@ void Window::Create() {
     lastY = height / 2;
 }
 
-Window::~Window() { glfwTerminate(); }
+void Window::InitGui() {
+    UIManager::window = window;
+    const auto& uim = UIManager::GetInstance();
+}
+
+Window::~Window() {
+    glfwDestroyWindow(window);
+    glfwTerminate();
+}
 
 Window& Window::GetInstance() {
     assert(height != 0 && width != 0);
@@ -78,6 +87,6 @@ void Window::Close() { glfwSetWindowShouldClose(window, true); }
 
 void Window::Resize(int width, int height) { glfwSetWindowSize(window, width, height); }
 
-void Window::releaseMouse() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
+void Window::ReleaseMouse() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
 
-void Window::captureMouse() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
+void Window::CaptureMouse() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
