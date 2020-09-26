@@ -1,10 +1,11 @@
 #pragma once
 
-#include "GLFW/glfw3.h"
-
 class UIManager {
   public:
-    static GLFWwindow* window;
+    void BeginFrame();
+    void EndFrame();
+    void Draw();
+
     static UIManager& GetInstance();
     // Deleted to prevent copies
     UIManager(const UIManager&) = delete;

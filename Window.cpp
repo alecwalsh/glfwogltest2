@@ -1,7 +1,8 @@
 #include "Window.h"
 
 #include "InputManager.h"
-#include "UIManager.h"
+
+#include "imgui_impl_glfw.h"
 
 #include <cassert>
 #include <exception>
@@ -63,8 +64,7 @@ void Window::Create() {
 }
 
 void Window::InitGui() {
-    UIManager::window = window;
-    const auto& uim = UIManager::GetInstance();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
 }
 
 Window::~Window() {

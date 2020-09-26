@@ -1,15 +1,41 @@
 #include "UIManager.h"
 
+#include "Window.h"
+
 #include "imgui.h"
 
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-GLFWwindow* UIManager::window;
-
 UIManager& UIManager::GetInstance() {
     static UIManager uim{};
     return uim;
+}
+
+void UIManager::BeginFrame() {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
+void UIManager::EndFrame() {
+    ImGui::Render();
+}
+
+void UIManager::Draw() {
+    BeginFrame();
+
+    ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
+
+    ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
+    char buf[512] = {};
+    ImGui::InputText("", buf, 512);
+
+    ImGui::End();
+
+    EndFrame();
+
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 UIManager::UIManager() {
@@ -18,9 +44,7 @@ UIManager::UIManager() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    ImGuiIO& io = ImGui::GetIO();
-
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    Window::GetInstance().InitGui();
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
