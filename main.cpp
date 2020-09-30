@@ -137,9 +137,9 @@ int main(int argc, char* argv[]) {
     // TODO: Add AssetManager, like TextureManager but for all assets
     // Compile and link shaders
     ShaderProgram& cubeShader =
-        shaderManager.addShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", Window::gl_version});
+        shaderManager.AddShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", Window::gl_version});
     ShaderProgram& lightShader =
-        shaderManager.addShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version});
+        shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version});
 
     // TODO: use different format
     Mesh floorMesh{"data/floor.fbx"};
@@ -238,7 +238,7 @@ int main(int argc, char* argv[]) {
         if (Window::hasResized) {
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 10.0f);
 
-            for (const auto& [id, sp] : shaderManager.getMap()) {
+            for (const auto& [id, sp] : shaderManager.GetMap()) {
                 glUseProgram(sp.shaderProgram);
                 GLint uniProj = glGetUniformLocation(sp.shaderProgram, "proj");
                 glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));

@@ -43,19 +43,19 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexSource, NULL);
     glCompileShader(vertexShader);
-    getCompileErrors(vertexShader);
+    GetCompileErrors(vertexShader);
 
     // Create and compile the fragment shader
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
     glCompileShader(fragmentShader);
-    getCompileErrors(fragmentShader);
+    GetCompileErrors(fragmentShader);
 
     // Link the vertex and fragment shader into a shader program
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
-    getLinkErrors(shaderProgram);
+    GetLinkErrors(shaderProgram);
 
     // Don't need these anymore
     glDetachShader(shaderProgram, fragmentShader);
@@ -68,7 +68,7 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, 
     return shaderProgram;
 }
 
-void ShaderProgram::getCompileErrors(GLuint shader) {
+void ShaderProgram::GetCompileErrors(GLuint shader) {
     GLint compiled;
 
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
@@ -85,7 +85,7 @@ void ShaderProgram::getCompileErrors(GLuint shader) {
     }
 }
 
-void ShaderProgram::getLinkErrors(GLuint shaderProgram) {
+void ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
     GLint linked;
 
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
@@ -124,7 +124,7 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
 //     return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
 // }
 
-ShaderProgram& ShaderManager::addShader(const ShaderIdentifier& id) {
+ShaderProgram& ShaderManager::AddShader(const ShaderIdentifier& id) {
     auto shaderIter = shaderMap.find(id);
     if (shaderIter == std::end(shaderMap)) {
         // Shader is not already in shaderMap, so add it
@@ -140,4 +140,4 @@ ShaderManager& ShaderManager::GetInstance() {
     return sm;
 }
 
-const std::unordered_map<ShaderIdentifier, ShaderProgram>& ShaderManager::getMap() { return shaderMap; }
+const std::unordered_map<ShaderIdentifier, ShaderProgram>& ShaderManager::GetMap() { return shaderMap; }

@@ -48,8 +48,8 @@ template <> struct hash<ShaderIdentifier> {
 
 class ShaderProgram {
     GLuint ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
-    void getCompileErrors(GLuint shader);
-    void getLinkErrors(GLuint shaderProgram);
+    void GetCompileErrors(GLuint shader);
+    void GetLinkErrors(GLuint shaderProgram);
     gl_version_t version;
   public:
     GLuint shaderProgram;
@@ -69,14 +69,14 @@ class ShaderProgram {
 
 class ShaderManager {
   public:
-    ShaderProgram& addShader(const ShaderIdentifier& id);
+    ShaderProgram& AddShader(const ShaderIdentifier& id);
 
     static ShaderManager& GetInstance();
     // Deleted to prevent copies
     ShaderManager(const ShaderManager&) = delete;
     ShaderManager& operator=(const ShaderManager&) = delete;
 
-    const std::unordered_map<ShaderIdentifier, ShaderProgram>& getMap();
+    const std::unordered_map<ShaderIdentifier, ShaderProgram>& GetMap();
   private:
     std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
     ShaderManager() = default;
