@@ -61,6 +61,8 @@ void Window::Create() {
     lastY = height / 2;
 }
 
+void Window::Destroy() { glfwDestroyWindow(window); }
+
 Window::~Window() { glfwTerminate(); }
 
 Window& Window::GetInstance() {

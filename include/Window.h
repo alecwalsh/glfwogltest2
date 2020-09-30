@@ -24,6 +24,7 @@ class Window {
 
     // Creates the window
     void Create();
+    void Destroy();
 
     void Resize(int width, int height);
 

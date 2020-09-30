@@ -277,6 +277,8 @@ int main(int argc, char* argv[]) {
         window.SwapBuffers();
     }
 
+    window.Destroy();
+
     return EXIT_SUCCESS;
 }
 
