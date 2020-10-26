@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "imgui.h"
+
 extern float lastX, lastY;
 extern double yaw, pitch;
 
@@ -10,22 +12,25 @@ bool InputManager::mouseMoved = false;
 bool InputManager::firstMouse = true;
 
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-    auto& keystates = InputManager::keystates;
+    if (InputManager::GetInstance().keyboardEnabled ||
+        key == GLFW_KEY_U && !ImGui::GetIO().WantCaptureKeyboard) { // TODO: Don't hardcode key to hide UI
+        auto& keystates = InputManager::keystates;
 
-    // Don't want to use -1 as an array index
-    if (key == GLFW_KEY_UNKNOWN) {
-        std::cerr << "Unknown key pressed" << std::endl;
-        return;
-    }
-
-    if (action == GLFW_PRESS) {
-        if (keystates[key] == KeyState::NotPressed) {
-            keystates[key] = KeyState::InitialPress;
-        } else {
-            keystates[key] = KeyState::RepeatPress;
+        // Don't want to use -1 as an array index
+        if (key == GLFW_KEY_UNKNOWN) {
+            std::cerr << "Unknown key pressed" << std::endl;
+            return;
         }
-    } else if (action == GLFW_RELEASE) {
-        keystates[key] = KeyState::NotPressed;
+
+        if (action == GLFW_PRESS) {
+            if (keystates[key] == KeyState::NotPressed) {
+                keystates[key] = KeyState::InitialPress;
+            } else {
+                keystates[key] = KeyState::RepeatPress;
+            }
+        } else if (action == GLFW_RELEASE) {
+            keystates[key] = KeyState::NotPressed;
+        }
     }
 }
 
@@ -81,6 +86,19 @@ void InputManager::HandleInput() {
 
 void InputManager::DisableMouseInput() { mouseEnabled = false; }
 void InputManager::EnableMouseInput() { mouseEnabled = true; }
+
+void InputManager::DisableKeyboardInput() { keyboardEnabled = false; }
+void InputManager::EnableKeyboardInput() { keyboardEnabled = true; }
+
+void InputManager::DisableInput() {
+    DisableMouseInput();
+    DisableKeyboardInput();
+}
+
+void InputManager::EnableInput() {
+    EnableMouseInput();
+    EnableKeyboardInput();
+}
 
 InputManager& InputManager::GetInstance() {
     static InputManager im{};

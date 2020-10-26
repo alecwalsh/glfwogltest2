@@ -2,6 +2,8 @@
 
 #include "Window.h"
 
+#include <iterator>
+
 #include "imgui.h"
 
 #include "imgui_impl_glfw.h"
@@ -15,6 +17,11 @@ UIManager& UIManager::GetInstance() {
 void UIManager::BeginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
+
+    if (!guiActive) {
+        ImGui::GetIO().MousePos = {-FLT_MAX, -FLT_MAX};
+    }
+
     ImGui::NewFrame();
 }
 
@@ -28,8 +35,7 @@ void UIManager::Draw() {
     ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
 
     ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
-    char buf[512] = {};
-    ImGui::InputText("", buf, 512);
+    ImGui::InputText("", textBuffer, std::size(textBuffer));
 
     ImGui::End();
 

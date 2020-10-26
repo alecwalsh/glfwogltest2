@@ -11,7 +11,10 @@ class UIManager {
     UIManager(const UIManager&) = delete;
     void operator=(const UIManager&) = delete;
 
+    bool guiActive = false;
   private:
     UIManager();
     ~UIManager();
+
+    char textBuffer[64] = {};
 };

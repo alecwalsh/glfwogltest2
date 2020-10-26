@@ -138,16 +138,22 @@ int main(int argc, char* argv[]) {
     });
     
     im.AddKeyBinding(KEY(U), KeyState::InitialPress, [&window, &im] {
-        static bool toggled = false;
-        if (toggled) {
+        if (Window::showCursor) {
             window.CaptureMouse();
-            im.EnableMouseInput();
-            InputManager::firstMouse = true;
-            toggled = false;
+            im.EnableInput();
+            
+            UIManager::GetInstance().guiActive = false;
+
+            Window::showCursor = false;
         } else {
+            InputManager::firstMouse = true; // Prevent camera from jumping to previous cursor location
+            
             window.ReleaseMouse();
-            im.DisableMouseInput();
-            toggled = true;
+            im.DisableInput();
+
+            UIManager::GetInstance().guiActive = true;
+            
+            Window::showCursor = true;
         }
     });
 
@@ -233,7 +239,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&] { lights[flashlight_idx]->ToggleActive(); });
+    im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&lights, flashlight_idx] { lights[flashlight_idx]->ToggleActive(); });
 
     // main loop
     while (!window.ShouldClose()) {
@@ -291,7 +297,9 @@ int main(int argc, char* argv[]) {
         // Draw the fullscreen quad
         fsq.Draw();
 
-        UIManager::GetInstance().Draw();
+        if (UIManager::GetInstance().guiActive) {
+            UIManager::GetInstance().Draw();
+        }
 
         window.SwapBuffers();
     }

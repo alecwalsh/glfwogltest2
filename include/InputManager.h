@@ -33,6 +33,12 @@ class InputManager {
 
     void DisableMouseInput();
     void EnableMouseInput();
+    
+    void DisableKeyboardInput();
+    void EnableKeyboardInput();
+    
+    void DisableInput();
+    void EnableInput();
 
     static InputManager& GetInstance();
     // Deleted to prevent copies
@@ -44,6 +50,7 @@ class InputManager {
     ~InputManager() = default;
 
     bool mouseEnabled = true;
+    bool keyboardEnabled = true;
 
     std::vector<std::tuple<keycode_t, KeyState, std::function<void()>>> key_bindings;
 };

@@ -11,6 +11,8 @@ class Window {
     static int height;
     static bool hasResized;
 
+    static inline bool showCursor = false;
+
     // Need to set gl_version, width, and height before calling this
     static Window& GetInstance();
     // Deleted to prevent copies
