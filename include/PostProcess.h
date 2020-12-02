@@ -8,7 +8,7 @@
 // Used for postprocessing effects
 // Renders the main scene to a texture and applies that texture to a fullscreen quad
 struct PostProcess {
-    static PostProcess& GetInstance();
+    [[nodiscard]] static PostProcess& GetInstance();
     void BindFramebuffer();
     void UnbindFramebuffer();
     void Draw();
@@ -30,7 +30,7 @@ struct PostProcess {
     void SetupFramebuffer();
 
     // gl_version needs to be set before insantiating this struct with the default constructor
-    PostProcess();
+    [[nodiscard]] PostProcess();
     ~PostProcess();
 
   public:

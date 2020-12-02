@@ -62,37 +62,37 @@ template <> struct hash<ShaderIdentifier> {
 };
 } // namespace std
 
-class ShaderProgram {
-    GLuint ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
+class [[nodiscard]] ShaderProgram {
+    [[nodiscard]] GLuint ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
     void GetCompileErrors(GLuint shader);
     void GetLinkErrors(GLuint shaderProgram);
     gl_version_t version;
   public:
     GLuint shaderProgram;
 
-    ShaderProgram(const ShaderIdentifier& id);
+    [[nodiscard]] ShaderProgram(const ShaderIdentifier& id);
     
     // Move constructor and assignment need to set shaderProgram to 0	
-    ShaderProgram(ShaderProgram&& sp) noexcept;
-    ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
+    [[nodiscard]] ShaderProgram(ShaderProgram&& sp) noexcept;
+    [[nodiscard]] ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
 
     // Copy constructor and assignment are deleted because you can't copy OpenGL objects
-    ShaderProgram(const ShaderProgram& sp) noexcept = delete;
-    ShaderProgram& operator=(const ShaderProgram& sp) noexcept = delete;
+    ShaderProgram(const ShaderProgram& sp) = delete;
+    ShaderProgram& operator=(const ShaderProgram& sp) = delete;
 
     ~ShaderProgram();
 };
 
 class ShaderManager {
   public:
-    ShaderProgram& AddShader(const ShaderIdentifier& id);
+    [[nodiscard]] ShaderProgram& AddShader(const ShaderIdentifier& id);
 
-    static ShaderManager& GetInstance();
+    [[nodiscard]] static ShaderManager& GetInstance();
     // Deleted to prevent copies
     ShaderManager(const ShaderManager&) = delete;
     ShaderManager& operator=(const ShaderManager&) = delete;
 
-    const std::unordered_map<ShaderIdentifier, ShaderProgram>& GetMap();
+    [[nodiscard]] const std::unordered_map<ShaderIdentifier, ShaderProgram>& GetMap();
   private:
     std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
     ShaderManager() = default;

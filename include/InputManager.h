@@ -30,7 +30,7 @@ class InputManager {
 
     void HandleInput();
 
-    static InputManager& GetInstance();
+    [[nodiscard]] static InputManager& GetInstance();
     // Deleted to prevent copies
     InputManager(const InputManager&) = delete;
     void operator=(const InputManager&) = delete;

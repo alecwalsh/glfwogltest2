@@ -12,13 +12,13 @@ class Window {
     static bool hasResized;
 
     // Need to set gl_version, width, and height before calling this
-    static Window& GetInstance();
+    [[nodiscard]] static Window& GetInstance();
     // Deleted to prevent copies
     Window(const Window&) = delete;
     void operator=(const Window&) = delete;
 
     void SwapBuffers();
-    bool ShouldClose();
+    [[nodiscard]] bool ShouldClose();
     // Calls glfwSetWindowShouldClose, will close the window on next frame
     void Close();
 

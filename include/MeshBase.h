@@ -27,8 +27,8 @@ class MeshBase {
 
     // TODO: copy/move constructors
     MeshBase() = default;
-    MeshBase(const std::vector<Vertex>& vertices);
-    MeshBase(const std::vector<Vertex>& vertices, const std::vector<GLuint>& elements);
+    [[nodiscard]] MeshBase(const std::vector<Vertex>& vertices);
+    [[nodiscard]] MeshBase(const std::vector<Vertex>& vertices, const std::vector<GLuint>& elements);
     virtual ~MeshBase();
 
     // Generates buffers and uploads data to graphics card
