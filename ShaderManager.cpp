@@ -120,10 +120,6 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
     return *this;
 }
 
-// bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
-//     return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
-// }
-
 ShaderProgram& ShaderManager::AddShader(const ShaderIdentifier& id) {
     auto shaderIter = shaderMap.find(id);
     if (shaderIter == std::end(shaderMap)) {
