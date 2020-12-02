@@ -20,7 +20,12 @@ target_compile_features(glfwogltest2 PUBLIC cxx_std_17)
 set_target_properties(glfwogltest2 PROPERTIES CXX_STANDARD_REQUIRED true)
 set_target_properties(glfwogltest2 PROPERTIES CXX_EXTENSIONS false)
 
-target_compile_options(glfwogltest2 PRIVATE "-Wall")
+target_compile_features(glfwogltest2 PUBLIC c_std_11)
+set_target_properties(glfwogltest2 PROPERTIES C_STANDARD_REQUIRED true)
+set_target_properties(glfwogltest2 PROPERTIES C_EXTENSIONS false)
+
+target_compile_options(glfwogltest2 PRIVATE "-Wall") #TODO: Only use with GCC/Clang
+target_compile_definitions(glfwogltest2 PRIVATE NOMINMAX)
 target_include_directories(glfwogltest2 PUBLIC "include" ".")
 
 if(UNIX)
