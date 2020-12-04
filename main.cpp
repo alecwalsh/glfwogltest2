@@ -70,10 +70,6 @@ int main(int argc, char* argv[]) {
     Camera camera{
         {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
     };
-
-    glfwSwapInterval(1);
-
-    Window::hasResized = false;
     
     int load_result = (Window::gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
 

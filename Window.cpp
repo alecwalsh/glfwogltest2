@@ -59,6 +59,8 @@ void Window::Create() {
 
     lastX = width / 2;
     lastY = height / 2;
+
+    glfwSwapInterval(1);
 }
 
 void Window::Destroy() { glfwDestroyWindow(window); }
