@@ -25,9 +25,13 @@ void Window::Create() {
     using std::get;
 
     glfwSetErrorCallback([](int i, const char* desc) {
+        auto f = std::cout.flags();
+
         std::cout << "GLFW Error" << std::endl;
-        std::cout << "  Error code: 0x" << std::hex << i << std::dec << std::endl;
+        std::cout << "  Error code: " << std::showbase << std::hex << i << std::endl;
         std::cout << "  Error description: " << desc << std::endl;
+
+        std::cout.flags(f); // Restore flags after using std::hex
     });
 
     glfwInit();
