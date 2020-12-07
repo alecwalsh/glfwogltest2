@@ -61,8 +61,8 @@ void Window::Create() {
     glfwSetCursorPosCallback(window, InputManager::mouse_callback);
     glfwSetFramebufferSizeCallback(window, Window::framebuffer_size_callback);
 
-    lastX = width / 2;
-    lastY = height / 2;
+    lastX = width / 2.0f;
+    lastY = height / 2.0f;
 
     glfwSwapInterval(1);
 }
