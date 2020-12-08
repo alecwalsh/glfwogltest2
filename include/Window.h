@@ -1,8 +1,14 @@
 #pragma once
 
+#include <stdexcept>
+
 #include "ShaderManager.h"
 
 #include <GLFW/glfw3.h>
+
+class WindowError : public std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
 
 class Window {
   public:

@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
 
     try {
         window.Create();
-    } catch (std::exception& e) {
+    } catch (const WindowError& e) {
         std::cout << e.what() << std::endl;
         return 1;
     }

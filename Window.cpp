@@ -3,7 +3,6 @@
 #include "InputManager.h"
 
 #include <cassert>
-#include <exception>
 #include <iostream>
 
 extern float lastX, lastY;
@@ -45,7 +44,7 @@ void Window::Create() {
     window = glfwCreateWindow(width, height, "OpenGL", nullptr, nullptr); // Windowed
 
     if (!window) {
-        throw std::runtime_error("Error creating window");
+        throw WindowError{"Error creating window"};
     }
 
     glfwMakeContextCurrent(window);
