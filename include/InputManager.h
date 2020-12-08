@@ -20,8 +20,8 @@ class InputManager {
 
     enum class KeyState : std::uint8_t { NotPressed, InitialPress, RepeatPress, AnyPress };
 
-    static std::array<KeyState, GLFW_KEY_LAST> keystates;
-    static bool mouseMoved;
+    static inline std::array<KeyState, GLFW_KEY_LAST> keystates;
+    static inline bool mouseMoved;
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);

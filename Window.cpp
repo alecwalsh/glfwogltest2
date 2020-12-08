@@ -8,11 +8,6 @@
 
 extern float lastX, lastY;
 
-int Window::width = 0, Window::height = 0;
-bool Window::hasResized = false;
-
-gl_version_t Window::gl_version;
-
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 

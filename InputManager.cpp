@@ -6,9 +6,6 @@
 extern float lastX, lastY;
 extern double yaw, pitch;
 
-std::array<InputManager::KeyState, GLFW_KEY_LAST> InputManager::keystates;
-bool InputManager::mouseMoved;
-
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
     auto& keystates = InputManager::keystates;
 

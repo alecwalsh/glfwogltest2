@@ -6,10 +6,10 @@
 
 class Window {
   public:
-    static gl_version_t gl_version;
-    static int width;
-    static int height;
-    static bool hasResized;
+    static inline gl_version_t gl_version;
+    static inline int width = 0;
+    static inline int height = 0;
+    static inline bool hasResized = false;
 
     // Need to set gl_version, width, and height before calling this
     [[nodiscard]] static Window& GetInstance();
