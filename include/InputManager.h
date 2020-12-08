@@ -26,6 +26,9 @@ class InputManager {
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
+    static inline double min_pitch = -89.0;
+    static inline double max_pitch = 89.0;
+
     template <typename F> void AddKeyBinding(InputManager::keycode_t key, KeyState state, F&& f);
 
     void HandleInput();

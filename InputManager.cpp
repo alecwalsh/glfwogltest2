@@ -1,6 +1,7 @@
 #include "InputManager.h"
 
 #include <iostream>
+#include <algorithm>
 
 extern float lastX, lastY;
 extern double yaw, pitch;
@@ -50,12 +51,7 @@ void InputManager::mouse_callback(GLFWwindow* window, double xpos, double ypos) 
     yaw -= deltaX * xSensitivity;
     pitch += deltaY * ySensitivity;
 
-    if (pitch > 89.0f) {
-        pitch = 89.0f;
-    }
-    if (pitch < -89.0f) {
-        pitch = -89.0f;
-    }
+    pitch = std::clamp(pitch, InputManager::min_pitch, InputManager::max_pitch);
 }
 
 void InputManager::HandleInput() {
