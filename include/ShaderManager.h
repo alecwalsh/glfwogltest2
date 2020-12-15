@@ -7,10 +7,11 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <cstdint>
 
 struct gl_version_t {
-    int major;
-    int minor;
+    std::uint8_t major;
+    std::uint8_t minor;
     bool is_gles; // OpenGL or OpenGL ES
 
 #ifdef __cpp_impl_three_way_comparison

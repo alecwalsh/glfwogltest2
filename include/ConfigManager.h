@@ -3,6 +3,7 @@
 #include "ShaderManager.h"
 
 #include <stdexcept>
+#include <cstdint>
 
 class ConfigManager {
   public:
@@ -13,7 +14,7 @@ class ConfigManager {
         throw std::runtime_error{"Not implemented yet"};
     }
 
-    int width = 800;
-    int height = 600;
+    std::uint16_t width = 800;
+    std::uint16_t height = 600;
     const gl_version_t gl_version = {3, 3, false};
 };
