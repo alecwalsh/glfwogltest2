@@ -108,8 +108,10 @@ int main(int argc, char* argv[]) {
 
     using KeyState = InputManager::KeyState;
 
+    #define KEY(k) GLFW_KEY_##k
+
     // Set key bindings
-    // TODO: Set in Lua file
+    // TODO: Set in config file
     im.AddKeyBinding(KEY(W), KeyState::AnyPress, [&] { translateCamera(Direction::Forward); });
     im.AddKeyBinding(KEY(A), KeyState::AnyPress, [&] { translateCamera(Direction::Left); });
     im.AddKeyBinding(KEY(S), KeyState::AnyPress, [&] { translateCamera(Direction::Backward); });

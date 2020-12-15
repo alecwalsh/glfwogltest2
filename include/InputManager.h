@@ -9,8 +9,6 @@
 
 #include <GLFW/glfw3.h>
 
-#define KEY(k) GLFW_KEY_##k
-
 // TODO: Allow events to fire on key release
 // TODO: Handle modifier keys
 // TODO: Input key as string, eg AddKeyBinding("Ctrl-A", []{})
