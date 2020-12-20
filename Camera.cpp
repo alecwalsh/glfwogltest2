@@ -7,7 +7,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up) : position(po
 }
 
 void Camera::SetPosition(glm::vec3 position) {
-    position = position;
+    this->position = position;
     UpdateViewMatrix();
 }
 

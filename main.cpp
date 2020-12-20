@@ -41,7 +41,7 @@ template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
 void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& camera);
 
-int main(int argc, char* argv[]) {
+int main() {
     std::filesystem::current_path("..");
 
     auto t_start = std::chrono::high_resolution_clock::now();

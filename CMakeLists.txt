@@ -6,15 +6,18 @@ set(GLM_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glm-0.9.9.5" CACHE PATH "")
 set(GLFW_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glfw-3.3" CACHE PATH "")
 set(ASSIMP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/assimp-4.1.0" CACHE PATH "")
 
-set(BASE "/build")
-
 file(GLOB SOURCES "*.cpp")
-file(GLOB_RECURSE HEADERS "include/*.h")
+file(GLOB HEADERS "include/*.h")
 set(SOURCES ${SOURCES} ${HEADERS} glad/glad.c)
 
-link_directories(${BASE}/lib)
-
 add_executable(glfwogltest2 ${SOURCES})
+
+if(MSVC)
+    target_compile_options(glfwogltest2 PUBLIC "/W4")
+    target_compile_options(glfwogltest2 PUBLIC "/Zc:__cplusplus")
+else()
+    target_compile_options(glfwogltest2 PRIVATE -Wall -Wextra -Wpedantic)
+endif()
 
 target_compile_features(glfwogltest2 PUBLIC cxx_std_17)
 set_target_properties(glfwogltest2 PROPERTIES CXX_STANDARD_REQUIRED true)
@@ -24,7 +27,6 @@ target_compile_features(glfwogltest2 PUBLIC c_std_11)
 set_target_properties(glfwogltest2 PROPERTIES C_STANDARD_REQUIRED true)
 set_target_properties(glfwogltest2 PROPERTIES C_EXTENSIONS false)
 
-target_compile_options(glfwogltest2 PRIVATE "-Wall") #TODO: Only use with GCC/Clang
 target_compile_definitions(glfwogltest2 PRIVATE NOMINMAX)
 target_include_directories(glfwogltest2 PUBLIC "include" ".")
 

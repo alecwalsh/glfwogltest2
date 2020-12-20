@@ -10,7 +10,7 @@ class ConfigManager {
     ConfigManager() = default;
 
     // TODO: Read values from file
-    ConfigManager(const char* fileName) : ConfigManager{} {
+    ConfigManager([[maybe_unused]] const char* fileName) : ConfigManager{} {
         throw std::runtime_error{"Not implemented yet"};
     }
 
