@@ -5,9 +5,9 @@
 #include <cassert>
 #include <iostream>
 
-extern float lastX, lastY;
+extern double lastX, lastY;
 
-void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void Window::framebuffer_size_callback([[maybe_unused]] GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 
     Window::width = width;

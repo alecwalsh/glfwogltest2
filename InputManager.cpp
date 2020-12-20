@@ -3,12 +3,11 @@
 #include <iostream>
 #include <algorithm>
 
-extern float lastX, lastY;
+extern double lastX, lastY;
 extern double yaw, pitch;
 
-void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-    auto& keystates = InputManager::keystates;
-
+void InputManager::key_callback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
+                                [[maybe_unused]] int mode) {
     // Don't want to use -1 as an array index
     if (key == GLFW_KEY_UNKNOWN) {
         std::cerr << "Unknown key pressed" << std::endl;
@@ -26,7 +25,7 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
     }
 }
 
-void InputManager::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void InputManager::mouse_callback([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) {
     static bool firstMouse = true;
 
     InputManager::mouseMoved = true;

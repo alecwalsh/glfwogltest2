@@ -34,7 +34,7 @@
 #include "version.h"
 
 // TODO: figure out where to put these, avoid extern in other files
-float lastX, lastY;
+double lastX, lastY;
 double yaw, pitch;
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
