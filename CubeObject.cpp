@@ -4,7 +4,9 @@
 void CubeObject::Tick() {
     glm::mat4 rotation{1.0f}, translation{1.0f}, scaling{1.0f};
 
-    rotation = glm::rotate(rotation, deltaTime * RotSpeed * glm::radians(180.0f), glm::vec3{0.0f, 1.0f, 0.0f});
+    float rotationAmount = deltaTime * RotSpeed * glm::radians(180.0f);
+
+    rotation = glm::rotate(rotation, rotationAmount, glm::vec3{0.0f, 1.0f, 0.0f});
 
     this->ModTransform(translation * rotation * scaling);
 }
@@ -28,8 +30,8 @@ void CubeObject::Draw(const Camera& camera) const {
     GameObject::Draw(camera);
 }
 
-CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime,
-                       float& deltaTime, TextureManager& texman)
+CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, double& elapsedTime,
+                       double& deltaTime, TextureManager& texman)
     : GameObject(mesh, shaderProgram, transform, elapsedTime, deltaTime, texman) {
     // Sets up material properties for the cube
     material.ambient = glm::vec3{1.0f, 0.5f, 0.31f};

@@ -1,13 +1,18 @@
 #include "UIManager.h"
 
+#include "TimeManager.h"
 #include "Window.h"
-
-#include <iterator>
 
 #include "imgui.h"
 
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+
+#include <iterator>
+#include <cmath>
+#include <cfloat>
+
+static auto& timeManager = TimeManager::GetInstance();
 
 UIManager& UIManager::GetInstance() {
     static UIManager uim{};
@@ -29,6 +34,29 @@ void UIManager::EndFrame() {
     ImGui::Render();
 }
 
+void DrawStats() {
+    static int oldElapsedSeconds = 0;
+    static double fps;
+    bool newSecond = false;
+
+    int elapsedSeconds = std::floor(timeManager.elapsedTime);
+
+    if (elapsedSeconds > oldElapsedSeconds) {
+        newSecond = true;
+        oldElapsedSeconds = elapsedSeconds;
+    }
+
+    if (newSecond) {
+        fps = timeManager.GetFPS();
+    }
+
+    ImGui::Begin("Stats");
+    ImGui::Text("FPS: %d", static_cast<int>(fps));
+    ImGui::Text("Seconds: %d", elapsedSeconds);
+    ImGui::Text("Frame %d", timeManager.frameCount);
+    ImGui::End();
+}
+
 void UIManager::Draw() {
     BeginFrame();
 
@@ -38,6 +66,8 @@ void UIManager::Draw() {
     ImGui::InputText("", textBuffer, std::size(textBuffer));
 
     ImGui::End();
+
+    DrawStats();
 
     EndFrame();
 
@@ -49,6 +79,9 @@ UIManager::UIManager() {
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+
+    // ImGuiIO& io = ImGui::GetIO();
+    // io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Medium.ttf", 16);
 
     Window::GetInstance().InitGui();
     ImGui_ImplOpenGL3_Init(glsl_version);
