@@ -27,7 +27,9 @@ class InputManager {
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
-    template <typename F> void AddKeyBinding(InputManager::keycode_t key, KeyState state, F&& f);
+    template <typename F> void AddKeyBinding(InputManager::keycode_t key, KeyState state, F&& f) {
+        key_bindings.emplace_back(key, state, std::forward<F>(f));
+    }
 
     void HandleInput();
 
@@ -54,7 +56,3 @@ class InputManager {
 
     std::vector<std::tuple<keycode_t, KeyState, std::function<void()>>> key_bindings;
 };
-
-template <typename F> void InputManager::AddKeyBinding(InputManager::keycode_t key, KeyState state, F&& f) {
-    key_bindings.emplace_back(key, state, std::forward<F>(f));
-}

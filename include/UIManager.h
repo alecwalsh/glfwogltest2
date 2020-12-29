@@ -16,5 +16,9 @@ class UIManager {
     UIManager();
     ~UIManager();
 
+    void DrawStats();
+
     char textBuffer[64] = {};
+
+    unsigned int displayFPS = 0;
 };

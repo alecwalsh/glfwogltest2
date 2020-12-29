@@ -9,7 +9,6 @@
 #include "imgui_impl_opengl3.h"
 
 #include <iterator>
-#include <cmath>
 #include <cfloat>
 
 static auto& timeManager = TimeManager::GetInstance();
@@ -34,26 +33,13 @@ void UIManager::EndFrame() {
     ImGui::Render();
 }
 
-void DrawStats() {
-    static int oldElapsedSeconds = 0;
-    static double fps;
-    bool newSecond = false;
-
-    int elapsedSeconds = std::floor(timeManager.elapsedTime);
-
-    if (elapsedSeconds > oldElapsedSeconds) {
-        newSecond = true;
-        oldElapsedSeconds = elapsedSeconds;
-    }
-
-    if (newSecond) {
-        fps = timeManager.GetFPS();
-    }
+void UIManager::DrawStats() {
+    unsigned int elapsedSeconds = static_cast<unsigned int>(timeManager.elapsedTime);
 
     ImGui::Begin("Stats");
-    ImGui::Text("FPS: %d", static_cast<int>(fps));
-    ImGui::Text("Seconds: %d", elapsedSeconds);
-    ImGui::Text("Frame %d", timeManager.frameCount);
+    ImGui::Text("FPS: %u", displayFPS);
+    ImGui::Text("Seconds: %u", elapsedSeconds);
+    ImGui::Text("Frame %u", timeManager.frameCount);
     ImGui::End();
 }
 
@@ -85,6 +71,11 @@ UIManager::UIManager() {
 
     Window::GetInstance().InitGui();
     ImGui_ImplOpenGL3_Init(glsl_version);
+
+    using namespace std::chrono_literals;
+    timeManager.AddTimer(Timer::Type::Repeat, 1s, [this] {
+        displayFPS = static_cast<unsigned int>(timeManager.GetFPS());
+    });
 }
 
 UIManager::~UIManager() {
