@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7.0)
 
-project(glfwogltest2 VERSION 0.0.0.1)
+project(glfwogltest2 VERSION 0.0.0.2)
 
 set(GLM_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glm-0.9.9.5" CACHE PATH "")
 set(GLFW_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glfw-3.3" CACHE PATH "")
@@ -8,11 +8,12 @@ set(ASSIMP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/assimp-4.1.0" CACHE PATH
 
 file(GLOB SOURCES "*.cpp")
 file(GLOB HEADERS "include/*.h")
-set(SOURCES ${SOURCES} ${HEADERS} glad/glad.c)
+set(SOURCES ${SOURCES} ${HEADERS} glad/glad.c imgui/imgui.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp imgui/imgui_demo.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp)
 
 add_executable(glfwogltest2 ${SOURCES})
 
 if(MSVC)
+    target_compile_definitions(glfwogltest2 PRIVATE NOMINMAX)
     target_compile_options(glfwogltest2 PUBLIC "/W4")
     target_compile_options(glfwogltest2 PUBLIC "/Zc:__cplusplus")
 else()
@@ -27,8 +28,7 @@ target_compile_features(glfwogltest2 PUBLIC c_std_11)
 set_target_properties(glfwogltest2 PROPERTIES C_STANDARD_REQUIRED true)
 set_target_properties(glfwogltest2 PROPERTIES C_EXTENSIONS false)
 
-target_compile_definitions(glfwogltest2 PRIVATE NOMINMAX)
-target_include_directories(glfwogltest2 PUBLIC "include" ".")
+target_include_directories(glfwogltest2 PUBLIC "include" "." "imgui")
 
 if(UNIX)
     target_link_libraries(glfwogltest2 GL glfw assimp dl)
@@ -46,8 +46,8 @@ elseif(WIN32)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT glfwogltest2)
     target_include_directories(glfwogltest2 PUBLIC ${GLM_PATH}/glm)
     target_link_libraries(glfwogltest2 opengl32 glfw3 assimp)
-	
-	add_custom_command(TARGET glfwogltest2 POST_BUILD 
+    
+    add_custom_command(TARGET glfwogltest2 POST_BUILD 
                COMMAND ${CMAKE_COMMAND} -E copy_if_different
                ${ASSIMP_PATH}/build/code/debug/assimp-vc140-mt.dll
                $<TARGET_FILE_DIR:glfwogltest2>)

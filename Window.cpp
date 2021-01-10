@@ -2,6 +2,8 @@
 
 #include "InputManager.h"
 
+#include "imgui_impl_glfw.h"
+
 #include <cassert>
 #include <iostream>
 
@@ -49,7 +51,7 @@ void Window::Create() {
 
     glfwMakeContextCurrent(window);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    CaptureMouse();
 
     glfwSetKeyCallback(window, InputManager::key_callback);
     glfwSetCursorPosCallback(window, InputManager::mouse_callback);
@@ -61,9 +63,15 @@ void Window::Create() {
     glfwSwapInterval(1);
 }
 
+void Window::InitGui() {
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+}
+
 void Window::Destroy() { glfwDestroyWindow(window); }
 
-Window::~Window() { glfwTerminate(); }
+Window::~Window() {
+    glfwTerminate();
+}
 
 Window& Window::GetInstance() {
     assert(height != 0 && width != 0);

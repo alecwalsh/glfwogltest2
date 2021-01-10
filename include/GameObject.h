@@ -25,8 +25,8 @@ class GameObject {
     } material;
 
     GLuint vao;
-    float& elapsedTime;
-    float& deltaTime;
+    double& elapsedTime;
+    double& deltaTime;
     TextureManager& texman;
 
   public:
@@ -34,7 +34,8 @@ class GameObject {
     std::string texture_name = "container";
     std::string spec_texture_name = "container_specular";
     
-    GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, float& elapsedTime, float& deltaTime,
+    GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, double& elapsedTime,
+               double& deltaTime,
                TextureManager& texman);
     virtual ~GameObject();
     GameObject(const GameObject& go);

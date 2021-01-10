@@ -17,6 +17,8 @@ class Window {
     static inline int height = 0;
     static inline bool hasResized = false;
 
+    static inline bool showCursor = false;
+
     // Need to set gl_version, width, and height before calling this
     [[nodiscard]] static Window& GetInstance();
     // Deleted to prevent copies
@@ -38,7 +40,8 @@ class Window {
     
     void ReleaseMouse();
     void CaptureMouse();
-
+    
+    void InitGui();
   private:
     Window() = default;
     ~Window();

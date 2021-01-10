@@ -5,7 +5,6 @@
 
 #include <cstdio>
 
-#include <chrono>
 #include <filesystem>
 #include <functional>
 #include <iostream>
@@ -25,6 +24,8 @@
 #include "ShaderManager.h"
 #include "SpotLight.h"
 #include "TextureManager.h"
+#include "TimeManager.h"
+#include "UIManager.h"
 #include "Window.h"
 // TODO: clean up duplicate includes
 
@@ -44,10 +45,7 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
 int main() {
     std::filesystem::current_path("..");
 
-    auto t_start = std::chrono::high_resolution_clock::now();
-    auto t_prev = t_start;
-    float elapsedTime = 0.0f;
-    float deltaTime = 0.0f;
+    TimeManager& tm = TimeManager::GetInstance();
 
     ConfigManager cm{};
 
@@ -70,8 +68,9 @@ int main() {
     Camera camera{
         {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
     };
-    
-    int load_result = (Window::gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
+
+    int load_result =
+        (Window::gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
 
     if (load_result == 0) {
         std::cerr << "Error initializing glad" << std::endl;
@@ -87,37 +86,39 @@ int main() {
 
     using Direction = Camera::Direction;
 
-    // Translates the camera in a certain direction
-    auto translateCamera = [&camera, &deltaTime](Direction d) {
-        // TODO: Get key bindings from files
-        // TODO: Figure out how to use control key
+    // Create a lambda that translates the camera in a certain direction
+    auto translateCamera = [&camera, &deltaTime = tm.deltaTime](Direction d) {
+        return [&, d] {
+            // TODO: Get key bindings from files
+            // TODO: Figure out how to use control key
 
-        const auto& [front, back, right, left, up, down] = camera.vectors;
+            const auto& [front, back, right, left, up, down] = camera.vectors;
 
-        glm::vec3 vectors[]{front, back, right, left, up, down};
+            glm::vec3 vectors[]{front, back, right, left, up, down};
 
-        glm::vec3 vector = vectors[static_cast<int>(d)];
+            glm::vec3 vector = vectors[static_cast<int>(d)];
 
-        // TODO: set this elsewhere
-        float velocity = 2.5f;
+            // TODO: set this elsewhere
+            float velocity = 2.5f;
 
-        glm::mat4 translation{1.0f};
-        translation = glm::translate(translation, velocity * deltaTime * vector);
-        camera.Translate(translation);
+            glm::mat4 translation{1.0f};
+            translation = glm::translate(translation, velocity * static_cast<float>(deltaTime) * vector);
+            camera.Translate(translation);
+        };
     };
 
     using KeyState = InputManager::KeyState;
 
-    #define KEY(k) GLFW_KEY_##k
+#define KEY(k) GLFW_KEY_##k
 
     // Set key bindings
     // TODO: Set in config file
-    im.AddKeyBinding(KEY(W), KeyState::AnyPress, [&] { translateCamera(Direction::Forward); });
-    im.AddKeyBinding(KEY(A), KeyState::AnyPress, [&] { translateCamera(Direction::Left); });
-    im.AddKeyBinding(KEY(S), KeyState::AnyPress, [&] { translateCamera(Direction::Backward); });
-    im.AddKeyBinding(KEY(D), KeyState::AnyPress, [&] { translateCamera(Direction::Right); });
-    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, [&] { translateCamera(Direction::Up); });
-    im.AddKeyBinding(KEY(C), KeyState::AnyPress, [&] { translateCamera(Direction::Down); });
+    im.AddKeyBinding(KEY(W), KeyState::AnyPress, translateCamera(Direction::Forward));
+    im.AddKeyBinding(KEY(A), KeyState::AnyPress, translateCamera(Direction::Left));
+    im.AddKeyBinding(KEY(S), KeyState::AnyPress, translateCamera(Direction::Backward));
+    im.AddKeyBinding(KEY(D), KeyState::AnyPress, translateCamera(Direction::Right));
+    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, translateCamera(Direction::Up));
+    im.AddKeyBinding(KEY(C), KeyState::AnyPress, translateCamera(Direction::Down));
     im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [&] { window.Close(); });
     im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&] {
         static bool toggled = false;
@@ -129,6 +130,26 @@ int main() {
             fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl",
                              Window::gl_version);
             toggled = true;
+        }
+    });
+
+    im.AddKeyBinding(KEY(U), KeyState::InitialPress, [&window, &im] {
+        if (Window::showCursor) {
+            window.CaptureMouse();
+            im.EnableInput();
+
+            UIManager::GetInstance().guiActive = false;
+
+            Window::showCursor = false;
+        } else {
+            InputManager::firstMouse = true; // Prevent camera from jumping to previous cursor location
+
+            window.ReleaseMouse();
+            im.DisableInput();
+
+            UIManager::GetInstance().guiActive = true;
+
+            Window::showCursor = true;
         }
     });
 
@@ -166,19 +187,21 @@ int main() {
     }
 
     // Creates a CubeObject
-    auto go = std::make_unique<CubeObject>(mesh, cubeShader, glm::mat4{1.0f}, elapsedTime, deltaTime, texman);
+    auto go = std::make_unique<CubeObject>(mesh, cubeShader, glm::mat4{1.0f}, tm.elapsedTime, tm.deltaTime, texman);
     go->name = "cube1";
     go->SetupTextures();
 
-    auto go2 = std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 1.0f}),
-                                           elapsedTime, deltaTime, texman);
+    auto go2 =
+        std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 1.0f}),
+                                     tm.elapsedTime, tm.deltaTime, texman);
     go2->name = "sphere1";
     go2->SetupTextures();
 
     glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
     floorTransform = glm::scale(floorTransform, {5.0f, 5.0f, 1.0f});
-    auto floor = std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, elapsedTime, deltaTime, texman);
+    auto floor =
+        std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, tm.elapsedTime, tm.deltaTime, texman);
     floor->texture_name = "container";
     floor->spec_texture_name = "container_specular";
 
@@ -208,25 +231,17 @@ int main() {
                 glm::translate(glm::scale(lightTransform, glm::vec3{0.5f}),
                                glm::vec3{light->position.x, light->position.y,
                                          light->position.z}); // Scale by 0.5 then translate to correct position
-            auto lo =
-                std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, elapsedTime, deltaTime, texman);
+            auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, tm.elapsedTime, tm.deltaTime,
+                                                   texman);
             lightObjects.push_back(std::move(lo));
         }
     }
 
-    im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&] { lights[flashlight_idx]->ToggleActive(); });
+    im.AddKeyBinding(KEY(F), KeyState::InitialPress,
+                     [&lights, flashlight_idx] { lights[flashlight_idx]->ToggleActive(); });
 
     // main loop
     while (!window.ShouldClose()) {
-        auto t_now = std::chrono::high_resolution_clock::now();
-
-        deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_prev).count();
-        t_prev = t_now;
-
-        elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
-
-        // std::cout << "Elapsed time:" << elapsedTime << std::endl;
-
         // Enable depth test when rendering main scene
         glEnable(GL_DEPTH_TEST);
 
@@ -272,7 +287,13 @@ int main() {
         // Draw the fullscreen quad
         fsq.Draw();
 
+        if (UIManager::GetInstance().guiActive) {
+            UIManager::GetInstance().Draw();
+        }
+
         window.SwapBuffers();
+
+        tm.Tick();
     }
 
     window.Destroy();
