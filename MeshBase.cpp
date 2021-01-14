@@ -1,8 +1,16 @@
 #include "MeshBase.h"
 
+#include <iostream>
+#include <limits>
+#include <cstdlib>
 
 // Generates buffers and uploads data to graphics card
 void MeshBase::UploadToGPU() {
+    if (vertices.size() > std::numeric_limits<GLsizei>::max()) {
+        std::cerr << "Number of vertices exceeds max GLsizei value" << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
     // Create a Vertex Buffer Object and copy the vertex data to it
     glGenBuffers(1, &buffers.vbo);
 
@@ -10,6 +18,11 @@ void MeshBase::UploadToGPU() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
     if (usesElementArray) {
+        if (elements.size() > std::numeric_limits<GLsizei>::max()) {
+            std::cerr << "Number of elements exceeds max GLsizei value" << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+
         // Create an Element Buffer Object and copy the element data to it
         glGenBuffers(1, &buffers.ebo);
 

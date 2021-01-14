@@ -12,6 +12,7 @@
 #include <sstream>
 #include <tuple>
 #include <vector>
+#include <limits>
 
 #include "Camera.h"
 #include "ConfigManager.h"
@@ -307,10 +308,18 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
 
     glUseProgram(sp.shaderProgram);
 
-    GLint numLights = glGetUniformLocation(sp.shaderProgram, "numLights");
-    glUniform1i(numLights, lights.size());
+    GLint numLightsUniform = glGetUniformLocation(sp.shaderProgram, "numLights");
+    
+    
+    std::size_t numLights = lights.size();
+    
+    if (numLights < 0 || numLights > std::numeric_limits<GLint>::max()) {
+        std::cerr << "Invalid number of lights" << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+    glUniform1i(numLightsUniform, static_cast<GLint>(numLights));
 
-    for (size_t i = 0; i < lights.size(); i++) {
+    for (std::size_t i = 0; i < lights.size(); i++) {
         using Type = Light::LightType;
 
         auto getLightUniLoc =
@@ -374,7 +383,7 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
         } break;
         default: {
             std::cerr << "Invalid light type" << std::endl;
-            exit(EXIT_FAILURE);
+            std::exit(EXIT_FAILURE);
         } break;
         }
     }

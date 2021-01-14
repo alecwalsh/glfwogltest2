@@ -15,7 +15,7 @@ class Camera {
     void ModPosition(glm::mat4 transform);
 
     void Translate(glm::mat4 transform);
-    void Rotate(float pitch, float yaw);
+    void Rotate(double pitch, double yaw);
 
     glm::vec3 position{0.0f};
     //     glm::vec3 up{0.0f}; // Up vector for the whole scene

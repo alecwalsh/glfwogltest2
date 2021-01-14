@@ -1,5 +1,9 @@
 #include "GameObject.h"
 
+#include <iostream>
+#include <limits>
+#include <cstdlib>
+
 // TODO: lots of parameters and long initializer list, maybe create Time object?
 GameObject::GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, double& elapsedTime,
                        double& deltaTime, TextureManager& texman)
@@ -59,11 +63,15 @@ void GameObject::Draw(const Camera& camera) const {
     GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(camera.viewMat));
 
+    if (mesh.vertices.size() > std::numeric_limits<GLsizei>::max()) {
+        std::cerr << "Too many vertices" << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
     if (mesh.usesElementArray) {
-        // TODO: Use indexes from imported mesh as element buffer
-        glDrawElements(GL_TRIANGLES, mesh.elements.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.elements.size()), GL_UNSIGNED_INT, 0);
     } else {
-        glDrawArrays(GL_TRIANGLES, 0, mesh.vertices.size());
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mesh.vertices.size()));
     }
 }
 

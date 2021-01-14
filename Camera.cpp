@@ -37,14 +37,11 @@ void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) {
     vectors.leftVector = -vectors.rightVector;
 }
 
-void Camera::Rotate(float pitch, float yaw) {
-    glm::vec3 front{0.0f};
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+void Camera::Rotate(double pitch, double yaw) {
+    double x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    double y = sin(glm::radians(pitch));
+    double z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
-    vectors.frontVector = glm::normalize(front);
-
+    UpdateVectors(glm::normalize(glm::vec3{x, y, z}), vectors.upVector);
     UpdateViewMatrix();
-    UpdateVectors(vectors.frontVector, vectors.upVector);
 }

@@ -22,14 +22,14 @@ void Mesh::ImportMesh(const std::string& pFile) {
     // If the import failed, report it
     if (!scene) {
         std::cout << importer.GetErrorString() << std::endl;
-        exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
 
     auto mesh = scene->mMeshes[0];
 
     if (!mesh->HasNormals()) {
         std::cerr << "Mesh doesn't have normals." << std::endl;
-        exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
 
     for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
@@ -37,7 +37,7 @@ void Mesh::ImportMesh(const std::string& pFile) {
         // TODO: Add error handling / support more than just triangles
         if (face.mNumIndices != 3) {
             std::cerr << "Wrong number of vertices" << std::endl;
-            exit(1);
+            std::exit(EXIT_FAILURE);
         }
 
         for (uint32_t j = 0; j < face.mNumIndices; j++) {

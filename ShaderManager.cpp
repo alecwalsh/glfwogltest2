@@ -81,7 +81,7 @@ void ShaderProgram::GetCompileErrors(GLuint shader) {
 
         printf("Compile error: %s\n", infoLog);
         delete[] infoLog;
-        exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -98,7 +98,7 @@ void ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
 
         printf("Link error: %s\n", infoLog);
         delete[] infoLog;
-        exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
 }
 

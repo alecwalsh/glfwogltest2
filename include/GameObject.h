@@ -3,8 +3,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
-
 #include "Camera.h"
 #include "MeshBase.h"
 #include "Mesh.h"
