@@ -9,15 +9,18 @@
 
 extern double lastX, lastY;
 
-void Window::framebuffer_size_callback([[maybe_unused]] GLFWwindow* window, int width, int height) {
+void Window::framebuffer_size_callback([[maybe_unused]] GLFWwindow* glfwwindow, int width, int height) {
     glViewport(0, 0, width, height);
 
-    Window::width = width;
-    Window::height = height;
-    Window::hasResized = true;
+    auto& window = Window::GetInstance();
+
+    window.width = width;
+    window.height = height;
+    window.hasResized = true;
 }
 
 void Window::Create() {
+    // TODO: check if gl_version is valid
     using std::get;
 
     glfwSetErrorCallback([](int i, const char* desc) {
@@ -74,8 +77,6 @@ Window::~Window() {
 }
 
 Window& Window::GetInstance() {
-    assert(height != 0 && width != 0);
-    // TODO: check if gl_version is valid
     static Window w{};
     return w;
 }

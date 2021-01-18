@@ -12,12 +12,13 @@ class WindowError : public std::runtime_error {
 
 class Window {
   public:
-    static inline gl_version_t gl_version;
-    static inline int width = 0;
-    static inline int height = 0;
-    static inline bool hasResized = false;
+    gl_version_t gl_version;
+    
+    int width = 0;
+    int height = 0;
 
-    static inline bool showCursor = false;
+    bool hasResized = false;
+    bool showCursor = false;
 
     // Need to set gl_version, width, and height before calling this
     [[nodiscard]] static Window& GetInstance();
@@ -36,7 +37,7 @@ class Window {
 
     void Resize(int width, int height);
 
-    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    static void framebuffer_size_callback(GLFWwindow* glfwwindow, int width, int height);
     
     void ReleaseMouse();
     void CaptureMouse();

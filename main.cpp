@@ -50,12 +50,12 @@ int main() {
 
     ConfigManager cm{};
 
-    Window::width = cm.width;
-    Window::height = cm.height;
-
-    Window::gl_version = cm.gl_version;
-
     Window& window = Window::GetInstance();
+
+    window.width = cm.width;
+    window.height = cm.height;
+
+    window.gl_version = cm.gl_version;
 
     try {
         window.Create();
@@ -71,7 +71,7 @@ int main() {
     };
 
     int load_result =
-        (Window::gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
+        (window.gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
 
     if (load_result == 0) {
         std::cerr << "Error initializing glad" << std::endl;
@@ -125,23 +125,23 @@ int main() {
         static bool toggled = false;
         if (toggled) {
             fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl",
-                             Window::gl_version);
+                             window.gl_version);
             toggled = false;
         } else {
             fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl",
-                             Window::gl_version);
+                             window.gl_version);
             toggled = true;
         }
     });
 
     im.AddKeyBinding(KEY(U), KeyState::InitialPress, [&window, &im] {
-        if (Window::showCursor) {
+        if (window.showCursor) {
             window.CaptureMouse();
             im.EnableInput();
 
             UIManager::GetInstance().guiActive = false;
 
-            Window::showCursor = false;
+            window.showCursor = false;
         } else {
             InputManager::firstMouse = true; // Prevent camera from jumping to previous cursor location
 
@@ -150,16 +150,16 @@ int main() {
 
             UIManager::GetInstance().guiActive = true;
 
-            Window::showCursor = true;
+            window.showCursor = true;
         }
     });
 
     // TODO: Add AssetManager, like TextureManager but for all assets
     // Compile and link shaders
     ShaderProgram& cubeShader =
-        shaderManager.AddShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", Window::gl_version});
+        shaderManager.AddShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", window.gl_version});
     ShaderProgram& lightShader =
-        shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", Window::gl_version});
+        shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", window.gl_version});
 
     // TODO: use different format
     Mesh floorMesh{"data/floor.fbx"};
@@ -249,7 +249,7 @@ int main() {
         // Render main scene to the framebuffer's texture
         fsq.BindFramebuffer();
 
-        if (Window::hasResized) {
+        if (window.hasResized) {
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 10.0f);
 
             for (const auto& [id, sp] : shaderManager.GetMap()) {
