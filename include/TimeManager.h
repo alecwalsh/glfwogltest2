@@ -47,3 +47,5 @@ class TimeManager {
 
     std::list<Timer> timers;
 };
+
+inline TimeManager& timeManager = TimeManager::GetInstance();

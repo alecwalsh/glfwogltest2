@@ -46,8 +46,6 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
 int main() {
     std::filesystem::current_path("..");
 
-    TimeManager& tm = TimeManager::GetInstance();
-
     ConfigManager cm{};
 
     Window& window = Window::GetInstance();
@@ -88,7 +86,7 @@ int main() {
     using Direction = Camera::Direction;
 
     // Create a lambda that translates the camera in a certain direction
-    auto translateCamera = [&camera, &deltaTime = tm.deltaTime](Direction d) {
+    auto translateCamera = [&camera, &deltaTime = timeManager.deltaTime](Direction d) {
         return [&, d] {
             // TODO: Get key bindings from files
             // TODO: Figure out how to use control key
@@ -292,7 +290,7 @@ int main() {
 
         window.SwapBuffers();
 
-        tm.Tick();
+        timeManager.Tick();
     }
 
     window.Destroy();

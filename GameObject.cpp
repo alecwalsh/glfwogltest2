@@ -7,8 +7,7 @@
 #include "TimeManager.h"
 
 GameObject::GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, TextureManager& texman)
-    : mesh(mesh), transform(transform), elapsedTime(TimeManager::GetInstance().elapsedTime),
-      deltaTime(TimeManager::GetInstance().deltaTime),
+    : mesh(mesh), transform(transform), elapsedTime(timeManager.elapsedTime), deltaTime(timeManager.deltaTime),
       texman(texman), shaderProgram(shaderProgram) {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);

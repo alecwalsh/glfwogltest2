@@ -11,8 +11,6 @@
 #include <iterator>
 #include <cfloat>
 
-static auto& timeManager = TimeManager::GetInstance();
-
 UIManager& UIManager::GetInstance() {
     static UIManager uim{};
     return uim;
