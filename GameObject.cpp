@@ -4,11 +4,12 @@
 #include <limits>
 #include <cstdlib>
 
-// TODO: lots of parameters and long initializer list, maybe create Time object?
-GameObject::GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, double& elapsedTime,
-                       double& deltaTime, TextureManager& texman)
-    : mesh(mesh), transform(transform), elapsedTime(elapsedTime), deltaTime(deltaTime), texman(texman),
-      shaderProgram(shaderProgram) {
+#include "TimeManager.h"
+
+GameObject::GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, TextureManager& texman)
+    : mesh(mesh), transform(transform), elapsedTime(TimeManager::GetInstance().elapsedTime),
+      deltaTime(TimeManager::GetInstance().deltaTime),
+      texman(texman), shaderProgram(shaderProgram) {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);

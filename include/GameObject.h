@@ -32,9 +32,7 @@ class GameObject {
     std::string texture_name = "container";
     std::string spec_texture_name = "container_specular";
     
-    GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, double& elapsedTime,
-               double& deltaTime,
-               TextureManager& texman);
+    GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, TextureManager& texman);
     virtual ~GameObject();
     GameObject(const GameObject& go);
 
@@ -43,7 +41,6 @@ class GameObject {
     // Renders the object
     virtual void Draw(const Camera& camera) const;
     void SetupTextures() const;
-    void BindFramebufferTexture() const;
     void BindTextures() const;
 
     void SetTransform(const glm::mat4& transform);

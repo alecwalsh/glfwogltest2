@@ -188,13 +188,12 @@ int main() {
     }
 
     // Creates a CubeObject
-    auto go = std::make_unique<CubeObject>(mesh, cubeShader, glm::mat4{1.0f}, tm.elapsedTime, tm.deltaTime, texman);
+    auto go = std::make_unique<CubeObject>(mesh, cubeShader, glm::mat4{1.0f}, texman);
     go->name = "cube1";
     go->SetupTextures();
 
     auto go2 =
-        std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 1.0f}),
-                                     tm.elapsedTime, tm.deltaTime, texman);
+        std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 1.0f}), texman);
     go2->name = "sphere1";
     go2->SetupTextures();
 
@@ -202,7 +201,7 @@ int main() {
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
     floorTransform = glm::scale(floorTransform, {5.0f, 5.0f, 1.0f});
     auto floor =
-        std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, tm.elapsedTime, tm.deltaTime, texman);
+        std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, texman);
     floor->texture_name = "container";
     floor->spec_texture_name = "container_specular";
 
@@ -232,8 +231,7 @@ int main() {
                 glm::translate(glm::scale(lightTransform, glm::vec3{0.5f}),
                                glm::vec3{light->position.x, light->position.y,
                                          light->position.z}); // Scale by 0.5 then translate to correct position
-            auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, tm.elapsedTime, tm.deltaTime,
-                                                   texman);
+            auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, texman);
             lightObjects.push_back(std::move(lo));
         }
     }

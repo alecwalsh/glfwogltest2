@@ -30,9 +30,8 @@ void CubeObject::Draw(const Camera& camera) const {
     GameObject::Draw(camera);
 }
 
-CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, double& elapsedTime,
-                       double& deltaTime, TextureManager& texman)
-    : GameObject(mesh, shaderProgram, transform, elapsedTime, deltaTime, texman) {
+CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, TextureManager& texman)
+    : GameObject(mesh, shaderProgram, transform, texman) {
     // Sets up material properties for the cube
     material.ambient = glm::vec3{1.0f, 0.5f, 0.31f};
     material.diffuse = glm::vec3{1.0f, 0.5f, 0.31f};
