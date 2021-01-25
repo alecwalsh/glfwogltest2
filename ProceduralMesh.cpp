@@ -4,6 +4,8 @@
 #include <utility>
 #include <optional>
 
+#include <stdexcept>
+
 #include <cstdint>
 
 #ifdef __cpp_lib_math_constants
@@ -15,16 +17,27 @@ constexpr double pi = 3.14159265358979323846;
 
 using vec3 = glm::vec3;
 
-// TODO: Doesn't work right if the vertices aren't in order
-constexpr std::array<GLuint, 6> QuadToTrisElements(std::array<vec3, 4> vertices) {
+#if __cpp_lib_constexpr_vector >= 201907L
+    #define VECTOR_CONSTEXPR constexpr
+#else
+    #define VECTOR_CONSTEXPR
+#endif
+
+// Returns the indices into the array that form two triangles. Works on unsorted inputs
+/*constexpr*/ std::array<GLuint, 6> QuadToTrisElements(std::array<vec3, 4> vertices) {
+    throw std::runtime_error{"Not implemented yet"};
+}
+
+// Assumes elements are either clockwise or counterclockwise
+constexpr std::array<GLuint, 6> QuadToTrisElements() {
     return {0, 1, 2, 2, 3, 0};
 }
 
-//TODO: Doesn't work right if the vertices aren't in order
-std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
-    std::array<vec3, 6> result;
+// TODO: Doesn't work right if the vertices aren't in order
+constexpr std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
+    std::array<vec3, 6> result = {};
 
-    auto elements = QuadToTrisElements(vertices);
+    const auto elements = QuadToTrisElements();
 
     for (std::size_t i = 0; i < result.size(); i++) {
         result[i] = vertices[elements[i]];
@@ -35,11 +48,11 @@ std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
 
 // Theta is polar angle, measured clockwise from {0, 1, 0}
 // Phi is azimuthal angle, measured counterclockwise from {0, 0, 1}
-vec3 SphericalToCartesian(double r, double theta, double phi) {
+constexpr vec3 SphericalToCartesian(double r, double theta, double phi) {
     return static_cast<vec3::value_type>(r) * vec3{sin(theta) * sin(phi), cos(theta), sin(theta) * cos(phi)};
 }
 
-std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
+VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
 GenerateUVSphereVertices() { // TODO: Generate UV coordinates
     std::vector<MeshBase::Vertex> vertices;
     std::vector<GLuint> elements;
@@ -75,7 +88,7 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
         for (const vec3& v : capVertices) {
             vertices.push_back({
                 v,
-                v
+                v,
             });
             elements.push_back(capIndex++);
         }
@@ -101,10 +114,10 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
             for(const vec3& v : faceVertices) {
                 vertices.push_back({
                     v,
-                    v
+                    v,
                 });
             }
-            for(const auto& e : QuadToTrisElements(faceVertices)) {
+            for(const auto& e : QuadToTrisElements()) {
                 elements.push_back(capIndex + e + 4 * index);
             }
             index++;
@@ -115,7 +128,7 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
 }
 
 // TODO: Support cuboids, subdivision, UV coordinates
-std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>> GenerateCubeVertices() {
+VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>> GenerateCubeVertices() {
     std::vector<MeshBase::Vertex> vertices;
     std::vector<GLuint> elements;
 
@@ -189,8 +202,8 @@ std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>> GenerateCubeVertic
                 normal
             });
         }
-        for (const auto& e : QuadToTrisElements(face)) {
-            elements.push_back(e + 4*index);
+        for (const auto& e : QuadToTrisElements()) {
+            elements.push_back(e + 4 * index);
         }
         index++;
     }
@@ -199,7 +212,6 @@ std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>> GenerateCubeVertic
 }
 
 ProceduralMesh::ProceduralMesh() {
-
     auto sphere = GenerateUVSphereVertices();
     vertices = sphere.first;
     elements = sphere.second;
