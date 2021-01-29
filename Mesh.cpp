@@ -1,11 +1,10 @@
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-
-#include <cstdint>
-
 #include "Mesh.h"
+
+#include <iostream>
+
+#include <assimp/Importer.hpp>  // C++ importer interface
+#include <assimp/postprocess.h> // Post processing flags
+#include <assimp/scene.h>       // Output data structure
 
 Mesh::Mesh(const std::string& fileName) {
     usesElementArray = true;
@@ -14,10 +13,10 @@ Mesh::Mesh(const std::string& fileName) {
 }
 
 // TODO: .blend files normals are per vertex, not per face; .fbx works fine
-void Mesh::ImportMesh(const std::string& pFile) {
+void Mesh::ImportMesh(const std::string& fileName) {
     Assimp::Importer importer;
     // TODO: Change/add postprocessing flags
-    const aiScene* scene = importer.ReadFile(pFile, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+    const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 
     // If the import failed, report it
     if (!scene) {
@@ -32,22 +31,22 @@ void Mesh::ImportMesh(const std::string& pFile) {
         std::exit(EXIT_FAILURE);
     }
 
-    for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
-        auto face = mesh->mFaces[i];
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+        const auto& face = mesh->mFaces[i];
         // TODO: Add error handling / support more than just triangles
         if (face.mNumIndices != 3) {
             std::cerr << "Wrong number of vertices" << std::endl;
             std::exit(EXIT_FAILURE);
         }
 
-        for (uint32_t j = 0; j < face.mNumIndices; j++) {
+        for (unsigned int j = 0; j < face.mNumIndices; j++) {
             elements.push_back(face.mIndices[j]);
         }
     }
 
-    for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
-        auto v = mesh->mVertices[i];
-        auto n = mesh->mNormals[i];
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+        const auto& v = mesh->mVertices[i];
+        const auto& n = mesh->mNormals[i];
 
         glm::vec2 texcoords;
 
