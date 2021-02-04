@@ -65,7 +65,7 @@ int main() {
     InputManager& im = InputManager::GetInstance();
 
     Camera camera{
-        {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f} // y-axis is up
+        {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, 2.5f
     };
 
     int load_result =
@@ -97,11 +97,7 @@ int main() {
 
             glm::vec3 vector = vectors[static_cast<int>(d)];
 
-            // TODO: set this elsewhere
-            float velocity = 2.5f;
-
-            glm::mat4 translation{1.0f};
-            translation = glm::translate(translation, velocity * static_cast<float>(deltaTime) * vector);
+            glm::mat4 translation = glm::translate(glm::mat4{1.0f}, camera.speed * static_cast<float>(deltaTime) * vector);
             camera.Translate(translation);
         };
     };

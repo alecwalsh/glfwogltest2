@@ -1,6 +1,10 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up) : position(position) {
+#include <cmath>
+
+#include <glm/gtc/matrix_transform.hpp>
+
+Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : position{position}, speed{speed} {
     // Set the front, right, up, etc vectors to their initial values
     UpdateVectors(glm::normalize(target - position), up);
     viewMat = glm::lookAt(position, target, vectors.upVector);
