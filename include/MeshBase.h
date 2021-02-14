@@ -5,8 +5,6 @@
 
 #include <vector>
 
-#define VERTEX_SIZE 8
-
 class MeshBase {
   public:
     struct Vertex {
@@ -34,3 +32,5 @@ class MeshBase {
     // Generates buffers and uploads data to graphics card
     void UploadToGPU();
 };
+
+constexpr std::size_t VERTEX_SIZE = sizeof(MeshBase::Vertex) / sizeof(float);

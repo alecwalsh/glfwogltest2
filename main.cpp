@@ -58,8 +58,8 @@ int main() {
     try {
         window.Create();
     } catch (const WindowError& e) {
-        std::cout << e.what() << std::endl;
-        return 1;
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 
     InputManager& im = InputManager::GetInstance();
@@ -164,10 +164,17 @@ int main() {
 
     // Create textures
     TextureManager texman;
-    texman.AddTextureFromFile("container", "container2.png");
-    texman.AddTextureFromFile("container_specular", "container2_specular.png");
-    texman.AddTextureFromFile("normalmaptest1", "normalmaptest1.png");
-    texman.AddTextureFromFile("puppy", "sample2.png");
+
+    try {
+        texman.AddTextureFromFile("container", "container2.png");
+        texman.AddTextureFromFile("container_specular", "container2_specular.png");
+        texman.AddTextureFromFile("normalmaptest1", "normalmaptest1.png");
+        texman.AddTextureFromFile("puppy", "sample2.png");
+        texman.AddTextureFromFile("gradient", "gradient.png");
+    } catch (const std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
     // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
     // for the first time
@@ -187,9 +194,8 @@ int main() {
     go->SetupTextures();
 
     auto go2 =
-        std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 1.0f}), texman);
+        std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 2.0f}), texman);
     go2->name = "sphere1";
-    go2->SetupTextures();
 
     glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
@@ -294,7 +300,6 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-// TODO: Support multiple lights and multiple types of lights
 void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& camera) {
     const auto& sp = go.shaderProgram;
 
@@ -382,8 +387,9 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
 
     GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
 
+    float ambient = 0.5f;
     // TODO: Don't hardcode ambient value
-    glUniform3f(ambientLoc, 0.1f, 0.1f, 0.1f);
+    glUniform3f(ambientLoc, ambient, ambient, ambient);
 
     go.Draw(camera);
 }
