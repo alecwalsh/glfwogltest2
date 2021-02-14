@@ -65,6 +65,7 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
     int latSlices = slices/2;
     int longSlices = slices;
 
+    float xcoord_offset = 0.002; // TODO: figure out why values of 0 and 1 cause wrong colors
 
     GLuint capIndex = 0;
 
@@ -85,10 +86,13 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
             SphericalToCartesian(radius, theta2, phi),
         };
 
+        auto xcoord = static_cast<float>(j) / longSlices;
+
         for (const vec3& v : capVertices) {
             vertices.push_back({
                 v,
                 v,
+                {xcoord + xcoord_offset,0}
             });
             elements.push_back(capIndex++);
         }
@@ -111,10 +115,13 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
                 SphericalToCartesian(radius, theta2, phi),
             };
 
+            auto xcoord = static_cast<float>(j) / longSlices;
+
             for(const vec3& v : faceVertices) {
                 vertices.push_back({
                     v,
                     v,
+                    {xcoord + xcoord_offset,0}
                 });
             }
             for(const auto& e : QuadToTrisElements()) {

@@ -196,6 +196,7 @@ int main() {
     auto go2 =
         std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 2.0f}), texman);
     go2->name = "sphere1";
+    go2->texture_name = "gradient";
 
     glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
     floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
