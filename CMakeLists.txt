@@ -2,13 +2,15 @@ cmake_minimum_required(VERSION 3.7.0)
 
 project(glfwogltest2 VERSION 0.0.0.2)
 
-set(GLM_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glm-0.9.9.5" CACHE PATH "")
-set(GLFW_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/glfw-3.3" CACHE PATH "")
-set(ASSIMP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../gl_libs/assimp-4.1.0" CACHE PATH "")
-
 file(GLOB SOURCES "*.cpp")
 file(GLOB HEADERS "include/*.h")
 set(SOURCES ${SOURCES} ${HEADERS} glad/glad.c imgui/imgui.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp imgui/imgui_demo.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp)
+
+find_package(Threads REQUIRED)
+
+find_package(glm CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 
 add_executable(glfwogltest2 ${SOURCES})
 
@@ -30,27 +32,10 @@ set_target_properties(glfwogltest2 PROPERTIES C_EXTENSIONS false)
 
 target_include_directories(glfwogltest2 PUBLIC "include" "." "imgui")
 
+target_link_libraries(glfwogltest2 PRIVATE glm glfw assimp::assimp)
+
 if(UNIX)
-    target_link_libraries(glfwogltest2 GL glfw assimp dl)
-elseif(MINGW)
-    target_link_libraries(glfwogltest2 opengl32 glfw3 assimp IrrXML z)
-elseif(WIN32)
-    add_library(glfw3 STATIC IMPORTED)
-    set_target_properties(glfw3 PROPERTIES IMPORTED_LOCATION ${GLFW_PATH}/build/src/debug/glfw3.lib)
-    target_include_directories(glfw3 INTERFACE ${GLFW_PATH}/include)
-
-    add_library(assimp STATIC IMPORTED)
-    set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${ASSIMP_PATH}/build/code/debug/assimp-vc140-mt.lib)
-    target_include_directories(assimp INTERFACE ${ASSIMP_PATH}/include ${ASSIMP_PATH}/build/include)
-
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT glfwogltest2)
-    target_include_directories(glfwogltest2 PUBLIC ${GLM_PATH}/glm)
-    target_link_libraries(glfwogltest2 opengl32 glfw3 assimp)
-    
-    add_custom_command(TARGET glfwogltest2 POST_BUILD 
-               COMMAND ${CMAKE_COMMAND} -E copy_if_different
-               ${ASSIMP_PATH}/build/code/debug/assimp-vc140-mt.dll
-               $<TARGET_FILE_DIR:glfwogltest2>)
+    target_link_libraries(glfwogltest2 PRIVATE stdc++fs) # Need to link with stdc++fs for std::filesystem support on some older compilers
 endif()
 
 configure_file(include/version.h.in version.h)

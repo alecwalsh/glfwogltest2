@@ -6,3 +6,5 @@ build/
 *.kdev4
 
 imgui.ini
+/.vs
+/vcpkg
