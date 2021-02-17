@@ -48,11 +48,11 @@ constexpr std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
 
 // Theta is polar angle, measured clockwise from {0, 1, 0}
 // Phi is azimuthal angle, measured counterclockwise from {0, 0, 1}
-constexpr vec3 SphericalToCartesian(double r, double theta, double phi) {
+vec3 SphericalToCartesian(double r, double theta, double phi) {
     return static_cast<vec3::value_type>(r) * vec3{sin(theta) * sin(phi), cos(theta), sin(theta) * cos(phi)};
 }
 
-VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
+std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
 GenerateUVSphereVertices() { // TODO: Generate UV coordinates
     std::vector<MeshBase::Vertex> vertices;
     std::vector<GLuint> elements;
