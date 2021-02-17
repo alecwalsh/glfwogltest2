@@ -99,4 +99,4 @@ class ShaderManager {
     ShaderManager() = default;
 };
 
-inline ShaderManager& shaderManager = ShaderManager::GetInstance();
+thread_local inline ShaderManager& shaderManager = ShaderManager::GetInstance();

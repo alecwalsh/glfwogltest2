@@ -132,7 +132,7 @@ ShaderProgram& ShaderManager::AddShader(const ShaderIdentifier& id) {
 }
 
 ShaderManager& ShaderManager::GetInstance() {
-    static ShaderManager sm{};
+    thread_local ShaderManager sm{};
     return sm;
 }
 

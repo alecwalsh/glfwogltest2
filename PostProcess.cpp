@@ -24,7 +24,7 @@ void PostProcess::Draw() {
 }
 
 PostProcess& PostProcess::GetInstance() {
-    static PostProcess f{};
+    thread_local PostProcess f{};
     return f;
 }
 
