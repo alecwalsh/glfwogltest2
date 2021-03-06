@@ -32,7 +32,7 @@ set_target_properties(glfwogltest2 PROPERTIES C_EXTENSIONS false)
 
 target_include_directories(glfwogltest2 PUBLIC "include" "." "imgui")
 
-target_link_libraries(glfwogltest2 PRIVATE glm glfw assimp::assimp)
+target_link_libraries(glfwogltest2 PRIVATE glm::glm glfw assimp::assimp)
 
 if(UNIX)
     target_link_libraries(glfwogltest2 PRIVATE stdc++fs) # Need to link with stdc++fs for std::filesystem support on some older compilers
