@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7.0)
+cmake_minimum_required(VERSION 3.8.0)
 
 project(glfwogltest2 VERSION 0.0.0.2)
 
@@ -6,7 +6,7 @@ file(GLOB SOURCES "*.cpp")
 file(GLOB HEADERS "include/*.h")
 set(SOURCES ${SOURCES} ${HEADERS} glad/glad.c imgui/imgui.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp imgui/imgui_demo.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp)
 
-find_package(Threads REQUIRED)
+find_package(Threads QUIET REQUIRED)
 
 find_package(glm CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
@@ -16,8 +16,8 @@ add_executable(glfwogltest2 ${SOURCES})
 
 if(MSVC)
     target_compile_definitions(glfwogltest2 PRIVATE NOMINMAX)
-    target_compile_options(glfwogltest2 PUBLIC "/W4")
-    target_compile_options(glfwogltest2 PUBLIC "/Zc:__cplusplus")
+    target_compile_options(glfwogltest2 PRIVATE "/W4")
+    target_compile_options(glfwogltest2 PRIVATE "/Zc:__cplusplus")
 else()
     target_compile_options(glfwogltest2 PRIVATE -Wall -Wextra -Wpedantic)
 endif()
