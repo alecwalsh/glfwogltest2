@@ -27,6 +27,9 @@ void CubeObject::Draw(const Camera& camera) const {
     GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
     glUniform3f(uniCameraPos, camera.position.x, camera.position.y, camera.position.z);
 
+    GLint timeUniform = glGetUniformLocation(shaderProgram.shaderProgram, "time");
+    glUniform1f(timeUniform, elapsedTime);
+
     GameObject::Draw(camera);
 }
 

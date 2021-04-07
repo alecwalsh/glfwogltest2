@@ -11,6 +11,6 @@ class TextureManager {
 
     void AddTextureFromFile(const char* id, const char* fileName);
     void AddTextureFromGLObject(const char* id, GLuint texture);
-    TextureManager();
+    
     ~TextureManager();
 };

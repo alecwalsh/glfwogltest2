@@ -12,7 +12,7 @@
 #include <cfloat>
 
 UIManager& UIManager::GetInstance() {
-    static UIManager uim{};
+    thread_local UIManager uim{};
     return uim;
 }
 
