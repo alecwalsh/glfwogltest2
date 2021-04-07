@@ -377,7 +377,7 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
 
             glUniform3f(getLightUniLoc("diffuse"), light->diffuse.r, light->diffuse.g, light->diffuse.b);
             glUniform3f(getLightUniLoc("specular"), light->specular.r, light->specular.g, light->specular.b);
-            glUniform1f(getLightUniLoc("cutoffAngle"), light->cutoffAngle);
+            glUniform1f(getLightUniLoc("cutoffAngleCos"), light->cutoffAngleCos);
         } break;
         default: {
             std::cerr << "Invalid light type" << std::endl;

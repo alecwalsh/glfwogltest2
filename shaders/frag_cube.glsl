@@ -20,8 +20,11 @@ uniform vec3 cameraPos;
 uniform vec3 uniAmbient;
 
 struct Material {
-    //TODO: move diffuse texture into struct
-    //sampler2D diffuse;
+    //TODO: move textures into struct
+    //sampler2D texDiffuseMap; //diffuse map
+    //sampler2D texSpecMap;
+    //sampler2D texNormalMap;
+    
     vec3 diffuse;
     vec3 specular;
     float shininess;
@@ -40,45 +43,14 @@ struct Light {
   
     vec3 diffuse;
     vec3 specular;
-    float cutoffAngle;
+    float cutoffAngleCos; // Cosine of cutoff angle
 };
 
 uniform int numLights;
 uniform Light lights[30];
 
-
-void calculateLighting(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
-    vec3 lightDir = normalize(light.position - FragPos);
-    
-    float dist = distance(light.position, FragPos);
-    //TODO: Implement attenuation  properly
-    float attenuation = 15.0 / pow(dist, 2.0);
-    
-    // Do calculations that are different for different types of lights here
-    switch(light.type) {
-        case POINTLIGHT:
-            break;
-        case DIRECTIONALLIGHT:
-            {
-                lightDir = -normalize(light.direction);
-                attenuation = 1.0;
-            }
-            break;
-        case SPOTLIGHT:
-            {
-                float theta = dot(lightDir, normalize(-light.direction));
-                if(theta <= light.cutoffAngle) {
-                    // If theta > light.cutoffAngle, then the spotlight affects this fragment
-                    // This sets diffuse and specular to 0 if the fragment is not affected by the spotlight
-                    // diffuse and specular are both multiplied by attenuation later, so setting attenuation to 0 ensures they are set to 0 too
-                    attenuation = 0.0;
-                }
-            }
-            break;
-    }
-
-
-    float diff = max(dot(norm, lightDir), 0.0);
+void generalLighting(Light light, vec3 norm, vec3 lightDir, float attenuation, out vec3 diffuse, out vec3 specular) {
+	float diff = max(dot(norm, lightDir), 0.0);
 
     //Calculate specular lighting
     //I don't really understand that math behind this, should probably learn it
@@ -88,6 +60,58 @@ void calculateLighting(Light light, vec3 norm, out vec3 diffuse, out vec3 specul
     
     diffuse += light.diffuse * (diff * material.diffuse) * texture(texDiffuseMap, Texcoord).rgb * attenuation;
     specular += light.specular * (spec * material.specular) * texture(texSpecMap, Texcoord).rgb * attenuation;
+}
+
+void spotLight(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
+    vec3 lightDir = normalize(light.position - FragPos);
+    
+    float dist = distance(light.position, FragPos);
+    //TODO: Implement attenuation  properly
+    float attenuation = 15.0 / pow(dist, 2.0);
+	
+	float cosTheta = dot(lightDir, normalize(-light.direction));
+	if(cosTheta <= light.cutoffAngleCos) {
+		// If cosTheta > light.cutoffAngleCos, then the spotlight affects this fragment
+		// This sets diffuse and specular to 0 if the fragment is not affected by the spotlight
+		// diffuse and specular are both multiplied by attenuation later, so setting attenuation to 0 ensures they are set to 0 too
+		attenuation = 0.0;
+	}
+	
+	generalLighting(light, norm, lightDir, attenuation, diffuse, specular);
+}
+
+
+void dirLight(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
+	vec3 lightDir = -normalize(light.direction);
+	float attenuation = 1.0;
+
+    generalLighting(light, norm, lightDir, attenuation, diffuse, specular);
+}
+
+void pointLight(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
+    vec3 lightDir = normalize(light.position - FragPos);
+    
+    float dist = distance(light.position, FragPos);
+    //TODO: Implement attenuation  properly
+    float attenuation = 15.0 / pow(dist, 2.0);
+
+    generalLighting(light, norm, lightDir, attenuation, diffuse, specular);
+}
+
+
+void calculateLighting(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {    
+    // Do calculations that are different for different types of lights here
+    switch(light.type) {
+        case POINTLIGHT:
+            pointLight(light, norm, diffuse, specular);
+            break;
+        case DIRECTIONALLIGHT:
+            dirLight(light, norm, diffuse, specular);
+            break;
+        case SPOTLIGHT:
+            spotLight(light, norm, diffuse, specular);
+            break;
+    }
 }
 
 
