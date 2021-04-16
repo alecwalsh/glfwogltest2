@@ -38,25 +38,32 @@ void UIManager::DrawStats() {
     ImGui::Text("FPS: %u", displayFPS);
     ImGui::Text("Seconds: %u", elapsedSeconds);
     ImGui::Text("Frame %u", timeManager.frameCount);
+
     ImGui::End();
 }
 
 void UIManager::Draw() {
     BeginFrame();
 
+    if (guiActive) DrawOptional();
+
+    DrawAlwaysVisible();
+
+    EndFrame();
+
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void UIManager::DrawOptional() {
     ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
 
     ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
     ImGui::InputText("", textBuffer, std::size(textBuffer));
 
     ImGui::End();
-
-    DrawStats();
-
-    EndFrame();
-
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+void UIManager::DrawAlwaysVisible() { DrawStats(); }
 
 UIManager::UIManager() {
     const char* glsl_version = "#version 130";

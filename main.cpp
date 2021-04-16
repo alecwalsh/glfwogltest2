@@ -287,9 +287,7 @@ int main() {
         // Draw the fullscreen quad
         fsq.Draw();
 
-        if (UIManager::GetInstance().guiActive) {
-            UIManager::GetInstance().Draw();
-        }
+        UIManager::GetInstance().Draw();
 
         window.SwapBuffers();
 
