@@ -17,18 +17,20 @@
 #include "Camera.h"
 #include "ConfigManager.h"
 #include "CubeObject.h"
-#include "DirLight.h" //TODO:  shouldn't have to include both types of light
 #include "GameObject.h"
 #include "InputManager.h"
-#include "PointLight.h"
 #include "PostProcess.h"
 #include "ShaderManager.h"
-#include "SpotLight.h"
 #include "TextureManager.h"
 #include "TimeManager.h"
 #include "UIManager.h"
 #include "Window.h"
 // TODO: clean up duplicate includes
+
+#include "DirLight.h" //TODO:  shouldn't have to include both types of light
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "Flashlight.h"
 
 #include "MeshBase.h"
 #include "ProceduralMesh.h"
@@ -213,11 +215,19 @@ int main() {
     lights.push_back(std::move(pointLight));
     lights.push_back(std::move(pointLight2));
 
+    auto dirLight = std::make_unique<DirLight>(glm::vec3{-1.0f, 0.0f, 0.0f}, glm::vec3{3.0f}, glm::vec3{3.0f});
+
+    lights.push_back(std::move(dirLight));
+
     auto spotLight = std::make_unique<SpotLight>(glm::vec3{3.0f, 0.75f, 0.0f}, glm::vec3{-1.0f, -0.25f, 0.0f},
-                                                 glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)));
+                                                  glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)));
     lights.push_back(std::move(spotLight));
 
-    size_t flashlight_idx = lights.size() - 1;
+    auto flashlight = std::make_unique<Flashlight>(glm::vec3{-1.0f, -0.25f, 0.0f},
+                                                 glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)), camera);
+    lights.push_back(std::move(flashlight));
+
+    std::size_t flashlight_idx = lights.size() - 1;
 
     // TODO: Create LightObject class
     // The white cubes that represent lights
@@ -306,7 +316,6 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
 
     GLint numLightsUniform = glGetUniformLocation(sp.shaderProgram, "numLights");
     
-    
     std::size_t numLights = lights.size();
     
     if (numLights < 0 || numLights > std::numeric_limits<GLint>::max()) {
@@ -316,72 +325,8 @@ void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& c
     glUniform1i(numLightsUniform, static_cast<GLint>(numLights));
 
     for (std::size_t i = 0; i < lights.size(); i++) {
-        using Type = Light::LightType;
-
-        auto getLightUniLoc =
-            [sp = sp.shaderProgram, i](const char* member) // Gets the uniform location for light struct members
-        {
-            std::stringstream ss;
-            ss << "lights[" << i << "]." << member;
-            return glGetUniformLocation(sp, ss.str().c_str());
-        };
-
-        // TODO: Don't even calculate the lighting for disabled lights in shader.  Add disabled flag to Light struct in
-        // shader
-        // TODO: Don't hardcode SpotLight here, allow disabling all types of lights
-        if (!lights[i]->active) {
-            auto light = static_cast<SpotLight*>(lights[i].get());
-            glUniform1i(getLightUniLoc("type"), static_cast<int>(light->type));
-
-            // Disable light by setting diffuse and specular to 0
-            glUniform3f(getLightUniLoc("diffuse"), 0, 0, 0);
-            glUniform3f(getLightUniLoc("specular"), 0, 0, 0);
-            continue;
-        }
-
         // TODO: don't do this every frame
-        switch (lights[i]->type) {
-        case Type::Point: {
-            auto light = static_cast<PointLight*>(lights[i].get());
-            glUniform1i(getLightUniLoc("type"), static_cast<int>(light->type));
-            // Set light properties
-            glUniform3f(getLightUniLoc("position"), light->position.x, light->position.y, light->position.z);
-            glUniform3f(getLightUniLoc("diffuse"), light->diffuse.r, light->diffuse.g, light->diffuse.b);
-            glUniform3f(getLightUniLoc("specular"), light->specular.r, light->specular.g, light->specular.b);
-        } break;
-        case Type::Directional: {
-            auto light = static_cast<DirLight*>(lights[i].get());
-            glUniform1i(getLightUniLoc("type"), static_cast<int>(light->type));
-            // Set light properties
-            glUniform3f(getLightUniLoc("direction"), light->direction.x, light->direction.y, light->direction.z);
-            glUniform3f(getLightUniLoc("diffuse"), light->diffuse.r, light->diffuse.g, light->diffuse.b);
-            glUniform3f(getLightUniLoc("specular"), light->specular.r, light->specular.g, light->specular.b);
-        } break;
-        case Type::Spot: {
-            auto light = static_cast<SpotLight*>(lights[i].get());
-            glUniform1i(getLightUniLoc("type"), static_cast<int>(light->type));
-            // Set light properties
-            // TODO: Support regular spotlights and flashlights
-            // Use the spotlight's position and direction
-            //                             glUniform3f(getLightUniLoc("position"), light->position.x, light->position.y,
-            //                                         light->position.z);
-            //                             glUniform3f(getLightUniLoc("direction"), light->direction.x,
-            //                             light->direction.y,
-            //                                         light->direction.z);
-            // Set the position and direction to the camera's, like a flashlight
-            glUniform3f(getLightUniLoc("position"), camera.position.x, camera.position.y, camera.position.z);
-            glUniform3f(getLightUniLoc("direction"), camera.vectors.frontVector.x, camera.vectors.frontVector.y,
-                        camera.vectors.frontVector.z);
-
-            glUniform3f(getLightUniLoc("diffuse"), light->diffuse.r, light->diffuse.g, light->diffuse.b);
-            glUniform3f(getLightUniLoc("specular"), light->specular.r, light->specular.g, light->specular.b);
-            glUniform1f(getLightUniLoc("cutoffAngleCos"), light->cutoffAngleCos);
-        } break;
-        default: {
-            std::cerr << "Invalid light type" << std::endl;
-            std::exit(EXIT_FAILURE);
-        } break;
-        }
+        lights[i]->SetUniforms(sp.shaderProgram, i);
     }
 
     GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");

@@ -7,4 +7,6 @@ class PointLight : public Light {
     glm::vec3 position;
 
     PointLight(glm::vec3 position, glm::vec3 diffuse, glm::vec3 specular);
+
+    void SetUniforms(GLuint program, std::size_t index) override;
 };

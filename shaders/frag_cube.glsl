@@ -44,6 +44,8 @@ struct Light {
     vec3 diffuse;
     vec3 specular;
     float cutoffAngleCos; // Cosine of cutoff angle
+
+    bool is_active;
 };
 
 uniform int numLights;
@@ -126,7 +128,9 @@ void main() {
     vec3 specular = vec3(0);
     
     for(int i = 0; i < numLights; i++) {
-        calculateLighting(lights[i], norm, diffuse, specular);
+        if(lights[i].is_active) {
+            calculateLighting(lights[i], norm, diffuse, specular);
+        }
     }
 
     vec3 ambient = uniAmbient * texture(texDiffuseMap, Texcoord).rgb;

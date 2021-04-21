@@ -7,4 +7,6 @@ class DirLight : public Light {
     glm::vec3 direction;
 
     DirLight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular);
+
+    void SetUniforms(GLuint program, std::size_t index) override;
 };
