@@ -46,7 +46,7 @@ template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& camera);
 
 int main() {
-    std::filesystem::current_path("..");
+    std::filesystem::current_path(BASE_DIR);
 
     ConfigManager cm{};
 
