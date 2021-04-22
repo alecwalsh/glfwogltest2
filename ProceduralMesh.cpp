@@ -2,9 +2,7 @@
 
 #include <array>
 #include <utility>
-#include <optional>
 
-#include <stdexcept>
 
 #include <cstdint>
 
@@ -15,25 +13,20 @@ using std::numbers::pi;
 constexpr double pi = 3.14159265358979323846;
 #endif
 
-using vec3 = glm::vec3;
-
 #if __cpp_lib_constexpr_vector >= 201907L
     #define VECTOR_CONSTEXPR constexpr
 #else
     #define VECTOR_CONSTEXPR
 #endif
 
-// Returns the indices into the array that form two triangles. Works on unsorted inputs
-/*constexpr*/ std::array<GLuint, 6> QuadToTrisElements(std::array<vec3, 4> vertices) {
-    throw std::runtime_error{"Not implemented yet"};
-}
+using vec3 = glm::vec3;
 
 // Assumes elements are either clockwise or counterclockwise
 constexpr std::array<GLuint, 6> QuadToTrisElements() {
     return {0, 1, 2, 2, 3, 0};
 }
 
-// TODO: Doesn't work right if the vertices aren't in order
+// Converts a quad to two triangles. Avoid in favor of using an element array
 constexpr std::array<vec3, 6> QuadToTris(std::array<vec3, 4> vertices) {
     std::array<vec3, 6> result = {};
 
@@ -53,11 +46,9 @@ vec3 SphericalToCartesian(double r, double theta, double phi) {
 }
 
 std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
-GenerateUVSphereVertices() { // TODO: Generate UV coordinates
+GenerateUVSphereVertices(double radius = 1) { // TODO: Generate UV coordinates
     std::vector<MeshBase::Vertex> vertices;
     std::vector<GLuint> elements;
-
-    double radius = 1;
 
     //Slices must be at least 4
     int slices = 20;
@@ -65,7 +56,7 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
     int latSlices = slices/2;
     int longSlices = slices;
 
-    float xcoord_offset = 0.002; // TODO: figure out why values of 0 and 1 cause wrong colors
+    float xcoord_offset = 0.002f; // TODO: figure out why values of 0 and 1 cause wrong colors
 
     GLuint capIndex = 0;
 
@@ -98,7 +89,8 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
         }
     }
 
-    GLuint index = 0;
+    // capIndex is now the index of the first non-cap vertex
+    GLuint faceNumber = 0;
 
     for (int i = 1; i < latSlices-1; i++) {
         double theta = i * pi / latSlices; // Angle from top ({0, 1, 0})
@@ -124,74 +116,77 @@ GenerateUVSphereVertices() { // TODO: Generate UV coordinates
                     {xcoord + xcoord_offset,0}
                 });
             }
+
             for(const auto& e : QuadToTrisElements()) {
-                elements.push_back(capIndex + e + 4 * index);
+                // 4 * faceNumber vertices for faceNumber faces
+                // capIndex + 4 * faceNumber is the index of the first vertex of the current quad
+                // e is the offset into the current quad needed to get the current vertex
+                elements.push_back(capIndex + 4 * faceNumber + e);
             }
-            index++;
+            faceNumber++;
         }
     }
 
     return {vertices, elements};
 }
 
-// TODO: Support cuboids, subdivision, UV coordinates
-VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>> GenerateCubeVertices() {
+// TODO: Support subdivision, UV coordinates
+VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
+GenerateCubeVertices(double x_size = 1, double y_size = 1, double z_size = 1) {
     std::vector<MeshBase::Vertex> vertices;
     std::vector<GLuint> elements;
 
     vertices.reserve(36);
     elements.reserve(24);
 
-    float size = 1.0f;
-
     vec3 topRightFront{1.0f, 1.0f, 1.0f};
 
-    vec3 bottomLeftBack = topRightFront - vec3{size};
+    vec3 bottomLeftBack = topRightFront - vec3{x_size, y_size, z_size};
 
     std::array topFace = {
         topRightFront,
-        topRightFront - vec3{size, 0, 0},
-        topRightFront - vec3{size, 0, size},
-        topRightFront - vec3{0, 0, size},
+        topRightFront - vec3{x_size, 0, 0},
+        topRightFront - vec3{x_size, 0, z_size},
+        topRightFront - vec3{0, 0, z_size},
     };
 
     std::array bottomFace = {
         bottomLeftBack,
-        bottomLeftBack + vec3{size, 0, 0},
-        bottomLeftBack + vec3{size, 0, size},
-        bottomLeftBack + vec3{0, 0, size},
+        bottomLeftBack + vec3{x_size, 0, 0},
+        bottomLeftBack + vec3{x_size, 0, z_size},
+        bottomLeftBack + vec3{0, 0, z_size},
     };
 
     std::array frontFace = {
         topRightFront,
-        topRightFront - vec3{size, 0, 0},
-        topRightFront - vec3{size, size, 0},
-        topRightFront - vec3{0, size, 0},
+        topRightFront - vec3{x_size, 0, 0},
+        topRightFront - vec3{x_size, y_size, 0},
+        topRightFront - vec3{0, y_size, 0},
     };
 
     std::array backFace = {
         bottomLeftBack,
-        bottomLeftBack + vec3{size, 0, 0},
-        bottomLeftBack + vec3{size, size, 0},
-        bottomLeftBack + vec3{0, size, 0},
+        bottomLeftBack + vec3{x_size, 0, 0},
+        bottomLeftBack + vec3{x_size, y_size, 0},
+        bottomLeftBack + vec3{0, y_size, 0},
     };
 
     std::array rightFace = {
         topRightFront,
-        topRightFront - vec3{0, 0, size},
-        topRightFront - vec3{0, size, size},
-        topRightFront - vec3{0, size, 0},
+        topRightFront - vec3{0, 0, z_size},
+        topRightFront - vec3{0, y_size, z_size},
+        topRightFront - vec3{0, y_size, 0},
     };
 
     std::array leftFace = {
         bottomLeftBack,
-        bottomLeftBack + vec3{0, 0, size},
-        bottomLeftBack + vec3{0, size, size},
-        bottomLeftBack + vec3{0, size, 0},
+        bottomLeftBack + vec3{0, 0, z_size},
+        bottomLeftBack + vec3{0, y_size, z_size},
+        bottomLeftBack + vec3{0, y_size, 0},
     };
 
-    using T = std::pair<std::array<vec3, 4>, vec3>;
-    std::vector<T> faces = {
+    using face_t = std::pair<std::array<vec3, 4>, vec3>;
+    std::vector<face_t> faces = {
         {topFace, vec3{0, 1, 0}},
         {bottomFace, vec3{0, -1, 0}},
         {frontFace, vec3{0, 0, 1}},
@@ -219,15 +214,12 @@ VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>> G
 }
 
 ProceduralMesh::ProceduralMesh() {
-    auto sphere = GenerateUVSphereVertices();
-    vertices = sphere.first;
-    elements = sphere.second;
-    usesElementArray = true;
+    auto mesh = GenerateUVSphereVertices();
+    //auto mesh = GenerateCubeVertices();
 
-    //auto cube = GenerateCubeVertices();
-    //vertices = cube.first;
-    //elements = cube.second;
-    //usesElementArray = true;
+    vertices = mesh.first;
+    elements = mesh.second;
+    usesElementArray = true;
 
     UploadToGPU();
 }
