@@ -162,7 +162,7 @@ int main() {
     Mesh mesh{"data/cube_irreg.fbx"};
     Mesh lightMesh{"data/cube.fbx"};
 
-    ProceduralMesh procMesh{};
+    SphereMesh procMesh{};
 
     // Create textures
     TextureManager texman;

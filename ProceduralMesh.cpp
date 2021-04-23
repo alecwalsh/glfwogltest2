@@ -19,6 +19,8 @@ constexpr double pi = 3.14159265358979323846;
     #define VECTOR_CONSTEXPR
 #endif
 
+namespace {
+
 using vec3 = glm::vec3;
 
 // Assumes elements are either clockwise or counterclockwise
@@ -46,7 +48,7 @@ vec3 SphericalToCartesian(double r, double theta, double phi) {
 }
 
 std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
-GenerateUVSphereVertices(double radius = 1) { // TODO: Generate UV coordinates
+GenerateUVSphereVertices(double radius) { // TODO: Generate UV coordinates
     std::vector<MeshBase::Vertex> vertices;
     std::vector<GLuint> elements;
 
@@ -132,7 +134,7 @@ GenerateUVSphereVertices(double radius = 1) { // TODO: Generate UV coordinates
 
 // TODO: Support subdivision, UV coordinates
 VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
-GenerateCubeVertices(double x_size = 1, double y_size = 1, double z_size = 1) {
+GenerateCubeVertices(double x_size, double y_size, double z_size) {
     std::vector<MeshBase::Vertex> vertices;
     std::vector<GLuint> elements;
 
@@ -213,9 +215,10 @@ GenerateCubeVertices(double x_size = 1, double y_size = 1, double z_size = 1) {
     return {vertices, elements};
 }
 
-ProceduralMesh::ProceduralMesh() {
-    auto mesh = GenerateUVSphereVertices();
-    //auto mesh = GenerateCubeVertices();
+} // namespace
+
+SphereMesh::SphereMesh(double radius) {
+    auto mesh = GenerateUVSphereVertices(radius);
 
     vertices = mesh.first;
     elements = mesh.second;
@@ -223,3 +226,19 @@ ProceduralMesh::ProceduralMesh() {
 
     UploadToGPU();
 }
+
+SphereMesh::SphereMesh() : SphereMesh{1} {}
+
+CuboidMesh::CuboidMesh(double x, double y, double z) {
+    auto mesh = GenerateCubeVertices(x, y, z);
+
+    vertices = mesh.first;
+    elements = mesh.second;
+    usesElementArray = true;
+
+    UploadToGPU();
+}
+
+CuboidMesh::CuboidMesh(double size) : CuboidMesh{size, size, size} {}
+
+CuboidMesh::CuboidMesh() : CuboidMesh{1} {}
