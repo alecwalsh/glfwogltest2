@@ -1,12 +1,53 @@
 #include "CubeObject.h"
 
-// Runs every frame
+#include "TimeManager.h"
+
+constexpr float earthGravity = 9.81f;
+
+bool collidesWithFloor(float height, float floorHeight, float size) { 
+    return (height - size/2) <= floorHeight; 
+}
+
+float calculateDistance(float& velocity) {
+    float acceleration = earthGravity;
+
+    float time = timeManager.deltaTime;
+
+    velocity += acceleration * time;
+
+    float distance = velocity * time + (acceleration * time * time) / 2;
+
+    return distance;
+}
+
 void CubeObject::Tick() {
     glm::mat4 rotation{1.0f}, translation{1.0f}, scaling{1.0f};
 
     float rotationAmount = deltaTime * RotSpeed * glm::radians(180.0f);
 
     rotation = glm::rotate(rotation, rotationAmount, glm::vec3{0.0f, 1.0f, 0.0f});
+
+    float distance;
+
+    float floorHeight = 0;
+
+    if (collidesWithFloor(height, floorHeight, size)) {
+        // Is currently colliding with the floor
+        distance = 0;
+        velocity = 0;
+    } else {
+        distance = calculateDistance(velocity);
+        // Is not currently colliding with the floor
+        if (collidesWithFloor(height - distance, floorHeight, size)) {
+            // The new height will collide with the floor
+            // Set distance so that the new height is exactly at the floor
+            distance = height - size / 2 - floorHeight;
+        }
+
+        height -= distance;
+    }
+
+    translation = glm::translate(translation, glm::vec3{0.0f, -distance, 0.0f});
 
     this->ModTransform(translation * rotation * scaling);
 }

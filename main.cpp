@@ -67,7 +67,7 @@ int main() {
     InputManager& im = InputManager::GetInstance();
 
     Camera camera{
-        {2.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 0.0f}, 2.5f
+        {3.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, 2.5f
     };
 
     int load_result =
@@ -158,9 +158,9 @@ int main() {
         shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", window.gl_version});
 
     // TODO: use different format
-    Mesh floorMesh{"data/floor.fbx"};
+    PlaneMesh floorMesh{};
     Mesh mesh{"data/cube_irreg.fbx"};
-    Mesh lightMesh{"data/cube.fbx"};
+    CuboidMesh lightMesh{};
 
     SphereMesh procMesh{};
 
@@ -190,8 +190,9 @@ int main() {
         yaw = -yaw;
     }
 
+    glm::mat4 goTransform = glm::translate(glm::mat4{1.0f}, {0.0f, 5.0f, 0.0f});
     // Creates a CubeObject
-    auto go = std::make_unique<CubeObject>(mesh, cubeShader, glm::mat4{1.0f}, texman);
+    auto go = std::make_unique<CubeObject>(mesh, cubeShader, goTransform, texman);
     go->name = "cube1";
     go->SetupTextures();
 
@@ -200,11 +201,12 @@ int main() {
     go2->name = "sphere1";
     go2->texture_name = "gradient";
 
-    glm::mat4 floorTransform = glm::translate(glm::mat4{1.0f}, {0.0f, -1.5f, 0.0f});
-    floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {1.0f, 0.0f, 0.0f});
-    floorTransform = glm::scale(floorTransform, {5.0f, 5.0f, 1.0f});
+    glm::mat4 floorTransform = glm::mat4{1.0f};
+    floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
+    floorTransform = glm::scale(floorTransform, {10.0f, 10.0f, 1.0f});
     auto floor =
         std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, texman);
+    floor->name = "floor";
     floor->texture_name = "container";
     floor->spec_texture_name = "container_specular";
 
@@ -225,6 +227,7 @@ int main() {
 
     auto flashlight = std::make_unique<Flashlight>(glm::vec3{-1.0f, -0.25f, 0.0f},
                                                  glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)), camera);
+    flashlight->ToggleActive();
     lights.push_back(std::move(flashlight));
 
     std::size_t flashlight_idx = lights.size() - 1;
@@ -281,13 +284,15 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        go->Tick();
+
         render(*go, lights, camera);
         render(*go2, lights, camera);
         render(*floor, lights, camera);
 
         // Render all of the lights
         for (auto& lo : lightObjects) {
-            lo->Tick();
+            //lo->Tick();
             render(*lo, lights, camera);
         }
 
