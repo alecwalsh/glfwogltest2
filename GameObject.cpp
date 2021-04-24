@@ -6,9 +6,11 @@
 
 #include "TimeManager.h"
 
+#include "Window.h"
+
 GameObject::GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, TextureManager& texman)
-    : mesh(mesh), transform(transform), elapsedTime(timeManager.elapsedTime), deltaTime(timeManager.deltaTime),
-      texman(texman), shaderProgram(shaderProgram) {
+    : mesh{mesh}, transform{transform}, elapsedTime{timeManager.elapsedTime}, deltaTime{timeManager.deltaTime},
+      texman{texman}, shaderProgram{shaderProgram} {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);
@@ -32,9 +34,10 @@ GameObject::GameObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 t
     glEnableVertexAttribArray(texAttrib);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
-    // Set up projection matrix
+    Window& window = Window::GetInstance();
 
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 10.0f);
+    // Set up projection matrix
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 100.0f);
     GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 

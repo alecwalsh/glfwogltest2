@@ -2,6 +2,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <stdexcept>
+
 #include <cmath>
 
 double TimeManager::GetFPS() {
@@ -12,6 +14,8 @@ void TimeManager::Tick() {
     frameCount++;
 
     double newTime = glfwGetTime();
+    if (newTime == 0) throw std::runtime_error{"Error in glfwGetTime"};
+
     deltaTime = newTime - elapsedTime;
     elapsedTime = newTime;
 

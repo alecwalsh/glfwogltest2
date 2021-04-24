@@ -259,7 +259,7 @@ int main() {
         fsq.BindFramebuffer();
 
         if (window.hasResized) {
-            glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 10.0f);
+            glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 100.0f);
 
             for (const auto& [id, sp] : shaderManager.GetMap()) {
                 glUseProgram(sp.shaderProgram);

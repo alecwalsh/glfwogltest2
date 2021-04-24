@@ -20,7 +20,7 @@ class GameObject {
         glm::vec3 diffuse;
         glm::vec3 specular;
         GLfloat shininess;
-    } material;
+    } material = {};
 
     GLuint vao;
     double& elapsedTime;
