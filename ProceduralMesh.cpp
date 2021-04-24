@@ -134,57 +134,57 @@ GenerateUVSphereVertices(double radius) { // TODO: Generate UV coordinates
 
 // TODO: Support subdivision, UV coordinates
 VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
-GenerateCubeVertices(double x_size, double y_size, double z_size) {
+GenerateCubeVertices(double xSize, double ySize, double zSize) {
     std::vector<MeshBase::Vertex> vertices;
     std::vector<GLuint> elements;
 
     vertices.reserve(36);
     elements.reserve(24);
 
-    vec3 topRightFront{1.0f, 1.0f, 1.0f};
+    vec3 topRightFront{xSize/2, ySize/2, zSize/2};
 
-    vec3 bottomLeftBack = topRightFront - vec3{x_size, y_size, z_size};
+    vec3 bottomLeftBack = topRightFront - vec3{xSize, ySize, zSize};
 
     std::array topFace = {
         topRightFront,
-        topRightFront - vec3{x_size, 0, 0},
-        topRightFront - vec3{x_size, 0, z_size},
-        topRightFront - vec3{0, 0, z_size},
+        topRightFront - vec3{xSize, 0, 0},
+        topRightFront - vec3{xSize, 0, zSize},
+        topRightFront - vec3{0, 0, zSize},
     };
 
     std::array bottomFace = {
         bottomLeftBack,
-        bottomLeftBack + vec3{x_size, 0, 0},
-        bottomLeftBack + vec3{x_size, 0, z_size},
-        bottomLeftBack + vec3{0, 0, z_size},
+        bottomLeftBack + vec3{xSize, 0, 0},
+        bottomLeftBack + vec3{xSize, 0, zSize},
+        bottomLeftBack + vec3{0, 0, zSize},
     };
 
     std::array frontFace = {
         topRightFront,
-        topRightFront - vec3{x_size, 0, 0},
-        topRightFront - vec3{x_size, y_size, 0},
-        topRightFront - vec3{0, y_size, 0},
+        topRightFront - vec3{xSize, 0, 0},
+        topRightFront - vec3{xSize, ySize, 0},
+        topRightFront - vec3{0, ySize, 0},
     };
 
     std::array backFace = {
         bottomLeftBack,
-        bottomLeftBack + vec3{x_size, 0, 0},
-        bottomLeftBack + vec3{x_size, y_size, 0},
-        bottomLeftBack + vec3{0, y_size, 0},
+        bottomLeftBack + vec3{xSize, 0, 0},
+        bottomLeftBack + vec3{xSize, ySize, 0},
+        bottomLeftBack + vec3{0, ySize, 0},
     };
 
     std::array rightFace = {
         topRightFront,
-        topRightFront - vec3{0, 0, z_size},
-        topRightFront - vec3{0, y_size, z_size},
-        topRightFront - vec3{0, y_size, 0},
+        topRightFront - vec3{0, 0, zSize},
+        topRightFront - vec3{0, ySize, zSize},
+        topRightFront - vec3{0, ySize, 0},
     };
 
     std::array leftFace = {
         bottomLeftBack,
-        bottomLeftBack + vec3{0, 0, z_size},
-        bottomLeftBack + vec3{0, y_size, z_size},
-        bottomLeftBack + vec3{0, y_size, 0},
+        bottomLeftBack + vec3{0, 0, zSize},
+        bottomLeftBack + vec3{0, ySize, zSize},
+        bottomLeftBack + vec3{0, ySize, 0},
     };
 
     using face_t = std::pair<std::array<vec3, 4>, vec3>;
@@ -215,6 +215,34 @@ GenerateCubeVertices(double x_size, double y_size, double z_size) {
     return {vertices, elements};
 }
 
+// TODO: Support subdivision, UV coordinates
+VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
+GeneratePlaneVertices(double xSize, double ySize) {
+    std::vector<MeshBase::Vertex> vertices;
+    
+    const auto elementsArray = QuadToTrisElements();
+    std::vector<GLuint> elements{elementsArray.begin(), elementsArray.end()};
+
+    vertices.reserve(4);
+    
+    vec3 topRight{xSize/2, ySize/2, 0};
+
+    vec3 normal{0, 0, 1};
+
+    std::array verticesArray = {
+        topRight,
+        topRight - vec3{xSize, 0, 0},
+        topRight - vec3{xSize, ySize, 0},
+        topRight - vec3{0, ySize, 0},
+    };
+
+    for (const auto& v : verticesArray) {
+        vertices.push_back({v, normal});
+    }
+
+   return {vertices, elements};
+}
+
 } // namespace
 
 SphereMesh::SphereMesh(double radius) {
@@ -242,3 +270,19 @@ CuboidMesh::CuboidMesh(double x, double y, double z) {
 CuboidMesh::CuboidMesh(double size) : CuboidMesh{size, size, size} {}
 
 CuboidMesh::CuboidMesh() : CuboidMesh{1} {}
+
+PlaneMesh::PlaneMesh(double x, double y) {
+    auto mesh = GeneratePlaneVertices(x, y);
+
+    auto elements_array = QuadToTrisElements();
+
+    vertices = mesh.first;
+    elements = mesh.second;
+    usesElementArray = true;
+
+    UploadToGPU();
+}
+
+PlaneMesh::PlaneMesh(double size) : PlaneMesh{size, size} {}
+
+PlaneMesh::PlaneMesh() : PlaneMesh{1} {}
