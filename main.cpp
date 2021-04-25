@@ -17,7 +17,7 @@
 #include "Camera.h"
 #include "ConfigManager.h"
 #include "CubeObject.h"
-#include "GameObject.h"
+#include "RenderableObject.h"
 #include "InputManager.h"
 #include "PostProcess.h"
 #include "ShaderManager.h"
@@ -32,7 +32,7 @@
 #include "SpotLight.h"
 #include "Flashlight.h"
 
-#include "MeshBase.h"
+#include "Mesh.h"
 #include "ProceduralMesh.h"
 
 #include "version.h"
@@ -43,7 +43,7 @@ double yaw, pitch;
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
-void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& camera);
+void render(const RenderableObject& go, const vec_uniq<Light>& lights, const Camera& camera);
 
 int main() {
     std::filesystem::current_path(BASE_DIR);
@@ -234,7 +234,7 @@ int main() {
 
     // TODO: Create LightObject class
     // The white cubes that represent lights
-    vec_uniq<GameObject> lightObjects;
+    vec_uniq<RenderableObject> lightObjects;
 
     // TODO: Light objects appear in the wrong place compared to the location of the light
     for (size_t i = 0; i < lights.size(); i++) {
@@ -314,7 +314,7 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-void render(const GameObject& go, const vec_uniq<Light>& lights, const Camera& camera) {
+void render(const RenderableObject& go, const vec_uniq<Light>& lights, const Camera& camera) {
     const auto& sp = go.shaderProgram;
 
     glUseProgram(sp.shaderProgram);

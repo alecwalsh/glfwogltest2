@@ -71,11 +71,11 @@ void CubeObject::Draw(const Camera& camera) const {
     GLint timeUniform = glGetUniformLocation(shaderProgram.shaderProgram, "time");
     glUniform1f(timeUniform, elapsedTime);
 
-    GameObject::Draw(camera);
+    RenderableObject::Draw(camera);
 }
 
 CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, TextureManager& texman)
-    : GameObject(mesh, shaderProgram, transform, texman) {
+    : RenderableObject{mesh, shaderProgram, transform, texman} {
     // Sets up material properties for the cube
     material.ambient = glm::vec3{1.0f, 0.5f, 0.31f};
     material.diffuse = glm::vec3{1.0f, 0.5f, 0.31f};

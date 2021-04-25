@@ -1,7 +1,8 @@
 #pragma once
-#include "GameObject.h"
 
-class CubeObject : public GameObject {
+#include "RenderableObject.h"
+
+class CubeObject : public RenderableObject {
     float height = 5; // TODO: Set this automatically
     float size = 1;   // TODO: Set this automatically
     float velocity = 0;
