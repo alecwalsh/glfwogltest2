@@ -189,12 +189,12 @@ GenerateCubeVertices(double xSize, double ySize, double zSize) {
 
     using face_t = std::pair<std::array<vec3, 4>, vec3>;
     std::vector<face_t> faces = {
-        {topFace, vec3{0, 1, 0}},
-        {bottomFace, vec3{0, -1, 0}},
-        {frontFace, vec3{0, 0, 1}},
-        {backFace, vec3{0, 0, -1}},
-        {rightFace, vec3{1, 0, 0}},
-        {leftFace, vec3{-1, 0, 0}},
+        {topFace, {0, 1, 0}},
+        {bottomFace, {0, -1, 0}},
+        {frontFace, {0, 0, 1}},
+        {backFace, {0, 0, -1}},
+        {rightFace, {1, 0, 0}},
+        {leftFace, {-1, 0, 0}},
     };
 
     GLuint index = 0;
@@ -236,8 +236,29 @@ GeneratePlaneVertices(double xSize, double ySize) {
         topRight - vec3{0, ySize, 0},
     };
 
-    for (const auto& v : verticesArray) {
-        vertices.push_back({v, normal});
+    using glm::vec2;
+
+    std::array texCoords = {
+        vec2{1, 1},
+        vec2{0, 1},
+        vec2{0, 0},
+        vec2{1, 0},
+    };
+
+    for (int i = 0; i < 4; i++) {
+#if __cpp_designated_initializers >= 201707L
+        vertices.push_back({
+                .position = verticesArray[i], 
+                .normal = normal,
+                .texcoord = texCoords[i]
+            });
+#else
+        vertices.push_back({
+                verticesArray[i],
+                normal,
+                texCoords[i]
+            });
+#endif
     }
 
    return {vertices, elements};
