@@ -1,54 +1,9 @@
 #include "CubeObject.h"
 
-#include "TimeManager.h"
-
-constexpr float earthGravity = 9.81f;
-
-bool collidesWithFloor(float height, float floorHeight, float size) { 
-    return (height - size/2) <= floorHeight; 
-}
-
-float calculateDistance(float& velocity) {
-    float acceleration = earthGravity;
-
-    float time = static_cast<float>(timeManager.deltaTime);
-
-    velocity += acceleration * time;
-
-    float distance = velocity * time + (acceleration * time * time) / 2;
-
-    return distance;
-}
+#include "Collision.h"
 
 void CubeObject::Tick() {
-    glm::mat4 rotationMat{1.0f};
-
-    float rotationAmount = static_cast<float>(elapsedTime) * RotSpeed * glm::radians(180.0f);
-
-    rotationMat = glm::rotate(rotationMat, rotationAmount, glm::vec3{0.0f, 1.0f, 0.0f});
-
-    float distance;
-
-    float floorHeight = 0;
-
-    if (collidesWithFloor(height, floorHeight, size)) {
-        // Is currently colliding with the floor
-        distance = 0;
-        velocity = 0;
-    } else {
-        distance = calculateDistance(velocity);
-        // Is not currently colliding with the floor
-        if (collidesWithFloor(height - distance, floorHeight, size)) {
-            // The new height will collide with the floor
-            // Set distance so that the new height is exactly at the floor
-            distance = height - size / 2 - floorHeight;
-        }
-
-        height -= distance;
-    }
-
-    rotation = rotationMat;
-    position -= glm::vec3{0.0f, distance, 0.0f};
+    ModifyPosition(Physics::getTranslation(velocity, height, size));
 }
 
 void CubeObject::Draw(const Camera& camera) const {
@@ -81,4 +36,15 @@ CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureMana
     material.diffuse = glm::vec3{1.0f, 0.5f, 0.31f};
     material.specular = glm::vec3{1.0f, 1.0f, 1.0f};
     material.shininess = 32.0f;
+}
+
+
+void CubeObject::SetPosition(glm::vec3 position) {
+    RenderableObject::SetPosition(position);
+    this->height = position.y;
+}
+
+void CubeObject::SetScale(glm::vec3 scale) {
+    RenderableObject::SetScale(scale);
+    this->size = scale.y;
 }

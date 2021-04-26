@@ -11,15 +11,9 @@ class CubeObject : public RenderableObject {
     
     CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureManager& texman);
 
-    void SetPosition(glm::vec3 position) override {
-        RenderableObject::SetPosition(position);
-        this->height = position.y;
-    }
+    void SetPosition(glm::vec3 position) override;
 
-    void SetScale(glm::vec3 scale) override {
-        RenderableObject::SetScale(scale);
-        this->size = scale.y;
-    }
+    void SetScale(glm::vec3 scale) override;
     
     // Runs every frame
     void Tick() override;

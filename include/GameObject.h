@@ -27,6 +27,8 @@ class GameObject {
 
     virtual glm::vec3 GetPosition() const { return position; }
 
+    virtual void ModifyPosition(glm::vec3 translation) { SetPosition(GetPosition() + translation); }
+
     glm::mat4 rotation{1.0f}; // TODO: Use quaternion for rotation
     
     GameObject();

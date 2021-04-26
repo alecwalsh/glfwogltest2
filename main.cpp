@@ -95,14 +95,7 @@ int main() {
             // TODO: Get key bindings from files
             // TODO: Figure out how to use control key
 
-            const auto& [front, back, right, left, up, down] = camera.vectors;
-
-            vec3 vectors[]{front, back, right, left, up, down};
-
-            vec3 vector = vectors[static_cast<int>(d)];
-
-            mat4 translation = glm::translate(mat4{1.0f}, camera.speed * static_cast<float>(deltaTime) * vector);
-            camera.Translate(translation);
+            camera.ModifyPosition(camera.speed * static_cast<float>(deltaTime) * camera.vectors[d]);
         };
     };
 

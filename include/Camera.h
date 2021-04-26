@@ -10,6 +10,8 @@ class Camera : public GameObject {
     void UpdateViewMatrix();
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector);
 
+    float height = 0;
+    float size = 3;
   public:
     Camera(glm::vec3 position, glm::vec3 target,
         float speed = 1.0f,
@@ -17,11 +19,10 @@ class Camera : public GameObject {
         );
 
     // Runs every frame
-    void Tick() override {}
+    void Tick() override;
 
     void SetPosition(glm::vec3 position) override;
 
-    void Translate(glm::mat4 transform);
     void Rotate(double pitch, double yaw);
     //     glm::vec3 up{0.0f}; // Up vector for the whole scene
 
