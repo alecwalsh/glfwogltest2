@@ -21,11 +21,11 @@ float calculateDistance(float& velocity) {
 }
 
 void CubeObject::Tick() {
-    glm::mat4 rotation{1.0f}, translation{1.0f}, scaling{1.0f};
+    glm::mat4 rotationMat{1.0f};
 
-    float rotationAmount = deltaTime * RotSpeed * glm::radians(180.0f);
+    float rotationAmount = static_cast<float>(elapsedTime) * RotSpeed * glm::radians(180.0f);
 
-    rotation = glm::rotate(rotation, rotationAmount, glm::vec3{0.0f, 1.0f, 0.0f});
+    rotationMat = glm::rotate(rotationMat, rotationAmount, glm::vec3{0.0f, 1.0f, 0.0f});
 
     float distance;
 
@@ -47,9 +47,8 @@ void CubeObject::Tick() {
         height -= distance;
     }
 
-    translation = glm::translate(translation, glm::vec3{0.0f, -distance, 0.0f});
-
-    this->ModTransform(translation * rotation * scaling);
+    rotation = rotationMat;
+    position -= glm::vec3{0.0f, distance, 0.0f};
 }
 
 void CubeObject::Draw(const Camera& camera) const {
@@ -74,8 +73,8 @@ void CubeObject::Draw(const Camera& camera) const {
     RenderableObject::Draw(camera);
 }
 
-CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, TextureManager& texman)
-    : RenderableObject{mesh, shaderProgram, transform, texman} {
+CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureManager& texman)
+    : RenderableObject{mesh, shaderProgram, texman} {
     // Sets up material properties for the cube
     material.ambient = glm::vec3{1.0f, 0.5f, 0.31f};
     material.diffuse = glm::vec3{1.0f, 0.5f, 0.31f};

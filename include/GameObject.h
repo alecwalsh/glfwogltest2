@@ -5,23 +5,24 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// TODO: Make Camera a subclass of GameObject
 class GameObject {
   protected:
-    glm::mat4 transform{1.0f};
+    glm::mat4 GetTransform() const;
 
     double& elapsedTime;
     double& deltaTime;
   public:
-    std::string name = "";
+    std::string name = "unnamed";
+
+    glm::vec3 position = {0,0,0};
+    glm::vec3 scale = {1,1,1};
+    glm::mat4 rotation{1.0f}; // TODO: Use quaternion for rotation
     
-    GameObject(glm::mat4 transform);
+    GameObject();
+    GameObject(glm::vec3 position, glm::vec3 scale);
     virtual ~GameObject();
     GameObject(const GameObject&);
 
     // Runs every frame
     virtual void Tick() = 0;
-
-    void SetTransform(const glm::mat4& transform);
-    void ModTransform(const glm::mat4& transform);
 };

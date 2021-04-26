@@ -27,7 +27,7 @@ class RenderableObject : public GameObject {
     std::string texture_name = "container";
     std::string spec_texture_name = "container_specular";
 
-    RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform, TextureManager& texman);
+    RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureManager& texman);
     RenderableObject(const RenderableObject&);
 
     // Renders the object

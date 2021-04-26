@@ -4,7 +4,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : position{position}, speed{speed} {
+Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : 
+    GameObject{position, {1, 1, 1}}, speed{speed} {
     // Set the front, right, up, etc vectors to their initial values
     UpdateVectors(glm::normalize(target - position), up);
     viewMat = glm::lookAt(position, target, vectors.upVector);
@@ -12,12 +13,6 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) 
 
 void Camera::SetPosition(glm::vec3 position) {
     this->position = position;
-    UpdateViewMatrix();
-}
-
-void Camera::ModPosition(glm::mat4 transform) {
-    // Converts position to vec4, applies transform, then converts back to vec3
-    position = glm::vec3{transform * glm::vec4(position, 1.0f)};
     UpdateViewMatrix();
 }
 

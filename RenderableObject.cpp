@@ -2,9 +2,8 @@
 
 #include "Window.h"
 
-RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram, glm::mat4 transform,
-                                   TextureManager& texman)
-    : GameObject{transform}, mesh{mesh}, texman{texman}, shaderProgram{shaderProgram} {
+RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureManager& texman)
+    : mesh{mesh}, texman{texman}, shaderProgram{shaderProgram} {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);
@@ -40,7 +39,7 @@ RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram,
 
 // Copy constructor
 RenderableObject::RenderableObject(const RenderableObject& rhs)
-    : GameObject{rhs.transform}, mesh{rhs.mesh}, texman{rhs.texman}, shaderProgram{rhs.shaderProgram} {
+    : GameObject{rhs}, mesh{rhs.mesh}, texman{rhs.texman}, shaderProgram{rhs.shaderProgram} {
     std::cout << "RenderableObject copy constructor" << std::endl;
 }
 
@@ -52,7 +51,7 @@ void RenderableObject::Draw(const Camera& camera) const {
     glUseProgram(shaderProgram.shaderProgram);
     GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
 
-    glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(transform));
+    glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(GetTransform()));
 
     GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(camera.viewMat));

@@ -190,22 +190,25 @@ int main() {
         yaw = -yaw;
     }
 
-    glm::mat4 goTransform = glm::translate(glm::mat4{1.0f}, {0.0f, 5.0f, 0.0f});
     // Creates a CubeObject
-    auto go = std::make_unique<CubeObject>(mesh, cubeShader, goTransform, texman);
+    auto go = std::make_unique<CubeObject>(mesh, cubeShader, texman);
+    go->position = {0.0f, 25.0f, 0.0f};
     go->name = "cube1";
     go->SetupTextures();
 
+
     auto go2 =
-        std::make_unique<CubeObject>(procMesh, cubeShader, glm::translate(glm::mat4{1.0f}, glm::vec3{0, 0, 2.0f}), texman);
+        std::make_unique<CubeObject>(procMesh, cubeShader, texman);
+    go2->position = glm::vec3{0, 0, 2.0f};
     go2->name = "sphere1";
     go2->texture_name = "gradient";
 
-    glm::mat4 floorTransform = glm::mat4{1.0f};
-    floorTransform = glm::rotate(floorTransform, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
-    floorTransform = glm::scale(floorTransform, {10.0f, 10.0f, 1.0f});
+    
+    glm::mat4 floorRotation = glm::rotate(glm::mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
     auto floor =
-        std::make_unique<CubeObject>(floorMesh, cubeShader, floorTransform, texman);
+        std::make_unique<CubeObject>(floorMesh, cubeShader, texman);
+    floor->scale = {10.0f, 10.0f, 1.0f};
+    floor->rotation = floorRotation;
     floor->name = "floor";
     floor->texture_name = "container";
     floor->spec_texture_name = "container_specular";
@@ -240,12 +243,12 @@ int main() {
     for (size_t i = 0; i < lights.size(); i++) {
         if (lights[i]->type == Light::LightType::Point) {
             auto light = static_cast<PointLight*>(lights[i].get());
-            glm::mat4 lightTransform{1.0f};
-            lightTransform =
-                glm::translate(glm::scale(lightTransform, glm::vec3{0.5f}),
-                               glm::vec3{light->position.x, light->position.y,
-                                         light->position.z}); // Scale by 0.5 then translate to correct position
-            auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, lightTransform, texman);
+
+            auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, texman);
+            // Scale by 0.5 then translate to correct position
+            lo->scale = glm::vec3{0.5f};
+            lo->position = glm::vec3{light->position.x, light->position.y, light->position.z};
+
             lightObjects.push_back(std::move(lo));
         }
     }
@@ -279,6 +282,8 @@ int main() {
             InputManager::mouseMoved = false;
             camera.Rotate(pitch, yaw);
         }
+
+        camera.Tick();
 
         // Clear the screen to black
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

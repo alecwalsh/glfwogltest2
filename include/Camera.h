@@ -1,11 +1,12 @@
 #pragma once
 
+#include "GameObject.h"
+
 #include <cstdint>
 
 #include <glm/glm.hpp>
 
-// TODO: Make Camera a subclass of GameObject;  see TODO at top of GameObject.h
-class Camera {
+class Camera : public GameObject {
     void UpdateViewMatrix();
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector);
 
@@ -15,13 +16,13 @@ class Camera {
         glm::vec3 up = {0.0f, 1.0f, 0.0f} // y-axis defaults to up
         );
 
+    // Runs every frame
+    void Tick() override {}
+
     void SetPosition(glm::vec3 position);
-    void ModPosition(glm::mat4 transform);
 
     void Translate(glm::mat4 transform);
     void Rotate(double pitch, double yaw);
-
-    glm::vec3 position{0.0f};
     //     glm::vec3 up{0.0f}; // Up vector for the whole scene
 
     glm::mat4 viewMat{1.0f};
@@ -29,7 +30,7 @@ class Camera {
     struct {
         using vec3 = glm::vec3;
 
-		vec3 frontVector{0.0f};
+        vec3 frontVector{0.0f};
         vec3 backVector{0.0f};
         vec3 rightVector{0.0f};
         vec3 leftVector{0.0f};
