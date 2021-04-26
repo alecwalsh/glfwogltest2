@@ -159,6 +159,8 @@ int main() {
     ShaderProgram& lightShader =
         shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", window.gl_version});
 
+    cubeShader.SetupTextures();
+
     // TODO: use different format
     PlaneMesh floorMesh{};
     Mesh mesh{"data/cube_irreg.fbx"};
@@ -196,8 +198,6 @@ int main() {
     auto go = std::make_unique<CubeObject>(mesh, cubeShader, texman);
     go->SetPosition({0.0f, 25.0f, 0.0f});
     go->name = "cube1";
-    go->SetupTextures();
-
 
     auto go2 =
         std::make_unique<CubeObject>(procMesh, cubeShader, texman);

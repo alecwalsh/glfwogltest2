@@ -33,7 +33,6 @@ class RenderableObject : public GameObject {
     // Renders the object
     virtual void Draw(const Camera& camera) const;
 
-    void SetupTextures() const;
     void BindTextures() const;
 
     ShaderProgram& shaderProgram;

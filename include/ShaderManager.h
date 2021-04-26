@@ -68,15 +68,17 @@ class [[nodiscard]] ShaderProgram {
     void GetCompileErrors(GLuint shader);
     void GetLinkErrors(GLuint shaderProgram);
     gl_version_t version;
+
+    // Move constructor and assignment need to set shaderProgram to 0
+    [[nodiscard]] ShaderProgram(ShaderProgram&& sp) noexcept;
+    ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
   public:
     GLuint shaderProgram;
 
+    void SetupTextures() const;
+
     [[nodiscard]] ShaderProgram(const ShaderIdentifier& id);
     
-    // Move constructor and assignment need to set shaderProgram to 0	
-    [[nodiscard]] ShaderProgram(ShaderProgram&& sp) noexcept;
-    [[nodiscard]] ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
-
     // Copy constructor and assignment are deleted because you can't copy OpenGL objects
     ShaderProgram(const ShaderProgram& sp) = delete;
     ShaderProgram& operator=(const ShaderProgram& sp) = delete;

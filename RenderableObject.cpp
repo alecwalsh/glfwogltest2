@@ -68,14 +68,6 @@ void RenderableObject::Draw(const Camera& camera) const {
     }
 }
 
-// TODO: this should be called once per shader, not once per object
-void RenderableObject::SetupTextures() const {
-    // Set sampler uniforms
-    glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texDiffuseMap"), 0);
-    glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texSpecMap"), 1);
-    glUniform1i(glGetUniformLocation(shaderProgram.shaderProgram, "texNormalMap"), 2);
-}
-
 void RenderableObject::BindTextures() const {
     // Bind texture objects to texture units
     glActiveTexture(GL_TEXTURE0);

@@ -107,23 +107,23 @@ ShaderProgram::~ShaderProgram() {
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram&& sp) noexcept {
-    shaderProgram = std::move(sp.shaderProgram);
-    sp.shaderProgram = 0;
-    version = std::move(sp.version);
+    *this = std::move(sp);
 }
 
+// Move constructor and assignment need to set shaderProgram to 0
 ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
     shaderProgram = std::move(sp.shaderProgram);
     sp.shaderProgram = 0;
     version = std::move(sp.version);
+    
     return *this;
 }
 
 ShaderProgram& ShaderManager::AddShader(const ShaderIdentifier& id) {
     auto shaderIter = shaderMap.find(id);
-    if (shaderIter == std::end(shaderMap)) {
+    if (shaderIter == shaderMap.end()) {
         // Shader is not already in shaderMap, so add it
-        const auto& [newShaderIter, b] = shaderMap.emplace(id, ShaderIdentifier{id});
+        const auto& [newShaderIter, b] = shaderMap.emplace(id, id);
         return newShaderIter->second;
     }
 
@@ -136,3 +136,12 @@ ShaderManager& ShaderManager::GetInstance() {
 }
 
 const std::unordered_map<ShaderIdentifier, ShaderProgram>& ShaderManager::GetMap() { return shaderMap; }
+
+
+void ShaderProgram::SetupTextures() const {
+    glUseProgram(shaderProgram);
+    // Set sampler uniforms
+    glUniform1i(glGetUniformLocation(shaderProgram, "texDiffuseMap"), 0);
+    glUniform1i(glGetUniformLocation(shaderProgram, "texSpecMap"), 1);
+    glUniform1i(glGetUniformLocation(shaderProgram, "texNormalMap"), 2);
+}
