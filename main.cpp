@@ -27,7 +27,7 @@
 #include "Window.h"
 // TODO: clean up duplicate includes
 
-#include "DirLight.h" //TODO:  shouldn't have to include both types of light
+#include "DirLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "Flashlight.h"
@@ -267,6 +267,7 @@ int main() {
         fsq.BindFramebuffer();
 
         if (window.hasResized) {
+            std::cout << "Window resized" << std::endl;
             mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 100.0f);
 
             for (const auto& [id, sp] : shaderManager.GetMap()) {
@@ -276,6 +277,8 @@ int main() {
             }
 
             fsq.Resize();
+
+            window.hasResized = false;
         }
 
         im.HandleInput();
