@@ -185,7 +185,7 @@ int main() {
     // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
     // for the first time
     // This is just the inverse of the code in Camera::Rotate
-    auto& cf = camera.vectors.frontVector;
+    const auto& cf = camera.vectors.front;
 
     pitch = glm::degrees(asin(cf.y));
     yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));

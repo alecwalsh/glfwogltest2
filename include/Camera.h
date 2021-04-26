@@ -27,18 +27,20 @@ class Camera : public GameObject {
 
     glm::mat4 viewMat{1.0f};
 
-    struct {
+    enum class Direction : std::uint8_t { Forward, Backward, Right, Left, Up, Down };
+
+    struct vectors {
         using vec3 = glm::vec3;
 
-        vec3 frontVector{0.0f};
-        vec3 backVector{0.0f};
-        vec3 rightVector{0.0f};
-        vec3 leftVector{0.0f};
-        vec3 upVector{0.0f};
-        vec3 downVector{0.0f};
-    } vectors;
+        vec3 front{0.0f};
+        vec3 back{0.0f};
+        vec3 right{0.0f};
+        vec3 left{0.0f};
+        vec3 up{0.0f};
+        vec3 down{0.0f};
 
-    enum class Direction : std::uint8_t { Forward, Backward, Right, Left, Up, Down };
+        const vec3& operator[](Direction d);
+    } vectors;
 
     float speed = 1.0f;
 };
