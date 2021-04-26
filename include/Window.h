@@ -37,7 +37,7 @@ class Window {
 
     void Resize(int width, int height);
 
-    static void framebuffer_size_callback(GLFWwindow* glfwwindow, int width, int height);
+    static void framebufferSizeCallback(GLFWwindow* glfwwindow, int width, int height);
     
     void ReleaseMouse();
     void CaptureMouse();

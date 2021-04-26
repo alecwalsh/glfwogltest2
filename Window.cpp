@@ -9,7 +9,7 @@
 
 extern double lastX, lastY;
 
-void Window::framebuffer_size_callback([[maybe_unused]] GLFWwindow* glfwwindow, int width, int height) {
+void Window::framebufferSizeCallback([[maybe_unused]] GLFWwindow* glfwwindow, int width, int height) {
     glViewport(0, 0, width, height);
 
     auto& window = Window::GetInstance();
@@ -35,7 +35,7 @@ void Window::Create() {
 
     glfwInit();
 
-	auto [gl_major_version, gl_minor_version, uses_gles] = gl_version;
+    auto [gl_major_version, gl_minor_version, uses_gles] = gl_version;
 
     int gl_api = uses_gles ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API;
 
@@ -56,9 +56,9 @@ void Window::Create() {
 
     CaptureMouse();
 
-    glfwSetKeyCallback(window, InputManager::key_callback);
-    glfwSetCursorPosCallback(window, InputManager::mouse_callback);
-    glfwSetFramebufferSizeCallback(window, Window::framebuffer_size_callback);
+    glfwSetKeyCallback(window, InputManager::keyCallback);
+    glfwSetCursorPosCallback(window, InputManager::mouseCallback);
+    glfwSetFramebufferSizeCallback(window, Window::framebufferSizeCallback);
 
     lastX = width / 2.0f;
     lastY = height / 2.0f;

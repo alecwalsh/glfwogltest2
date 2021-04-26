@@ -22,8 +22,8 @@ class InputManager {
     static inline bool mouseMoved = false;
     static inline bool firstMouse = true;
 
-    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-    static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
+    static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 
     static inline double min_pitch = -89.0;
     static inline double max_pitch = 89.0;

@@ -9,7 +9,7 @@ extern double lastX, lastY;
 extern double yaw, pitch;
 
 
-void InputManager::key_callback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
+void InputManager::keyCallback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
     [[maybe_unused]] int mode) {
     if (InputManager::GetInstance().keyboardEnabled ||
         key == GLFW_KEY_U && !ImGui::GetIO().WantCaptureKeyboard) { // TODO: Don't hardcode key to hide UI
@@ -33,7 +33,8 @@ void InputManager::key_callback([[maybe_unused]] GLFWwindow* window, int key, [[
     }
 }
 
-void InputManager::mouse_callback([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) {
+// TODO: Mouse callback gets called when maximizing and restoring window, causing the camera to jump
+void InputManager::mouseCallback([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) {
     if(InputManager::GetInstance().mouseEnabled) {
         InputManager::mouseMoved = true;
         if(InputManager::firstMouse) {
