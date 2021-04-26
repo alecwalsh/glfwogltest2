@@ -12,15 +12,13 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) 
 }
 
 void Camera::SetPosition(glm::vec3 position) {
-    this->position = position;
+    GameObject::SetPosition(position);
     UpdateViewMatrix();
 }
 
 void Camera::Translate(glm::mat4 transform) {
     // Converts position to vec4, applies transform, then converts back to vec3
-    position = glm::vec3{transform * glm::vec4(position, 1.0f)};
-
-    UpdateViewMatrix();
+    SetPosition(glm::vec3{transform * glm::vec4(position, 1.0f)});
 }
 
 void Camera::UpdateViewMatrix() { viewMat = glm::lookAt(position, position + vectors.frontVector, vectors.upVector); }

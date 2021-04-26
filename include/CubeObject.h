@@ -3,13 +3,23 @@
 #include "RenderableObject.h"
 
 class CubeObject : public RenderableObject {
-    float size = 1;   // TODO: Set this automatically
+    float height = 0;
+    float size = 1;
     float velocity = 0;
   public:
-    float height = 25; // TODO: Set this automatically
     float RotSpeed = 0;
     
     CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureManager& texman);
+
+    void SetPosition(glm::vec3 position) override {
+        RenderableObject::SetPosition(position);
+        this->height = position.y;
+    }
+
+    void SetScale(glm::vec3 scale) override {
+        RenderableObject::SetScale(scale);
+        this->size = scale.y;
+    }
     
     // Runs every frame
     void Tick() override;

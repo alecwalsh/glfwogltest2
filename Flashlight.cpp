@@ -11,8 +11,9 @@ void Flashlight::SetUniforms(GLuint program, std::size_t index) {
 
     if (!active) return;
 
+    auto cameraPos = camera.GetPosition();
     // Set the position and direction to the camera's, like a flashlight
-    glUniform3f(getLightUniLoc("position"), camera.position.x, camera.position.y, camera.position.z);
+    glUniform3f(getLightUniLoc("position"), cameraPos.x, cameraPos.y, cameraPos.z);
     glUniform3f(getLightUniLoc("direction"), camera.vectors.frontVector.x, camera.vectors.frontVector.y,
                 camera.vectors.frontVector.z);
 

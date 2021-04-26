@@ -7,6 +7,9 @@
 
 class GameObject {
   protected:
+    glm::vec3 position = {0, 0, 0};
+    glm::vec3 scale = {1, 1, 1};
+
     glm::mat4 GetTransform() const;
 
     double& elapsedTime;
@@ -14,8 +17,16 @@ class GameObject {
   public:
     std::string name = "unnamed";
 
-    glm::vec3 position = {0,0,0};
-    glm::vec3 scale = {1,1,1};
+    virtual void SetScale(glm::vec3 scale) { this->scale = scale; }
+
+    virtual glm::vec3 GetScale() const { return scale; }
+
+    virtual void SetPosition(glm::vec3 position) {
+        this->position = position;
+    }
+
+    virtual glm::vec3 GetPosition() const { return position; }
+
     glm::mat4 rotation{1.0f}; // TODO: Use quaternion for rotation
     
     GameObject();

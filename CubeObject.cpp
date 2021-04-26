@@ -11,7 +11,7 @@ bool collidesWithFloor(float height, float floorHeight, float size) {
 float calculateDistance(float& velocity) {
     float acceleration = earthGravity;
 
-    float time = timeManager.deltaTime;
+    float time = static_cast<float>(timeManager.deltaTime);
 
     velocity += acceleration * time;
 
@@ -65,10 +65,11 @@ void CubeObject::Draw(const Camera& camera) const {
 
     // Sets up cameraPos uniform then calls base class method
     GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
-    glUniform3f(uniCameraPos, camera.position.x, camera.position.y, camera.position.z);
+    auto cameraPos = camera.GetPosition();
+    glUniform3f(uniCameraPos, cameraPos.x, cameraPos.y, cameraPos.z);
 
     GLint timeUniform = glGetUniformLocation(shaderProgram.shaderProgram, "time");
-    glUniform1f(timeUniform, elapsedTime);
+    glUniform1f(timeUniform, static_cast<float>(elapsedTime));
 
     RenderableObject::Draw(camera);
 }

@@ -19,7 +19,7 @@ class Camera : public GameObject {
     // Runs every frame
     void Tick() override {}
 
-    void SetPosition(glm::vec3 position);
+    void SetPosition(glm::vec3 position) override;
 
     void Translate(glm::mat4 transform);
     void Rotate(double pitch, double yaw);

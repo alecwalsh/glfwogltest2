@@ -192,14 +192,14 @@ int main() {
 
     // Creates a CubeObject
     auto go = std::make_unique<CubeObject>(mesh, cubeShader, texman);
-    go->position = {0.0f, 25.0f, 0.0f};
+    go->SetPosition({0.0f, 25.0f, 0.0f});
     go->name = "cube1";
     go->SetupTextures();
 
 
     auto go2 =
         std::make_unique<CubeObject>(procMesh, cubeShader, texman);
-    go2->position = glm::vec3{0, 0, 2.0f};
+    go2->SetPosition({0, 0, 2.0f});
     go2->name = "sphere1";
     go2->texture_name = "gradient";
 
@@ -207,7 +207,7 @@ int main() {
     glm::mat4 floorRotation = glm::rotate(glm::mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
     auto floor =
         std::make_unique<CubeObject>(floorMesh, cubeShader, texman);
-    floor->scale = {10.0f, 10.0f, 1.0f};
+    floor->SetScale({10.0f, 10.0f, 1.0f});
     floor->rotation = floorRotation;
     floor->name = "floor";
     floor->texture_name = "container";
@@ -246,8 +246,8 @@ int main() {
 
             auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, texman);
             // Scale by 0.5 then translate to correct position
-            lo->scale = glm::vec3{0.5f};
-            lo->position = glm::vec3{light->position.x, light->position.y, light->position.z};
+            lo->SetScale(glm::vec3{0.5f});
+            lo->SetPosition({light->position.x, light->position.y, light->position.z});
 
             lightObjects.push_back(std::move(lo));
         }
