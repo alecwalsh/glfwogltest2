@@ -45,6 +45,8 @@ template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
 void render(const RenderableObject& go, const vec_uniq<Light>& lights, const Camera& camera);
 
+using glm::vec3, glm::mat4;
+
 int main() {
     std::filesystem::current_path(BASE_DIR);
 
@@ -95,11 +97,11 @@ int main() {
 
             const auto& [front, back, right, left, up, down] = camera.vectors;
 
-            glm::vec3 vectors[]{front, back, right, left, up, down};
+            vec3 vectors[]{front, back, right, left, up, down};
 
-            glm::vec3 vector = vectors[static_cast<int>(d)];
+            vec3 vector = vectors[static_cast<int>(d)];
 
-            glm::mat4 translation = glm::translate(glm::mat4{1.0f}, camera.speed * static_cast<float>(deltaTime) * vector);
+            mat4 translation = glm::translate(mat4{1.0f}, camera.speed * static_cast<float>(deltaTime) * vector);
             camera.Translate(translation);
         };
     };
@@ -204,7 +206,7 @@ int main() {
     go2->texture_name = "gradient";
 
     
-    glm::mat4 floorRotation = glm::rotate(glm::mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
+    mat4 floorRotation = glm::rotate(mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
     auto floor =
         std::make_unique<CubeObject>(floorMesh, cubeShader, texman);
     floor->SetScale({10.0f, 10.0f, 1.0f});
@@ -215,21 +217,21 @@ int main() {
 
     vec_uniq<Light> lights;
 
-    auto pointLight = std::make_unique<PointLight>(glm::vec3{3.0f, 1.0f, 2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f});
-    auto pointLight2 = std::make_unique<PointLight>(glm::vec3{-6.0f, 1.0f, -2.0f}, glm::vec3{0.5f}, glm::vec3{1.0f});
+    auto pointLight = std::make_unique<PointLight>(vec3{3.0f, 1.0f, 2.0f}, vec3{0.5f}, vec3{1.0f});
+    auto pointLight2 = std::make_unique<PointLight>(vec3{-6.0f, 1.0f, -2.0f}, vec3{0.5f}, vec3{1.0f});
     lights.push_back(std::move(pointLight));
     lights.push_back(std::move(pointLight2));
 
-    auto dirLight = std::make_unique<DirLight>(glm::vec3{-1.0f, 0.0f, 0.0f}, glm::vec3{3.0f}, glm::vec3{3.0f});
+    auto dirLight = std::make_unique<DirLight>(vec3{-1.0f, 0.0f, 0.0f}, vec3{3.0f}, vec3{3.0f});
 
     lights.push_back(std::move(dirLight));
 
-    auto spotLight = std::make_unique<SpotLight>(glm::vec3{3.0f, 0.75f, 0.0f}, glm::vec3{-1.0f, -0.25f, 0.0f},
-                                                  glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)));
+    auto spotLight = std::make_unique<SpotLight>(vec3{3.0f, 0.75f, 0.0f}, vec3{-1.0f, -0.25f, 0.0f},
+                                                  vec3{3.0f}, vec3{3.0f}, glm::cos(glm::radians(15.5f)));
     lights.push_back(std::move(spotLight));
 
-    auto flashlight = std::make_unique<Flashlight>(glm::vec3{-1.0f, -0.25f, 0.0f},
-                                                 glm::vec3{3.0f}, glm::vec3{3.0f}, glm::cos(glm::radians(15.5f)), camera);
+    auto flashlight = std::make_unique<Flashlight>(vec3{-1.0f, -0.25f, 0.0f},
+                                                 vec3{3.0f}, vec3{3.0f}, glm::cos(glm::radians(15.5f)), camera);
     flashlight->ToggleActive();
     lights.push_back(std::move(flashlight));
 
@@ -246,7 +248,7 @@ int main() {
 
             auto lo = std::make_unique<CubeObject>(lightMesh, lightShader, texman);
             // Scale by 0.5 then translate to correct position
-            lo->SetScale(glm::vec3{0.5f});
+            lo->SetScale(vec3{0.5f});
             lo->SetPosition({light->position.x, light->position.y, light->position.z});
 
             lightObjects.push_back(std::move(lo));
@@ -265,7 +267,7 @@ int main() {
         fsq.BindFramebuffer();
 
         if (window.hasResized) {
-            glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 100.0f);
+            mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 100.0f);
 
             for (const auto& [id, sp] : shaderManager.GetMap()) {
                 glUseProgram(sp.shaderProgram);
