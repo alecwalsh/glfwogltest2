@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include "glad/glad.h"
+
 #include "InputManager.h"
 
 #include "imgui_impl_glfw.h"
@@ -64,6 +66,8 @@ void Window::Create() {
     lastY = height / 2.0f;
 
     glfwSwapInterval(1);
+
+    LoadGL();
 }
 
 void Window::InitGui() {
@@ -71,6 +75,17 @@ void Window::InitGui() {
 }
 
 void Window::Destroy() { glfwDestroyWindow(window); }
+
+void Window::LoadGL() {
+    int load_result = (gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
+
+    if (load_result == 0) {
+        std::cerr << "Error initializing glad" << std::endl;
+        glfwTerminate();
+        throw WindowError{"Error loading OpenGL function"};
+    }
+}
+
 
 Window::~Window() {
     glfwTerminate();

@@ -72,15 +72,6 @@ int main() {
         {3.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, 2.5f
     };
 
-    int load_result =
-        (window.gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
-
-    if (load_result == 0) {
-        std::cerr << "Error initializing glad" << std::endl;
-        glfwTerminate();
-        return EXIT_FAILURE;
-    }
-
     glEnable(GL_MULTISAMPLE);
 
     // A fullscreen quad

@@ -35,6 +35,8 @@ class Window {
     void Create();
     void Destroy();
 
+    void LoadGL();
+
     void Resize(int width, int height);
 
     static void framebufferSizeCallback(GLFWwindow* glfwwindow, int width, int height);
