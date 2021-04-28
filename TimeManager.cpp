@@ -40,3 +40,5 @@ TimeManager& TimeManager::GetInstance() {
     static TimeManager tm{};
     return tm;
 }
+
+void TimeManager::Initialize() { glfwSetTime(0); }

@@ -41,6 +41,8 @@ class TimeManager {
     TimeManager(const TimeManager&) = delete;
     void operator=(const TimeManager&) = delete;
 
+    // Sets time to 0. Call immediately before starting main loop
+    void Initialize();
   private:
     TimeManager() = default;
     ~TimeManager() = default;

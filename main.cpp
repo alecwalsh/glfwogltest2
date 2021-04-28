@@ -251,6 +251,7 @@ int main() {
     im.AddKeyBinding(KEY(F), KeyState::InitialPress,
                      [&lights, flashlight_idx] { lights[flashlight_idx]->ToggleActive(); });
 
+    timeManager.Initialize();
     // main loop
     while (!window.ShouldClose()) {
         // Enable depth test when rendering main scene
