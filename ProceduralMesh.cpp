@@ -70,11 +70,11 @@ GenerateUVSphereVertices(double radius) { // TODO: Generate UV coordinates
         double phi2 = phi + 2 * pi / longSlices;
 
         std::array capVertices = {
-            vec3{0, 1, 0},
+            vec3{0, radius, 0},
             SphericalToCartesian(radius, theta, phi2),
             SphericalToCartesian(radius, theta, phi),
 
-            vec3{0, -1, 0},
+            vec3{0, -radius, 0},
             SphericalToCartesian(radius, theta2, phi2),
             SphericalToCartesian(radius, theta2, phi),
         };
@@ -276,7 +276,7 @@ SphereMesh::SphereMesh(double radius) {
     UploadToGPU();
 }
 
-SphereMesh::SphereMesh() : SphereMesh{1} {}
+SphereMesh::SphereMesh() : SphereMesh{0.5} {}
 
 CuboidMesh::CuboidMesh(double x, double y, double z) {
     auto mesh = GenerateCubeVertices(x, y, z);
