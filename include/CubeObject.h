@@ -2,10 +2,14 @@
 
 #include "RenderableObject.h"
 
+#include "Collision.h"
+
 class CubeObject : public RenderableObject {
-    float height = 0;
     float size = 1;
-    float velocity = 0;
+
+    glm::vec3 velocityVector = {};
+
+    Physics::SphereCollider collider = {{}, 0.5f};
   public:
     float RotSpeed = 0;
     

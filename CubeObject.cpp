@@ -2,8 +2,30 @@
 
 #include "Collision.h"
 
+#include "TimeManager.h"
+
+#include "UIManager.h"
+
+#include "imgui.h"
+
+constexpr Physics::SphereCollider sphere1Collider = {{0, 0, 2.0f}, 0.5};
+
 void CubeObject::Tick() {
-    ModifyPosition(Physics::getTranslation(velocity, height, size));
+    if (name == "sphere2") {
+        glm::vec3 distance = Physics::getTranslationSphere(velocityVector, collider, sphere1Collider);
+        ModifyPosition(distance);
+
+        this->collider.position += distance;
+
+        uiManager.AddToUI([vel = velocityVector, pos = position] {
+            ImGui::Text("Velocity %.2f, %.2f, %.2f", vel.x, vel.y, vel.z);
+
+            ImGui::Text("Position: %.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
+        });
+
+        return;
+    }
+    ModifyPosition(Physics::getTranslation(velocityVector.y, position.y, size));
 }
 
 void CubeObject::Draw(const Camera& camera) const {
@@ -41,10 +63,17 @@ CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureMana
 
 void CubeObject::SetPosition(glm::vec3 position) {
     RenderableObject::SetPosition(position);
-    this->height = position.y;
+
+    this->collider.position = position;
 }
 
 void CubeObject::SetScale(glm::vec3 scale) {
     RenderableObject::SetScale(scale);
     this->size = scale.y;
+
+    if (scale.x != scale.y || scale.x != scale.z) {
+        // TODO: disable collision for non uniform scales, or add support for more types of collision
+    }
+
+    this->collider.radius = scale.x;
 }

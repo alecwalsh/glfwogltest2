@@ -81,12 +81,12 @@ int main() {
     using Direction = Camera::Direction;
 
     // Create a lambda that translates the camera in a certain direction
-    auto translateCamera = [&camera, &deltaTime = timeManager.deltaTime](Direction d) {
+    auto translateCamera = [&camera](Direction d) {
         return [&, d] {
             // TODO: Get key bindings from files
             // TODO: Figure out how to use control key
 
-            camera.ModifyPosition(camera.speed * static_cast<float>(deltaTime) * camera.vectors[d]);
+            camera.ModifyPosition(camera.speed * static_cast<float>(timeManager.deltaTime) * camera.vectors[d]);
         };
     };
 
@@ -150,7 +150,7 @@ int main() {
     Mesh mesh{"data/cube_irreg.fbx"};
     CuboidMesh lightMesh{};
 
-    SphereMesh procMesh{};
+    SphereMesh sphereMesh{};
 
     // Create textures
     TextureManager texman;
@@ -183,11 +183,15 @@ int main() {
     go->SetPosition({0.0f, 25.0f, 0.0f});
     go->name = "cube1";
 
-    auto go2 =
-        std::make_unique<CubeObject>(procMesh, cubeShader, texman);
+    auto go2 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
     go2->SetPosition({0, 0, 2.0f});
     go2->name = "sphere1";
     go2->texture_name = "gradient";
+
+    auto go3 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
+    go3->SetPosition({0, 5.0f, 2.0f});
+    go3->name = "sphere2";
+    go3->texture_name = "gradient";
 
     
     mat4 floorRotation = glm::rotate(mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
@@ -281,9 +285,11 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         go->Tick();
+        go3->Tick();
 
         render(*go, lights, camera);
         render(*go2, lights, camera);
+        render(*go3, lights, camera);
         render(*floor, lights, camera);
 
         // Render all of the lights
