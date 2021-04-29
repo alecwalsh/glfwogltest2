@@ -1,5 +1,9 @@
 #pragma once
 
+#include <queue>
+#include <functional>
+#include <utility>
+
 class UIManager {
   public:
     void Draw();
@@ -10,8 +14,17 @@ class UIManager {
     void operator=(const UIManager&) = delete;
 
     bool guiActive = false;
+
+    // Call before any drawing
+    void Initialize();
+
+    // Registers a function that draws UI elements
+    template<typename F>
+    void AddToUI(F&& f) {
+        registeredFunctions.push(std::forward<F>(f));
+    }
   private:
-    UIManager();
+    UIManager() = default;
     ~UIManager();
 
     void BeginFrame();
@@ -19,7 +32,14 @@ class UIManager {
     void DrawOptional();      // Draw UI elements whose visibility can be toggled
     void DrawAlwaysVisible(); // Draw UI elements that are always visible
     void DrawStats();
+    // Call all registered UI functions, and clears the queue
+    void DrawMisc();
+
+    // Registered UI functions
+    std::queue<std::function<void()>> registeredFunctions;
 
     char textBuffer[64] = {};
     unsigned int displayFPS = 0;
 };
+
+inline UIManager& uiManager = UIManager::GetInstance();

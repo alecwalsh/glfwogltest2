@@ -45,9 +45,13 @@ void UIManager::DrawStats() {
 void UIManager::Draw() {
     BeginFrame();
 
-    if (guiActive) DrawOptional();
+    if (guiActive) {
+        DrawOptional();
+    }
 
     DrawAlwaysVisible();
+
+    DrawMisc();
 
     EndFrame();
 
@@ -63,9 +67,29 @@ void UIManager::DrawOptional() {
     ImGui::End();
 }
 
+void UIManager::DrawMisc() {
+    if (registeredFunctions.empty()) return;
+
+    ImGui::Begin("Misc");
+
+    while (!registeredFunctions.empty()) {
+        registeredFunctions.front()();
+        registeredFunctions.pop();
+    }
+
+    ImGui::End();
+}
+
 void UIManager::DrawAlwaysVisible() { DrawStats(); }
 
-UIManager::UIManager() {
+void UIManager::Initialize() {
+    static bool firstCall = true;
+    
+    // Initialization only needs to be done once
+    if (!firstCall) return;
+
+    firstCall = false;
+
     const char* glsl_version = "#version 130";
 
     IMGUI_CHECKVERSION();
