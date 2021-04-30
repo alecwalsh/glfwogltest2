@@ -25,7 +25,8 @@ void CubeObject::Tick() {
 
         return;
     }
-    ModifyPosition(Physics::getTranslation(velocityVector.y, position.y, size));
+
+    ModifyPosition(Physics::getTranslation(velocityVector, cubeCollider));
 }
 
 void CubeObject::Draw(const Camera& camera) const {
@@ -65,6 +66,7 @@ void CubeObject::SetPosition(glm::vec3 position) {
     RenderableObject::SetPosition(position);
 
     this->collider.position = position;
+    this->cubeCollider.position = position;
 }
 
 void CubeObject::SetScale(glm::vec3 scale) {
@@ -75,5 +77,6 @@ void CubeObject::SetScale(glm::vec3 scale) {
         // TODO: disable collision for non uniform scales, or add support for more types of collision
     }
 
-    this->collider.radius = scale.x;
+    this->collider.radius = scale.x / 2;
+    this->cubeCollider.size = scale.y;
 }

@@ -8,7 +8,8 @@
 
 Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : 
     GameObject{position, {1, 1, 1}}, speed{speed} {
-    height = position.y;
+    name = "Camera";
+    collider.position = position;
     // Set the front, right, up, etc vectors to their initial values
     UpdateVectors(target - position, up);
     UpdateViewMatrix();
@@ -16,7 +17,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) 
 
 void Camera::SetPosition(glm::vec3 position) {
     GameObject::SetPosition(position);
-    height = position.y;
+    collider.position = position;
 
     UpdateViewMatrix();
 }
@@ -43,11 +44,8 @@ void Camera::Rotate(double pitch, double yaw) {
     UpdateViewMatrix();
 }
 
-
-float cameraVelocity = 0;
-
 void Camera::Tick() {
-    ModifyPosition(Physics::getTranslation(cameraVelocity, height, size));
+    ModifyPosition(Physics::getTranslation(velocityVector, collider));
 }
 
 const glm::vec3& Camera::vectors::operator[](Direction d) {

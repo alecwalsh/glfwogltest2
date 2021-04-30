@@ -2,6 +2,8 @@
 
 #include "GameObject.h"
 
+#include "Collision.h"
+
 #include <cstdint>
 
 #include <glm/glm.hpp>
@@ -10,8 +12,8 @@ class Camera : public GameObject {
     void UpdateViewMatrix();
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector);
 
-    float height = 0;
-    float size = 3;
+    glm::vec3 velocityVector = {};
+    Physics::SimpleCubeCollider collider = {{}, 3};
   public:
     Camera(glm::vec3 position, glm::vec3 target,
         float speed = 1.0f,

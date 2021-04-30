@@ -10,6 +10,7 @@ class CubeObject : public RenderableObject {
     glm::vec3 velocityVector = {};
 
     Physics::SphereCollider collider = {{}, 0.5f};
+    Physics::SimpleCubeCollider cubeCollider = {{}, 1};
   public:
     float RotSpeed = 0;
     

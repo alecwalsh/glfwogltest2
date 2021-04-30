@@ -6,40 +6,56 @@
 
 #include <glm/geometric.hpp>
 
+#include "UIManager.h"
+#include "imgui.h"
+
 namespace Physics {
 
-bool collidesWithFloor(float height, float size, float floorHeight) {
+bool collidesWithFloor(SimpleCubeCollider collider, float floorHeight) {
+    auto height = collider.position.y;
+    auto size = collider.size;
+
     return (height - size / 2) <= floorHeight && (height + size/2) >= floorHeight;
 }
 
-float calculateDistance(float& velocity, float deltaTime) {
-    const float acceleration = earthGravity;
+glm::vec3 calculateDistance(glm::vec3& velocity, float deltaTime) {
+    const auto acceleration = glm::vec3{0, -earthGravity, 0};
 
     velocity += acceleration * deltaTime;
 
-    float distance = velocity * deltaTime + (acceleration * deltaTime * deltaTime) / 2;
+    auto distance = velocity * deltaTime + (acceleration * deltaTime * deltaTime) / glm::vec3{2, 2, 2};
 
     return distance;
 }
 
-glm::vec3 getTranslation(float& velocity, float height, float size, float floorHeight) {
-    float distance;
+glm::vec3 getTranslation(glm::vec3& velocityVector, const SimpleCubeCollider& collider, float floorHeight) {
+    glm::vec3 distanceVec{};
 
-    if (collidesWithFloor(height, size, floorHeight)) {
+    if (collidesWithFloor(collider, floorHeight)) {
         // Is currently colliding with the floor
-        distance = 0;
-        velocity = 0;
+        distanceVec.y = 0;
+        velocityVector.y = 0;
     } else {
-        distance = calculateDistance(velocity, static_cast<float>(timeManager.deltaTime));
+        distanceVec = calculateDistance(velocityVector, static_cast<float>(timeManager.deltaTime));
+
+        uiManager.AddToUI([distanceVec, velocityVector] {
+            ImGui::Text("Physics info:");
+            ImGui::Text("velocityVector: %f, %f, %f", velocityVector.x, velocityVector.y, velocityVector.z);
+            ImGui::Text("distanceVec: %f, %f, %f", distanceVec.x, distanceVec.y, distanceVec.z);
+            ImGui::NewLine();
+        });
+
+        auto newCollider = collider;
+        newCollider.position += distanceVec;
         // Is not currently colliding with the floor
-        if (collidesWithFloor(height - distance, size, floorHeight)) {
+        if (collidesWithFloor(newCollider, floorHeight)) {
             // The new height will collide with the floor
             // Set distance so that the new height is exactly at the floor
-            distance = height - size / 2 - floorHeight;
+            distanceVec.y = floorHeight - collider.position.y + collider.size / 2;
         }
     }
 
-    return {0, -distance, 0};
+    return distanceVec;
 }
 
 bool SpheresCollide(const SphereCollider& sphere1, const SphereCollider& sphere2) {
