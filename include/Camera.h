@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 
-#include "Collision.h"
+#include "Collision.hpp"
 
 #include <cstdint>
 

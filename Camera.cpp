@@ -4,7 +4,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Collision.h"
+#include "Collision.hpp"
 
 Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : 
     GameObject{position, {1, 1, 1}}, speed{speed} {

@@ -246,6 +246,9 @@ int main() {
     im.AddKeyBinding(KEY(F), KeyState::InitialPress,
                      [&lights, flashlight_idx] { lights[flashlight_idx]->ToggleActive(); });
 
+    TimeManagerShim tms{timeManager.elapsedTime, timeManager.deltaTime};
+    Physics::timeManager = &tms;
+
     uiManager.Initialize();
     timeManager.Initialize();
     // main loop

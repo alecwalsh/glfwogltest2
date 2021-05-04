@@ -1,6 +1,6 @@
 #include "CubeObject.h"
 
-#include "Collision.h"
+#include "Collision.hpp"
 
 #include "TimeManager.h"
 

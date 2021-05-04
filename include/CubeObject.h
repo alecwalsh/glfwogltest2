@@ -2,7 +2,7 @@
 
 #include "RenderableObject.h"
 
-#include "Collision.h"
+#include "Collision.hpp"
 
 class CubeObject : public RenderableObject {
     float size = 1;
