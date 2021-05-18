@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 
-#include "Collision.hpp"
+#include <Physics/Collision.hpp>
 
 #include <cstdint>
 
@@ -12,8 +12,7 @@ class Camera : public GameObject {
     void UpdateViewMatrix();
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector);
 
-    glm::vec3 velocityVector = {};
-    Physics::SimpleCubeCollider collider = {{}, 3};
+    Physics::SimpleCubeCollider collider = {{}, 3, {}};
   public:
     Camera(glm::vec3 position, glm::vec3 target,
         float speed = 1.0f,

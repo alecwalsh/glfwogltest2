@@ -182,6 +182,7 @@ int main() {
     auto go = std::make_unique<CubeObject>(mesh, cubeShader, texman);
     go->SetPosition({0.0f, 25.0f, 0.0f});
     go->name = "cube1";
+    go->SetCollider<Physics::SimpleCubeCollider>();
 
     auto go2 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
     go2->SetPosition({0, 0, 2.0f});
@@ -192,7 +193,7 @@ int main() {
     go3->SetPosition({0, 5.0f, 2.0f});
     go3->name = "sphere2";
     go3->texture_name = "gradient";
-
+    go3->SetCollider<Physics::SphereCollider>();
     
     mat4 floorRotation = glm::rotate(mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
     auto floor =

@@ -4,7 +4,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Collision.hpp"
+static Physics::SimplePlaneCollider floorCollider = {0};
 
 Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : 
     GameObject{position, {1, 1, 1}}, speed{speed} {
@@ -45,7 +45,9 @@ void Camera::Rotate(double pitch, double yaw) {
 }
 
 void Camera::Tick() {
-    ModifyPosition(Physics::getTranslation(velocityVector, collider));
+    // TODO: This sets collider.position, then SetPosition sets collider.position again, redundantly
+    collider.ApplyCollision(floorCollider);
+    SetPosition(collider.position);
 }
 
 const glm::vec3& Camera::vectors::operator[](Direction d) {
