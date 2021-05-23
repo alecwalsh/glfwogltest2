@@ -2,15 +2,14 @@
 
 #include "RenderableObject.h"
 
-#include "Collision.h"
+#include <Physics/Collision.hpp>
+
+#include <memory>
 
 class CubeObject : public RenderableObject {
     float size = 1;
 
-    glm::vec3 velocityVector = {};
-
-    Physics::SphereCollider collider = {{}, 0.5f};
-    Physics::SimpleCubeCollider cubeCollider = {{}, 1};
+    std::unique_ptr<Physics::Collider> collider;
   public:
     float RotSpeed = 0;
     
@@ -23,4 +22,8 @@ class CubeObject : public RenderableObject {
     // Runs every frame
     void Tick() override;
     void Draw(const Camera& camera) const override;
+
+    template <typename T> void SetCollider() { 
+        collider = std::make_unique<T>(position, size, glm::vec3{});
+    }
 };

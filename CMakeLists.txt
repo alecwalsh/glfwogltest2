@@ -14,10 +14,12 @@ find_package(assimp CONFIG REQUIRED)
 
 add_executable(glfwogltest2 ${SOURCES})
 
+add_subdirectory(Physics)
+
 if(MSVC)
     target_compile_definitions(glfwogltest2 PRIVATE NOMINMAX)
     target_compile_options(glfwogltest2 PRIVATE "/W4")
-    target_compile_options(glfwogltest2 PRIVATE "/Zc:__cplusplus")
+    target_compile_options(glfwogltest2 PRIVATE "/Zc:__cplusplus") # Use the correct value for the __cplusplus macro
 else()
     target_compile_options(glfwogltest2 PRIVATE -Wall -Wextra -Wpedantic)
 endif()
@@ -26,7 +28,7 @@ target_compile_features(glfwogltest2 PUBLIC c_std_11 cxx_std_17)
 
 target_include_directories(glfwogltest2 PUBLIC "include" "." "imgui")
 
-target_link_libraries(glfwogltest2 PRIVATE glm::glm glfw assimp::assimp)
+target_link_libraries(glfwogltest2 PRIVATE glm::glm glfw assimp::assimp glfwogltest2_physics)
 
 if(UNIX)
     target_link_libraries(glfwogltest2 PRIVATE stdc++fs) # Need to link with stdc++fs for std::filesystem support on some older compilers
