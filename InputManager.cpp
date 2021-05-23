@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "imgui.h"
+#include <imgui/imgui.h>
 
 extern double lastX, lastY;
 extern double yaw, pitch;

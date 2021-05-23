@@ -4,7 +4,7 @@
 
 #include "UIManager.h"
 
-#include "imgui.h"
+#include <imgui/imgui.h>
 
 static Physics::SimplePlaneCollider floorCollider = {0};
 static Physics::SphereCollider sphere1Collider = {{0, 0, 2.0f}, 1, {}};

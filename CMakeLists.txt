@@ -4,7 +4,8 @@ project(glfwogltest2 VERSION 0.0.0.2)
 
 file(GLOB SOURCES "*.cpp")
 file(GLOB HEADERS "include/*.h")
-set(SOURCES ${SOURCES} ${HEADERS} glad/glad.c imgui/imgui.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp imgui/imgui_demo.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp)
+file(GLOB IMGUI_SOURCES "external/imgui/*.cpp")
+set(SOURCES ${SOURCES} ${HEADERS} ${IMGUI_SOURCES} external/glad/glad.c )
 
 find_package(Threads QUIET REQUIRED)
 
@@ -26,7 +27,7 @@ endif()
 
 target_compile_features(glfwogltest2 PUBLIC c_std_11 cxx_std_17)
 
-target_include_directories(glfwogltest2 PUBLIC "include" "." "imgui")
+target_include_directories(glfwogltest2 PUBLIC "include" "external")
 
 target_link_libraries(glfwogltest2 PRIVATE glm::glm glfw assimp::assimp glfwogltest2_physics)
 
@@ -34,8 +35,8 @@ if(UNIX)
     target_link_libraries(glfwogltest2 PRIVATE stdc++fs) # Need to link with stdc++fs for std::filesystem support on some older compilers
 endif()
 
-configure_file(include/version.h.in version.h)
-target_include_directories(glfwogltest2 PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+configure_file(include/version.h.in include/version.h)
+target_include_directories(glfwogltest2 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 #Debug flags
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
