@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "ShaderManager.h"
+#include "ShaderManager.hpp"
 
 #include <GLFW/glfw3.h>
 

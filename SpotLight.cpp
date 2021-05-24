@@ -1,4 +1,4 @@
-#include "SpotLight.h"
+#include "SpotLight.hpp"
 
 #include "glad/glad.h"
 

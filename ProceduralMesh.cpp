@@ -1,4 +1,4 @@
-#include "ProceduralMesh.h"
+#include "ProceduralMesh.hpp"
 
 #include <array>
 #include <utility>

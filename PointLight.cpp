@@ -1,4 +1,4 @@
-#include "PointLight.h"
+#include "PointLight.hpp"
 
 #include "glad/glad.h"
 

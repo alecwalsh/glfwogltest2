@@ -1,7 +1,7 @@
-#include "UIManager.h"
+#include "UIManager.hpp"
 
-#include "TimeManager.h"
-#include "Window.h"
+#include "TimeManager.hpp"
+#include "Window.hpp"
 
 #include <imgui/imgui.h>
 

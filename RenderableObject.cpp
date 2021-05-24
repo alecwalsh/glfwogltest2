@@ -1,6 +1,6 @@
-#include "RenderableObject.h"
+#include "RenderableObject.hpp"
 
-#include "Window.h"
+#include "Window.hpp"
 
 RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureManager& texman)
     : mesh{mesh}, texman{texman}, shaderProgram{shaderProgram} {

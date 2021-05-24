@@ -1,4 +1,4 @@
-#include "Flashlight.h"
+#include "Flashlight.hpp"
 
 Flashlight::Flashlight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular, float cutoffAngleCos,
                        const Camera& camera)

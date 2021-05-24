@@ -1,11 +1,11 @@
 #pragma once
 
-#include "GameObject.h"
+#include "GameObject.hpp"
 
-#include "Camera.h"
-#include "MeshBase.h"
-#include "ShaderManager.h"
-#include "TextureManager.h"
+#include "Camera.hpp"
+#include "MeshBase.hpp"
+#include "ShaderManager.hpp"
+#include "TextureManager.hpp"
 
 class RenderableObject : public GameObject {
   protected:

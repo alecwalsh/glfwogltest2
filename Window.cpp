@@ -1,8 +1,8 @@
-#include "Window.h"
+#include "Window.hpp"
 
 #include "glad/glad.h"
 
-#include "InputManager.h"
+#include "InputManager.hpp"
 
 #include <imgui/imgui_impl_glfw.h>
 

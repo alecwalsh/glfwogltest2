@@ -1,8 +1,8 @@
-#include "CubeObject.h"
+#include "CubeObject.hpp"
 
-#include "TimeManager.h"
+#include "TimeManager.hpp"
 
-#include "UIManager.h"
+#include "UIManager.hpp"
 
 #include <imgui/imgui.h>
 

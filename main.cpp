@@ -14,28 +14,28 @@
 #include <vector>
 #include <limits>
 
-#include "Camera.h"
-#include "ConfigManager.h"
-#include "CubeObject.h"
-#include "RenderableObject.h"
-#include "InputManager.h"
-#include "PostProcess.h"
-#include "ShaderManager.h"
-#include "TextureManager.h"
-#include "TimeManager.h"
-#include "UIManager.h"
-#include "Window.h"
+#include "Camera.hpp"
+#include "ConfigManager.hpp"
+#include "CubeObject.hpp"
+#include "RenderableObject.hpp"
+#include "InputManager.hpp"
+#include "PostProcess.hpp"
+#include "ShaderManager.hpp"
+#include "TextureManager.hpp"
+#include "TimeManager.hpp"
+#include "UIManager.hpp"
+#include "Window.hpp"
 // TODO: clean up duplicate includes
 
-#include "DirLight.h"
-#include "PointLight.h"
-#include "SpotLight.h"
-#include "Flashlight.h"
+#include "DirLight.hpp"
+#include "PointLight.hpp"
+#include "SpotLight.hpp"
+#include "Flashlight.hpp"
 
-#include "Mesh.h"
-#include "ProceduralMesh.h"
+#include "Mesh.hpp"
+#include "ProceduralMesh.hpp"
 
-#include "version.h"
+#include "version.hpp"
 
 // TODO: figure out where to put these, avoid extern in other files
 double lastX, lastY;

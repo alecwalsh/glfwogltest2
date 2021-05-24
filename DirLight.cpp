@@ -1,4 +1,4 @@
-#include "DirLight.h"
+#include "DirLight.hpp"
 
 #include "glad/glad.h"
 

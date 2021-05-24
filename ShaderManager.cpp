@@ -1,4 +1,4 @@
-#include "ShaderManager.h"
+#include "ShaderManager.hpp"
 
 #include <fstream>
 #include <iostream>

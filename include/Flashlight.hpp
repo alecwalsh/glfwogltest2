@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SpotLight.h"
+#include "SpotLight.hpp"
 
-#include "Camera.h"
+#include "Camera.hpp"
 
 class Flashlight : public SpotLight {
     const Camera& camera;

@@ -2,8 +2,8 @@
 
 #include "glad/glad.h"
 
-#include "ShaderManager.h"
-#include "Window.h"
+#include "ShaderManager.hpp"
+#include "Window.hpp"
 
 // Used for postprocessing effects
 // Renders the main scene to a texture and applies that texture to a fullscreen quad

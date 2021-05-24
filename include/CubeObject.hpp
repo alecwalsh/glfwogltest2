@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RenderableObject.h"
+#include "RenderableObject.hpp"
 
 #include <Physics/Collision.hpp>
 

@@ -1,10 +1,10 @@
-#include "GameObject.h"
+#include "GameObject.hpp"
 
 #include <iostream>
 #include <limits>
 #include <cstdlib>
 
-#include "TimeManager.h"
+#include "TimeManager.hpp"
 
 glm::mat4 GameObject::GetTransform() const {
     glm::mat4 scaleMat = glm::scale(glm::mat4{1.0f}, scale);

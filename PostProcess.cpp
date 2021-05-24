@@ -1,4 +1,4 @@
-#include "PostProcess.h"
+#include "PostProcess.hpp"
 
 //Vertices and indices for a full screen rectangle
 const GLfloat vertices[20]{1.0f,  1.0f,  0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
@@ -65,8 +65,8 @@ void PostProcess::SetupFramebuffer() {
 
 PostProcess::PostProcess()
     : shaderProgram{
-		shaderManager.AddShader({"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::GetInstance().gl_version})
-	} {
+        shaderManager.AddShader({"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::GetInstance().gl_version})
+    } {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 

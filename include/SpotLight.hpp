@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Light.h"
+#include "Light.hpp"
 
 // TODO: Fade out as distance from center increases
 class SpotLight : public Light {

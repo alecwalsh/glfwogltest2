@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShaderManager.h"
+#include "ShaderManager.hpp"
 
 #include <stdexcept>
 #include <cstdint>
