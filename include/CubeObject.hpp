@@ -6,6 +6,10 @@
 
 #include <memory>
 
+#if __cpp_concepts >= 201907L
+#include <concepts>
+#endif
+
 class CubeObject : public RenderableObject {
     float size = 1;
 
@@ -23,7 +27,16 @@ class CubeObject : public RenderableObject {
     void Tick() override;
     void Draw(const Camera& camera) const override;
 
-    template <typename T> void SetCollider() { 
+    bool HasCollider();
+    Physics::Collider& GetCollider();
+    void SetCollider(std::unique_ptr<Physics::Collider> collider);
+
+    #if __cpp_concepts >= 201907L
+    template <std::derived_from<Physics::Collider> T>
+    #else
+    template <typename T>
+    #endif
+    void SetCollider() {
         collider = std::make_unique<T>(position, size, glm::vec3{});
     }
 };

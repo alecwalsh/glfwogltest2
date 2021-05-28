@@ -1,10 +1,11 @@
 #include "CubeObject.hpp"
 
 #include "TimeManager.hpp"
-
 #include "UIManager.hpp"
 
 #include <imgui/imgui.h>
+
+#include <stdexcept>
 
 static Physics::SimplePlaneCollider floorCollider = {0};
 static Physics::SphereCollider sphere1Collider = {{0, 0, 2.0f}, 1, {}};
@@ -80,4 +81,17 @@ void CubeObject::SetScale(glm::vec3 scale) {
     if (collider) {
         this->collider->size = scale.y;
     }
+}
+
+bool CubeObject::HasCollider() { return static_cast<bool>(collider); }
+
+Physics::Collider& CubeObject::GetCollider() {
+    if (!collider) {
+        throw std::runtime_error{"Attempted to access nonexistent collider"};
+    }
+    return *collider;
+}
+
+void CubeObject::SetCollider(std::unique_ptr<Physics::Collider> collider) {
+    this->collider = std::move(collider);
 }
