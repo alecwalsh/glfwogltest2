@@ -1,11 +1,8 @@
 #pragma once
 #include "glad/glad.h"
 
-#include <functional>
-#include <iostream>
-#include <memory>
 #include <string>
-#include <tuple>
+#include <functional>
 #include <unordered_map>
 #include <cstdint>
 
@@ -16,6 +13,10 @@ struct gl_version_t {
 
 #ifdef __cpp_impl_three_way_comparison
     friend constexpr bool operator==(const gl_version_t& lhs, const gl_version_t& rhs) noexcept = default;
+#else
+    friend constexpr bool operator==(const gl_version_t& lhs, const gl_version_t& rhs) noexcept {
+        return lhs.major == rhs.major && lhs.minor == rhs.minor && lhs.is_gles == rhs.is_gles;
+    }
 #endif // __cpp_impl_three_way_comparison
 };
 
@@ -25,23 +26,23 @@ struct ShaderIdentifier {
     const gl_version_t version;
 
 #ifdef __cpp_impl_three_way_comparison
-#ifdef __cpp_lib_constexpr_string
-    #define STRING_CONSTEXPR constexpr
-#else
-    #define STRING_CONSTEXPR
-#endif // __cpp_lib_constexpr_string
+    #ifdef __cpp_lib_constexpr_string
+        #define STRING_CONSTEXPR constexpr
+    #else
+        #define STRING_CONSTEXPR
+    #endif // __cpp_lib_constexpr_string
+    
     friend STRING_CONSTEXPR inline bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept = default;
     #undef STRING_CONSTEXPR
+#else
+    friend inline bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
+        return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
+    }
 #endif // __cpp_impl_three_way_comparison
 };
 
 #ifndef __cpp_impl_three_way_comparison
-constexpr bool operator==(const gl_version_t& lhs, const gl_version_t& rhs) noexcept {
-    return lhs.major == rhs.major && lhs.minor == rhs.minor && lhs.is_gles == rhs.is_gles;
-}
-inline bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
-    return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
-}
+
 #endif // !__cpp_impl_three_way_comparison
 
 //TODO: Find a better way to combine hashes
@@ -89,6 +90,8 @@ class [[nodiscard]] ShaderProgram {
 };
 
 class ShaderManager {
+    std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
+    ShaderManager() = default;
   public:
     [[nodiscard]] ShaderProgram& AddShader(const ShaderIdentifier& id);
 
@@ -99,9 +102,6 @@ class ShaderManager {
 
     // Calculates a new projection matrix and updates the shaders' uniforms
     void UpdateProjectionMatrix(float width, float height) noexcept;
-  private:
-    std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
-    ShaderManager() = default;
 };
 
 thread_local inline ShaderManager& shaderManager = ShaderManager::GetInstance();

@@ -1,10 +1,12 @@
 #include "PostProcess.hpp"
 
+#include <stdexcept>
+
 //Vertices and indices for a full screen rectangle
-const GLfloat vertices[20]{1.0f,  1.0f,  0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
+static const GLfloat vertices[20]{1.0f,  1.0f,  0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
                            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f,  0.0f, 0.0f, 1.0f};
 
-const GLubyte elements[6]{0, 1, 2, 0, 2, 3};
+static const GLubyte elements[6]{0, 1, 2, 0, 2, 3};
 
 void PostProcess::Draw() {
     // Clear the screen to black
@@ -14,9 +16,9 @@ void PostProcess::Draw() {
     // Depth test is unnecessary here because we are rendering a single quad
     glDisable(GL_DEPTH_TEST);
 
-    shaderProgram.get().UseProgram();
+    shaderProgram->UseProgram();
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, fb_texture);
+    glBindTexture(GL_TEXTURE_2D, fbTexture);
 
     glBindVertexArray(vao);
 
@@ -35,13 +37,13 @@ void PostProcess::UnbindFramebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 void PostProcess::SetupFramebuffer() {
     glGenFramebuffers(1, &fbo);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "Framebuffer bound" << std::endl;
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        throw std::runtime_error{"Error generating framebuffer"};
     }
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glGenTextures(1, &fb_texture);
-    glBindTexture(GL_TEXTURE_2D, fb_texture);
+    glGenTextures(1, &fbTexture);
+    glBindTexture(GL_TEXTURE_2D, fbTexture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -50,7 +52,7 @@ void PostProcess::SetupFramebuffer() {
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window.width, window.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb_texture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbTexture, 0);
 
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -59,14 +61,14 @@ void PostProcess::SetupFramebuffer() {
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-    shaderProgram.get().UseProgram();
-    glUniform1i(glGetUniformLocation(shaderProgram.get().shaderProgram, "texFramebuffer"), 0);
+    shaderProgram->UseProgram();
+    glUniform1i(glGetUniformLocation(shaderProgram->shaderProgram, "texFramebuffer"), 0);
 }
 
-PostProcess::PostProcess()
-    : shaderProgram{
-        shaderManager.AddShader({"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl", Window::GetInstance().gl_version})
-    } {
+PostProcess::PostProcess() {
+    shaderProgram =
+        &shaderManager.AddShader({"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl",
+                                  Window::GetInstance().gl_version});
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
@@ -97,13 +99,13 @@ PostProcess::~PostProcess() {
 }
 
 void PostProcess::ReloadShader(const char* vertShader, const char* fragShader, gl_version_t version) {
-    shaderProgram = shaderManager.AddShader({vertShader, fragShader, version});
+    shaderProgram = &shaderManager.AddShader({vertShader, fragShader, version});
 }
 
 void PostProcess::Resize() {
     auto& window = Window::GetInstance();
 
-    glBindTexture(GL_TEXTURE_2D, fb_texture);
+    glBindTexture(GL_TEXTURE_2D, fbTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window.width, window.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);

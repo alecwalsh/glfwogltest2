@@ -2,6 +2,8 @@
 
 #include "Window.hpp"
 
+#include <iostream>
+
 RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureManager& texman)
     : mesh{mesh}, texman{texman}, shaderProgram{shaderProgram} {
     glGenVertexArrays(1, &vao);

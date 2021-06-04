@@ -5,7 +5,7 @@ project(glfwogltest2 VERSION 0.0.0.2)
 file(GLOB SOURCES "*.cpp")
 file(GLOB HEADERS "include/*.hpp")
 file(GLOB IMGUI_SOURCES "external/imgui/*.cpp")
-set(SOURCES ${SOURCES} ${HEADERS} ${IMGUI_SOURCES} external/glad/glad.c )
+set(SOURCES ${SOURCES} ${HEADERS} ${IMGUI_SOURCES} external/glad/glad.c)
 
 find_package(Threads QUIET REQUIRED)
 
