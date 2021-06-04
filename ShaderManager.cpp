@@ -64,8 +64,8 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, 
     glDetachShader(shaderProgram, vertexShader);
     glDeleteShader(vertexShader);
 
-    printf("Compiled shader %d\n", shaderProgram);
-    fflush(stdout);
+    std::cout << "Compiled shader " << shaderProgram << std::endl;
+
     return shaderProgram;
 }
 
@@ -80,9 +80,13 @@ void ShaderProgram::GetCompileErrors(GLuint shader) {
         GLchar* infoLog = new GLchar[logLength];
         glGetShaderInfoLog(shader, logLength, &logLength, infoLog);
 
-        printf("Compile error: %s\n", infoLog);
+        std::string errorText = infoLog;
+
         delete[] infoLog;
-        std::exit(EXIT_FAILURE);
+
+        std::cout << "Shader compile error: " << errorText << std::endl;
+
+        throw ShaderCompileError{errorText};
     }
 }
 
@@ -97,9 +101,13 @@ void ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
         GLchar* infoLog = new GLchar[logLength];
         glGetProgramInfoLog(shaderProgram, logLength, &logLength, infoLog);
 
-        printf("Link error: %s\n", infoLog);
+        std::string errorText = infoLog;
+
         delete[] infoLog;
-        std::exit(EXIT_FAILURE);
+
+        std::cout << "Shader link error: " << errorText << std::endl;
+        
+        throw ShaderLinkError{errorText};
     }
 }
 

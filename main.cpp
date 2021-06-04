@@ -136,12 +136,23 @@ int main() {
         }
     });
 
+    ShaderProgram* pCubeShader;
+    ShaderProgram* pLightShader;
+
+    try {
+        pCubeShader =
+            &shaderManager.AddShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", window.gl_version});
+        pLightShader =
+            &shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", window.gl_version});
+    } catch (const ShaderError& e) {
+        std::cerr << e.what() << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
     // TODO: Add AssetManager, like TextureManager but for all assets
     // Compile and link shaders
-    ShaderProgram& cubeShader =
-        shaderManager.AddShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", window.gl_version});
-    ShaderProgram& lightShader =
-        shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", window.gl_version});
+    ShaderProgram& cubeShader = *pCubeShader;
+    ShaderProgram& lightShader = *pLightShader;
 
     cubeShader.SetupTextures();
 

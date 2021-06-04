@@ -5,6 +5,19 @@
 #include <functional>
 #include <unordered_map>
 #include <cstdint>
+#include <stdexcept>
+
+class ShaderError : public std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
+
+class ShaderCompileError : public ShaderError {
+    using ShaderError::ShaderError;
+};
+
+class ShaderLinkError : public ShaderError {
+    using ShaderError::ShaderError;
+};
 
 struct gl_version_t {
     std::uint8_t major;
