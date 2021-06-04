@@ -75,7 +75,7 @@ class [[nodiscard]] ShaderProgram {
   public:
     GLuint shaderProgram;
 
-    void SetupTextures() const;
+    void SetupTextures() const noexcept;
 
     [[nodiscard]] ShaderProgram(const ShaderIdentifier& id);
     
@@ -95,7 +95,8 @@ class ShaderManager {
     ShaderManager(const ShaderManager&) = delete;
     ShaderManager& operator=(const ShaderManager&) = delete;
 
-    [[nodiscard]] const std::unordered_map<ShaderIdentifier, ShaderProgram>& GetMap();
+    // Calculates a new projection matrix and updates the shaders' uniforms
+    void UpdateProjectionMatrix(float width, float height) noexcept;
   private:
     std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
     ShaderManager() = default;

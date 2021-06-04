@@ -252,6 +252,7 @@ int main() {
 
     uiManager.Initialize();
     timeManager.Initialize();
+
     // main loop
     while (!window.ShouldClose()) {
         // Enable depth test when rendering main scene
@@ -262,13 +263,8 @@ int main() {
 
         if (window.hasResized) {
             std::cout << "Window resized" << std::endl;
-            mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 100.0f);
 
-            for (const auto& [id, sp] : shaderManager.GetMap()) {
-                glUseProgram(sp.shaderProgram);
-                GLint uniProj = glGetUniformLocation(sp.shaderProgram, "proj");
-                glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
-            }
+            shaderManager.UpdateProjectionMatrix(window.width, window.height);
 
             fsq.Resize();
 
