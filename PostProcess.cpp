@@ -14,7 +14,7 @@ void PostProcess::Draw() {
     // Depth test is unnecessary here because we are rendering a single quad
     glDisable(GL_DEPTH_TEST);
 
-    glUseProgram(shaderProgram.get().shaderProgram);
+    shaderProgram.get().UseProgram();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fb_texture);
 
@@ -59,7 +59,7 @@ void PostProcess::SetupFramebuffer() {
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-    glUseProgram(shaderProgram.get().shaderProgram);
+    shaderProgram.get().UseProgram();
     glUniform1i(glGetUniformLocation(shaderProgram.get().shaderProgram, "texFramebuffer"), 0);
 }
 

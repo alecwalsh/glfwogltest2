@@ -141,16 +141,18 @@ void ShaderManager::UpdateProjectionMatrix(float width, float height) noexcept {
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), width / height, 1.0f, 100.0f);
 
     for (const auto& [id, sp] : shaderMap) {
-        glUseProgram(sp.shaderProgram);
+        sp.UseProgram();
         GLint uniProj = glGetUniformLocation(sp.shaderProgram, "proj");
         glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
     }
 }
 
 void ShaderProgram::SetupTextures() const noexcept {
-    glUseProgram(shaderProgram);
+    UseProgram();
     // Set sampler uniforms
     glUniform1i(glGetUniformLocation(shaderProgram, "texDiffuseMap"), 0);
     glUniform1i(glGetUniformLocation(shaderProgram, "texSpecMap"), 1);
     glUniform1i(glGetUniformLocation(shaderProgram, "texNormalMap"), 2);
 }
+
+void ShaderProgram::UseProgram() const noexcept { glUseProgram(shaderProgram); }

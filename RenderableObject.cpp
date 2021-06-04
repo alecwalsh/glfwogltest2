@@ -11,7 +11,7 @@ RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram,
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers.ebo);
     }
 
-    glUseProgram(shaderProgram.shaderProgram);
+    shaderProgram.UseProgram();
 
     // Specify the layout of the vertex data
     // Use attrib location from glBindAttribLocation
@@ -48,7 +48,8 @@ void RenderableObject::Draw(const Camera& camera) const {
     // Make sure the right vertex array is bound
     glBindVertexArray(vao);
     BindTextures();
-    glUseProgram(shaderProgram.shaderProgram);
+    shaderProgram.UseProgram();
+
     GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
 
     glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(GetTransform()));

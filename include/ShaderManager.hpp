@@ -76,7 +76,9 @@ class [[nodiscard]] ShaderProgram {
     GLuint shaderProgram;
 
     void SetupTextures() const noexcept;
-
+    // Calls glUseProgram
+    void UseProgram() const noexcept;
+    
     [[nodiscard]] ShaderProgram(const ShaderIdentifier& id);
     
     // Copy constructor and assignment are deleted because you can't copy OpenGL objects

@@ -30,11 +30,13 @@ void CubeObject::Tick() {
 }
 
 void CubeObject::Draw(const Camera& camera) const {
+    GLuint sp = shaderProgram.shaderProgram;
+
     // Set material properties
-    GLint matAmbientLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.ambient");
-    GLint matDiffuseLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.diffuse");
-    GLint matSpecularLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.specular");
-    GLint matShineLoc = glGetUniformLocation(shaderProgram.shaderProgram, "material.shininess");
+    GLint matAmbientLoc = glGetUniformLocation(sp, "material.ambient");
+    GLint matDiffuseLoc = glGetUniformLocation(sp, "material.diffuse");
+    GLint matSpecularLoc = glGetUniformLocation(sp, "material.specular");
+    GLint matShineLoc = glGetUniformLocation(sp, "material.shininess");
 
     glUniform3f(matAmbientLoc, material.ambient.r, material.ambient.g, material.ambient.b);
     glUniform3f(matDiffuseLoc, material.diffuse.r, material.diffuse.g, material.diffuse.b);
@@ -42,11 +44,11 @@ void CubeObject::Draw(const Camera& camera) const {
     glUniform1f(matShineLoc, material.shininess);
 
     // Sets up cameraPos uniform then calls base class method
-    GLint uniCameraPos = glGetUniformLocation(shaderProgram.shaderProgram, "cameraPos");
+    GLint uniCameraPos = glGetUniformLocation(sp, "cameraPos");
     auto cameraPos = camera.GetPosition();
     glUniform3f(uniCameraPos, cameraPos.x, cameraPos.y, cameraPos.z);
 
-    GLint timeUniform = glGetUniformLocation(shaderProgram.shaderProgram, "time");
+    GLint timeUniform = glGetUniformLocation(sp, "time");
     glUniform1f(timeUniform, static_cast<float>(elapsedTime));
 
     RenderableObject::Draw(camera);

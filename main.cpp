@@ -319,7 +319,7 @@ int main() {
 void render(const RenderableObject& go, const vec_uniq<Light>& lights, const Camera& camera) {
     const auto& sp = go.shaderProgram;
 
-    glUseProgram(sp.shaderProgram);
+    sp.UseProgram();
 
     GLint numLightsUniform = glGetUniformLocation(sp.shaderProgram, "numLights");
     
