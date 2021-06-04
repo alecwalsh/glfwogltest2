@@ -83,12 +83,8 @@ void UIManager::DrawMisc() {
 void UIManager::DrawAlwaysVisible() { DrawStats(); }
 
 void UIManager::Initialize() {
-    static bool firstCall = true;
-    
     // Initialization only needs to be done once
-    if (!firstCall) return;
-
-    firstCall = false;
+    if (initialized) return;
 
     const char* glsl_version = "#version 130";
 
@@ -105,10 +101,16 @@ void UIManager::Initialize() {
     timeManager.AddTimer(Timer::Type::Repeat, 1s, [this] {
         displayFPS = static_cast<unsigned int>(timeManager.GetFPS());
     });
+
+    initialized = true;
 }
 
-UIManager::~UIManager() {
+void UIManager::Destroy() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+UIManager::~UIManager() {
+    if (initialized) Destroy(); // Don't destroy the context if it hasn't been initialized
 }

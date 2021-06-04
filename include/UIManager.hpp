@@ -17,6 +17,7 @@ class UIManager {
 
     // Call before any drawing
     void Initialize();
+    void Destroy();
 
     // Registers a function that draws UI elements
     template<typename F>
@@ -40,6 +41,8 @@ class UIManager {
 
     char textBuffer[64] = {};
     unsigned int displayFPS = 0;
+
+    bool initialized = false;
 };
 
 inline UIManager& uiManager = UIManager::GetInstance();
