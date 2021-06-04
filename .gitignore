@@ -5,6 +5,6 @@ build/
 .kdev4/
 *.kdev4
 
+.vs/
+
 imgui.ini
-/.vs
-/vcpkg
