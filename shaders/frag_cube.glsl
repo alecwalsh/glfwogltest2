@@ -51,7 +51,7 @@ struct Light {
 uniform int numLights;
 uniform Light lights[30];
 
-void generalLighting(Light light, vec3 norm, vec3 lightDir, float attenuation, out vec3 diffuse, out vec3 specular) {
+void generalLighting(Light light, vec3 norm, vec3 lightDir, float attenuation, inout vec3 diffuse, inout vec3 specular) {
 	float diff = max(dot(norm, lightDir), 0.0);
 
     //Calculate specular lighting
@@ -64,7 +64,7 @@ void generalLighting(Light light, vec3 norm, vec3 lightDir, float attenuation, o
     specular += light.specular * (spec * material.specular) * texture(texSpecMap, Texcoord).rgb * attenuation;
 }
 
-void spotLight(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
+void spotLight(Light light, vec3 norm, inout vec3 diffuse, inout vec3 specular) {
     vec3 lightDir = normalize(light.position - FragPos);
     
     float dist = distance(light.position, FragPos);
@@ -83,14 +83,14 @@ void spotLight(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
 }
 
 
-void dirLight(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
+void dirLight(Light light, vec3 norm, inout vec3 diffuse, inout vec3 specular) {
 	vec3 lightDir = -normalize(light.direction);
 	float attenuation = 1.0;
 
     generalLighting(light, norm, lightDir, attenuation, diffuse, specular);
 }
 
-void pointLight(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
+void pointLight(Light light, vec3 norm, inout vec3 diffuse, inout vec3 specular) {
     vec3 lightDir = normalize(light.position - FragPos);
     
     float dist = distance(light.position, FragPos);
@@ -101,7 +101,7 @@ void pointLight(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {
 }
 
 
-void calculateLighting(Light light, vec3 norm, out vec3 diffuse, out vec3 specular) {    
+void calculateLighting(Light light, vec3 norm, inout vec3 diffuse, inout vec3 specular) {    
     // Do calculations that are different for different types of lights here
     switch(light.type) {
         case POINTLIGHT:
