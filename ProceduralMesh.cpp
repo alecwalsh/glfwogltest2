@@ -58,6 +58,15 @@ GenerateUVSphereVertices(double radius) { // TODO: Generate UV coordinates
     int latSlices = slices/2;
     int longSlices = slices;
 
+    unsigned int totalVertices = longSlices * 6 // Cap vertices
+        + (latSlices - 2) * longSlices * 4; // Vertices in the rest of the sphere
+
+    unsigned int totalElements = longSlices * 6 // Cap elements
+        + (latSlices - 2) * longSlices * 6; // Elements for the rest of the sphere
+
+    vertices.reserve(totalVertices);
+    elements.reserve(totalElements);
+
     float xcoord_offset = 0.002f; // TODO: figure out why values of 0 and 1 cause wrong colors
 
     GLuint capIndex = 0;
