@@ -118,3 +118,10 @@ class ShaderManager {
 };
 
 thread_local inline ShaderManager& shaderManager = ShaderManager::GetInstance();
+
+enum class VertexShaderAttribute : GLint {
+    position = 0,
+    normal = 1,
+    texcoord = 2,
+    color = 3,
+};

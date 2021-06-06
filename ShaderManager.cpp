@@ -34,11 +34,6 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, 
     auto fragmentSource = f.c_str();
 
     GLuint shaderProgram = glCreateProgram();
-    // Bind attrib locations
-    glBindAttribLocation(shaderProgram, 0, "position");
-    glBindAttribLocation(shaderProgram, 1, "normal");
-    glBindAttribLocation(shaderProgram, 2, "texcoord");
-    glBindAttribLocation(shaderProgram, 3, "color");
 
     // Create and compile the vertex shader
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);

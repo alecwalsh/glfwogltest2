@@ -7,7 +7,7 @@ in vec3 Normal;
 in vec3 FragPos;
 in vec2 Texcoord;
 
-out vec4 outColor;
+layout(location = 0) out vec4 outColor;
 
 uniform sampler2D texDiffuseMap; //diffuse map
 uniform sampler2D texSpecMap;
@@ -52,7 +52,7 @@ uniform int numLights;
 uniform Light lights[30];
 
 void generalLighting(Light light, vec3 norm, vec3 lightDir, float attenuation, inout vec3 diffuse, inout vec3 specular) {
-	float diff = max(dot(norm, lightDir), 0.0);
+    float diff = max(dot(norm, lightDir), 0.0);
 
     //Calculate specular lighting
     //I don't really understand that math behind this, should probably learn it
@@ -70,22 +70,22 @@ void spotLight(Light light, vec3 norm, inout vec3 diffuse, inout vec3 specular) 
     float dist = distance(light.position, FragPos);
     //TODO: Implement attenuation  properly
     float attenuation = 15.0 / pow(dist, 2.0);
-	
-	float cosTheta = dot(lightDir, normalize(-light.direction));
-	if(cosTheta <= light.cutoffAngleCos) {
-		// If cosTheta > light.cutoffAngleCos, then the spotlight affects this fragment
-		// This sets diffuse and specular to 0 if the fragment is not affected by the spotlight
-		// diffuse and specular are both multiplied by attenuation later, so setting attenuation to 0 ensures they are set to 0 too
-		attenuation = 0.0;
-	}
-	
-	generalLighting(light, norm, lightDir, attenuation, diffuse, specular);
+    
+    float cosTheta = dot(lightDir, normalize(-light.direction));
+    if(cosTheta <= light.cutoffAngleCos) {
+        // If cosTheta > light.cutoffAngleCos, then the spotlight affects this fragment
+        // This sets diffuse and specular to 0 if the fragment is not affected by the spotlight
+        // diffuse and specular are both multiplied by attenuation later, so setting attenuation to 0 ensures they are set to 0 too
+        attenuation = 0.0;
+    }
+    
+    generalLighting(light, norm, lightDir, attenuation, diffuse, specular);
 }
 
 
 void dirLight(Light light, vec3 norm, inout vec3 diffuse, inout vec3 specular) {
-	vec3 lightDir = -normalize(light.direction);
-	float attenuation = 1.0;
+    vec3 lightDir = -normalize(light.direction);
+    float attenuation = 1.0;
 
     generalLighting(light, norm, lightDir, attenuation, diffuse, specular);
 }

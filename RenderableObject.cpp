@@ -15,17 +15,17 @@ RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram,
 
     shaderProgram.UseProgram();
 
+    GLint posAttrib = static_cast<GLint>(VertexShaderAttribute::position);
+    GLint normalAttrib = static_cast<GLint>(VertexShaderAttribute::normal);
+    GLint texAttrib = static_cast<GLint>(VertexShaderAttribute::texcoord);
+
     // Specify the layout of the vertex data
-    // Use attrib location from glBindAttribLocation
-    GLint posAttrib = 0;
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), 0);
 
-    GLint normalAttrib = 1;
     glEnableVertexAttribArray(normalAttrib);
     glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
 
-    GLint texAttrib = 2;
     glEnableVertexAttribArray(texAttrib);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 

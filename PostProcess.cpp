@@ -80,11 +80,12 @@ PostProcess::PostProcess() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers.ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(elements[0]), elements, GL_STATIC_DRAW);
 
-    GLint posAttrib = 0;
+    GLint posAttrib = static_cast<GLint>(VertexShaderAttribute::position);
+    GLint texAttrib = static_cast<GLint>(VertexShaderAttribute::texcoord);
+
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 
-    GLint texAttrib = 1;
     glEnableVertexAttribArray(texAttrib);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
