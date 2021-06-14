@@ -6,10 +6,9 @@
 
 #include "TimeManager.hpp"
 
-glm::mat4 GameObject::GetTransform() const {
+glm::mat4 GameObject::GetTransform() const noexcept {
     glm::mat4 scaleMat = glm::scale(glm::mat4{1.0f}, scale);
     glm::mat4 positionMat = glm::translate(glm::mat4{1.0f}, position);
-
 
     return positionMat * rotation * scaleMat;
 }

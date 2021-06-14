@@ -13,7 +13,7 @@ class Light {
     };
     const LightType type;
 
-    void ToggleActive() { active = !active; }
+    void ToggleActive() noexcept { active = !active; }
 
     virtual ~Light() = default;
 
@@ -26,7 +26,7 @@ class Light {
 
     bool active = true;
     
-    Light(glm::vec3 diffuse, glm::vec3 specular, LightType type);
+    Light(glm::vec3 diffuse, glm::vec3 specular, LightType type) noexcept;
 
     static GLint getLightUniLoc(const char* member, std::size_t i, GLuint program);
 

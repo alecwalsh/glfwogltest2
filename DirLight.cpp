@@ -2,7 +2,7 @@
 
 #include "glad/glad.h"
 
-DirLight::DirLight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular)
+DirLight::DirLight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular) noexcept
     : Light{diffuse, specular, LightType::Directional}, direction{direction} {}
 
 void DirLight::SetUniforms(GLuint program, std::size_t index) {

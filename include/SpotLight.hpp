@@ -9,7 +9,7 @@ class SpotLight : public Light {
     glm::vec3 direction;
     float cutoffAngleCos; // Cosine of cutoff angle, to avoid acos in shader
 
-    SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular, float cutoffAngleCos);
+    SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular, float cutoffAngleCos) noexcept;
 
     void SetUniforms(GLuint program, std::size_t index) override;
 };

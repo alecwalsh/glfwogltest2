@@ -10,7 +10,7 @@ class GameObject {
     glm::vec3 position = {0, 0, 0};
     glm::vec3 scale = {1, 1, 1};
 
-    glm::mat4 GetTransform() const;
+    glm::mat4 GetTransform() const noexcept;
 
     double& elapsedTime;
     double& deltaTime;

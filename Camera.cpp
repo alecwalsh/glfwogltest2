@@ -22,9 +22,9 @@ void Camera::SetPosition(glm::vec3 position) {
     UpdateViewMatrix();
 }
 
-void Camera::UpdateViewMatrix() { viewMat = glm::lookAt(position, position + vectors.front, vectors.up); }
+void Camera::UpdateViewMatrix() noexcept { viewMat = glm::lookAt(position, position + vectors.front, vectors.up); }
 
-void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) {
+void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept {
     // Calculates vectors from the perspective of the camera
     // This allows the camera to work no matter how it is moved and rotated
     vectors.front = glm::normalize(frontVector);
@@ -35,7 +35,7 @@ void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) {
     vectors.left = -vectors.right;
 }
 
-void Camera::Rotate(double pitch, double yaw) {
+void Camera::Rotate(double pitch, double yaw) noexcept {
     double x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     double y = sin(glm::radians(pitch));
     double z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -50,7 +50,14 @@ void Camera::Tick() {
     SetPosition(collider.position);
 }
 
-const glm::vec3& Camera::vectors::operator[](Direction d) {
+const glm::vec3& Camera::vectors::operator[](Direction d) const noexcept {
+    // Uses array of pointers so returning a reference works right
+    const vec3* vectorsArray[]{&front, &back, &right, &left, &up, &down};
+
+    return *vectorsArray[static_cast<std::uint8_t>(d)];
+}
+
+glm::vec3& Camera::vectors::operator[](Direction d) noexcept {
     // Uses array of pointers so returning a reference works right
     vec3* vectorsArray[]{&front, &back, &right, &left, &up, &down};
 
