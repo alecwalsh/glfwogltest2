@@ -3,6 +3,7 @@
 
 #include <string>
 #include <functional>
+#include <optional>
 #include <unordered_map>
 #include <cstdint>
 #include <stdexcept>
@@ -12,7 +13,9 @@ class ShaderError : public std::runtime_error {
 };
 
 class ShaderCompileError : public ShaderError {
-    using ShaderError::ShaderError;
+  public:
+    ShaderCompileError(const std::string& fileName, const std::string& message)
+        : ShaderError{"Error compiling shader file \"" + fileName + "\"\n" + message} {}
 };
 
 class ShaderLinkError : public ShaderError {
@@ -79,8 +82,8 @@ template <> struct hash<ShaderIdentifier> {
 
 class [[nodiscard]] ShaderProgram {
     [[nodiscard]] GLuint ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
-    void GetCompileErrors(GLuint shader);
-    void GetLinkErrors(GLuint shaderProgram);
+    std::optional<std::string> GetCompileErrors(GLuint shader);
+    std::optional<std::string> GetLinkErrors(GLuint shaderProgram);
     gl_version_t version;
 
     // Move constructor and assignment need to set shaderProgram to 0

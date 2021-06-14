@@ -39,19 +39,28 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexSource, NULL);
     glCompileShader(vertexShader);
-    GetCompileErrors(vertexShader);
+    
+    if (auto compileError = GetCompileErrors(vertexShader)) {
+        throw ShaderCompileError{vertShaderFile, *compileError};
+    }
 
     // Create and compile the fragment shader
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
     glCompileShader(fragmentShader);
-    GetCompileErrors(fragmentShader);
+
+    if (auto compileError = GetCompileErrors(fragmentShader)) {
+        throw ShaderCompileError{fragShaderFile, *compileError};
+    }
 
     // Link the vertex and fragment shader into a shader program
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
-    GetLinkErrors(shaderProgram);
+    
+    if (auto linkError = GetLinkErrors(shaderProgram)) {
+        throw ShaderLinkError{*linkError};
+    }
 
     // Don't need these anymore
     glDetachShader(shaderProgram, fragmentShader);
@@ -64,7 +73,7 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, 
     return shaderProgram;
 }
 
-void ShaderProgram::GetCompileErrors(GLuint shader) {
+std::optional<std::string> ShaderProgram::GetCompileErrors(GLuint shader) {
     GLint compiled;
 
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
@@ -79,13 +88,13 @@ void ShaderProgram::GetCompileErrors(GLuint shader) {
 
         delete[] infoLog;
 
-        std::cout << "Shader compile error: " << errorText << std::endl;
-
-        throw ShaderCompileError{errorText};
+        return errorText;
     }
+
+    return {};
 }
 
-void ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
+std::optional<std::string> ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
     GLint linked;
 
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
@@ -99,11 +108,11 @@ void ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
         std::string errorText = infoLog;
 
         delete[] infoLog;
-
-        std::cout << "Shader link error: " << errorText << std::endl;
         
-        throw ShaderLinkError{errorText};
+        return errorText;
     }
+
+    return {};
 }
 
 ShaderProgram::~ShaderProgram() {
