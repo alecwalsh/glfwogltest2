@@ -1,11 +1,13 @@
 #include "Flashlight.hpp"
 
+#include <glad/glad.h>
+
 Flashlight::Flashlight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular, float cutoffAngleCos,
                        const Camera& camera) noexcept
     : SpotLight{glm::vec3{0.0f}, direction, diffuse, specular, cutoffAngleCos}, camera{camera} {}
 
-void Flashlight::SetUniforms(GLuint program, std::size_t index) {
-    auto getLightUniLoc = getLightUniLocGenerator(program, index);
+void Flashlight::SetUniforms(std::uint32_t program, std::size_t index) {
+    auto getLightUniLoc = GetLightUniLocGenerator(program, index);
 
     Light::SetUniforms(program, index);
 

@@ -57,7 +57,7 @@ int main() {
     window.width = cm.width;
     window.height = cm.height;
 
-    window.gl_version = cm.gl_version;
+    window.glVersion = cm.glVersion;
 
     try {
         window.Create();
@@ -100,12 +100,10 @@ int main() {
     im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&] {
         static bool toggled = false;
         if (toggled) {
-            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl",
-                             window.gl_version);
+            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl");
             toggled = false;
         } else {
-            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl",
-                             window.gl_version);
+            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl");
             toggled = true;
         }
     });
@@ -135,9 +133,9 @@ int main() {
 
     try {
         pCubeShader =
-            &shaderManager.AddShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", window.gl_version});
+            &shaderManager.AddShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", window.glVersion});
         pLightShader =
-            &shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", window.gl_version});
+            &shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", window.glVersion});
     } catch (const ShaderError& e) {
         std::cerr << e.what() << std::endl;
         std::exit(EXIT_FAILURE);

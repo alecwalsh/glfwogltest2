@@ -16,5 +16,5 @@ class ConfigManager {
 
     std::uint16_t width = 800;
     std::uint16_t height = 600;
-    const gl_version_t gl_version = {3, 3, false};
+    const gl_version_t glVersion = {3, 3, false};
 };

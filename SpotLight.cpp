@@ -7,8 +7,8 @@ SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 diffuse,
     : Light{diffuse, specular, LightType::Spot}, position{position}, direction{direction},
       cutoffAngleCos{cutoffAngleCos} {}
 
-void SpotLight::SetUniforms(GLuint program, std::size_t index) {
-    auto getLightUniLoc = getLightUniLocGenerator(program, index);
+void SpotLight::SetUniforms(std::uint32_t program, std::size_t index) {
+    auto getLightUniLoc = GetLightUniLocGenerator(program, index);
 
     Light::SetUniforms(program, index);
 

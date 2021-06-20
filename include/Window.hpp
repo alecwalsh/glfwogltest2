@@ -4,6 +4,7 @@
 
 #include "ShaderManager.hpp"
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 class WindowError : public std::runtime_error {
@@ -12,7 +13,7 @@ class WindowError : public std::runtime_error {
 
 class Window {
   public:
-    gl_version_t gl_version;
+    gl_version_t glVersion;
     
     int width = 0;
     int height = 0;

@@ -15,9 +15,9 @@ RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram,
 
     shaderProgram.UseProgram();
 
-    GLint posAttrib = static_cast<GLint>(VertexShaderAttribute::position);
-    GLint normalAttrib = static_cast<GLint>(VertexShaderAttribute::normal);
-    GLint texAttrib = static_cast<GLint>(VertexShaderAttribute::texcoord);
+    GLint posAttrib = VertexShaderAttribute::position;
+    GLint normalAttrib = VertexShaderAttribute::normal;
+    GLint texAttrib = VertexShaderAttribute::texcoord;
 
     // Specify the layout of the vertex data
     glEnableVertexAttribArray(posAttrib);

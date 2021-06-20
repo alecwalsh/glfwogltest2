@@ -36,6 +36,8 @@ class PostProcess {
     // TODO: Support multiple postprocess effects
     // Replaces the current postprocess shader with a different shader
     void ReloadShader(const char* vertShader, const char* fragShader, gl_version_t version);
+    void ReloadShader(const char* vertShader, const char* fragShader);
+    
     // Resize framebuffer texture and renderbuffer to match the current window size
     void Resize();
 };

@@ -1,5 +1,4 @@
 #pragma once
-#include "glad/glad.h"
 
 #include <string>
 #include <functional>
@@ -81,16 +80,16 @@ template <> struct hash<ShaderIdentifier> {
 } // namespace std
 
 class [[nodiscard]] ShaderProgram {
-    [[nodiscard]] GLuint ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
-    std::optional<std::string> GetCompileErrors(GLuint shader);
-    std::optional<std::string> GetLinkErrors(GLuint shaderProgram);
+    [[nodiscard]] std::uint32_t ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
+    std::optional<std::string> GetCompileErrors(std::uint32_t shader);
+    std::optional<std::string> GetLinkErrors(std::uint32_t shaderProgram);
     gl_version_t version;
 
     // Move constructor and assignment need to set shaderProgram to 0
     [[nodiscard]] ShaderProgram(ShaderProgram&& sp) noexcept;
     ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
   public:
-    GLuint shaderProgram;
+    std::uint32_t shaderProgram;
 
     void SetupTextures() const noexcept;
     // Calls glUseProgram
@@ -122,9 +121,9 @@ class ShaderManager {
 
 thread_local inline ShaderManager& shaderManager = ShaderManager::GetInstance();
 
-enum class VertexShaderAttribute : GLint {
-    position = 0,
-    normal = 1,
-    texcoord = 2,
-    color = 3,
+struct VertexShaderAttribute {
+    static constexpr int position = 0;
+    static constexpr int normal = 1;
+    static constexpr int texcoord = 2;
+    static constexpr int color = 3;
 };

@@ -37,7 +37,7 @@ void Window::Create() {
 
     glfwInit();
 
-    auto [gl_major_version, gl_minor_version, uses_gles] = gl_version;
+    auto [gl_major_version, gl_minor_version, uses_gles] = glVersion;
 
     int gl_api = uses_gles ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API;
 
@@ -77,7 +77,7 @@ void Window::InitGui() {
 void Window::Destroy() { glfwDestroyWindow(window); }
 
 void Window::LoadGL() {
-    int load_result = (gl_version.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
+    int load_result = (glVersion.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
 
     if (load_result == 0) {
         std::cerr << "Error initializing glad" << std::endl;

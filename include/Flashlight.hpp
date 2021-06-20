@@ -9,5 +9,5 @@ class Flashlight : public SpotLight {
   public:
     Flashlight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular, float cutoffAngleCos, const Camera& camera) noexcept;
 
-    void SetUniforms(GLuint program, std::size_t index) override;
+    void SetUniforms(std::uint32_t program, std::size_t index) override;
 };

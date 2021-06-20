@@ -3,7 +3,6 @@
 #include <array>
 #include <utility>
 
-
 #include <cstdint>
 
 #ifdef __cpp_lib_math_constants
@@ -24,7 +23,7 @@ namespace {
 using vec3 = glm::vec3;
 
 // Assumes elements are either clockwise or counterclockwise
-constexpr std::array<GLuint, 6> QuadToTrisElements() {
+constexpr std::array<std::uint32_t, 6> QuadToTrisElements() {
     return {0, 1, 2, 2, 3, 0};
 }
 
@@ -47,10 +46,10 @@ vec3 SphericalToCartesian(double r, double theta, double phi) {
     return static_cast<vec3::value_type>(r) * vec3{sin(theta) * sin(phi), cos(theta), sin(theta) * cos(phi)};
 }
 
-std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
+std::pair<std::vector<MeshBase::Vertex>, std::vector<std::uint32_t>>
 GenerateUVSphereVertices(double radius) { // TODO: Generate UV coordinates
     std::vector<MeshBase::Vertex> vertices;
-    std::vector<GLuint> elements;
+    std::vector<std::uint32_t> elements;
 
     //Slices must be at least 4
     int slices = 20;
@@ -69,7 +68,7 @@ GenerateUVSphereVertices(double radius) { // TODO: Generate UV coordinates
 
     float xcoord_offset = 0.002f; // TODO: figure out why values of 0 and 1 cause wrong colors
 
-    GLuint capIndex = 0;
+    std::uint32_t capIndex = 0;
 
     for (int j = 0; j < longSlices; j++) {// Create top and bottom cap
         double theta = pi / latSlices;// Angle for top of second slice
@@ -101,7 +100,7 @@ GenerateUVSphereVertices(double radius) { // TODO: Generate UV coordinates
     }
 
     // capIndex is now the index of the first non-cap vertex
-    GLuint faceNumber = 0;
+    std::uint32_t faceNumber = 0;
 
     for (int i = 1; i < latSlices-1; i++) {
         double theta = i * pi / latSlices; // Angle from top ({0, 1, 0})
@@ -142,10 +141,10 @@ GenerateUVSphereVertices(double radius) { // TODO: Generate UV coordinates
 }
 
 // TODO: Support subdivision, UV coordinates
-VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
+VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<std::uint32_t>>
 GenerateCubeVertices(double xSize, double ySize, double zSize) {
     std::vector<MeshBase::Vertex> vertices;
-    std::vector<GLuint> elements;
+    std::vector<std::uint32_t> elements;
 
     vertices.reserve(36);
     elements.reserve(24);
@@ -206,7 +205,7 @@ GenerateCubeVertices(double xSize, double ySize, double zSize) {
         {leftFace, {-1, 0, 0}},
     };
 
-    GLuint index = 0;
+    std::uint32_t index = 0;
 
     for (const auto& [face, normal] : faces) {
         for (const auto& v : face) {
@@ -225,12 +224,12 @@ GenerateCubeVertices(double xSize, double ySize, double zSize) {
 }
 
 // TODO: Support subdivision, UV coordinates
-VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<GLuint>>
+VECTOR_CONSTEXPR std::pair<std::vector<MeshBase::Vertex>, std::vector<std::uint32_t>>
 GeneratePlaneVertices(double xSize, double ySize) {
     std::vector<MeshBase::Vertex> vertices;
     
     const auto elementsArray = QuadToTrisElements();
-    std::vector<GLuint> elements{elementsArray.begin(), elementsArray.end()};
+    std::vector<std::uint32_t> elements{elementsArray.begin(), elementsArray.end()};
 
     vertices.reserve(4);
     

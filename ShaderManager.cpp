@@ -1,5 +1,7 @@
 #include "ShaderManager.hpp"
 
+#include "glad/glad.h"
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <fstream>

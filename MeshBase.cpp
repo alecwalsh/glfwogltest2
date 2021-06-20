@@ -1,5 +1,7 @@
 #include "MeshBase.hpp"
 
+#include "glad/glad.h"
+
 #include <iostream>
 #include <limits>
 #include <cstdlib>
@@ -35,7 +37,7 @@ MeshBase::MeshBase(const std::vector<Vertex>& vertices) : vertices{vertices} {
     UploadToGPU();
 }
 
-MeshBase::MeshBase(const std::vector<Vertex>& vertices, const std::vector<GLuint>& elements)
+MeshBase::MeshBase(const std::vector<Vertex>& vertices, const std::vector<std::uint32_t>& elements)
     : vertices{vertices}, elements{elements}, usesElementArray{true} {
     UploadToGPU();
 }

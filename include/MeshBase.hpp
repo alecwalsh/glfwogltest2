@@ -1,10 +1,11 @@
 #pragma once
-#include "glad/glad.h"
+
+#include <cstdint>
+#include <vector>
 
 #include <glm/glm.hpp>
 
-#include <vector>
-
+// TODO: Create constexpr MeshData class
 class MeshBase {
   public:
     struct Vertex {
@@ -14,19 +15,19 @@ class MeshBase {
     };
 
     std::vector<Vertex> vertices;
-    std::vector<GLuint> elements;
+    std::vector<std::uint32_t> elements;
 
     bool usesElementArray = false; // Set to true or false depending on which constructor is called
 
     struct {
-        GLuint vbo;
-        GLuint ebo;
+        std::uint32_t vbo;
+        std::uint32_t ebo;
     } buffers = {};
 
     // TODO: copy/move constructors
     MeshBase() = default;
     [[nodiscard]] MeshBase(const std::vector<Vertex>& vertices);
-    [[nodiscard]] MeshBase(const std::vector<Vertex>& vertices, const std::vector<GLuint>& elements);
+    [[nodiscard]] MeshBase(const std::vector<Vertex>& vertices, const std::vector<std::uint32_t>& elements);
     virtual ~MeshBase();
 
     // Generates buffers and uploads data to graphics card

@@ -8,5 +8,5 @@ class DirLight : public Light {
 
     DirLight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular) noexcept;
 
-    void SetUniforms(GLuint program, std::size_t index) override;
+    void SetUniforms(std::uint32_t program, std::size_t index) override;
 };

@@ -68,7 +68,7 @@ void PostProcess::SetupFramebuffer() {
 PostProcess::PostProcess() {
     shaderProgram =
         &shaderManager.AddShader({"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl",
-                                  Window::GetInstance().gl_version});
+                                  Window::GetInstance().glVersion});
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
@@ -80,8 +80,8 @@ PostProcess::PostProcess() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers.ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(elements[0]), elements, GL_STATIC_DRAW);
 
-    GLint posAttrib = static_cast<GLint>(VertexShaderAttribute::position);
-    GLint texAttrib = static_cast<GLint>(VertexShaderAttribute::texcoord);
+    GLint posAttrib = VertexShaderAttribute::position;
+    GLint texAttrib = VertexShaderAttribute::texcoord;
 
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -101,6 +101,10 @@ PostProcess::~PostProcess() {
 
 void PostProcess::ReloadShader(const char* vertShader, const char* fragShader, gl_version_t version) {
     shaderProgram = &shaderManager.AddShader({vertShader, fragShader, version});
+}
+
+void PostProcess::ReloadShader(const char* vertShader, const char* fragShader) {
+    ReloadShader(vertShader, fragShader, Window::GetInstance().glVersion);
 }
 
 void PostProcess::Resize() {

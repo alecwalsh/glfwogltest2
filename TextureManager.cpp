@@ -12,6 +12,10 @@ void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
     std::filesystem::path finalFileName = "data/textures";
     finalFileName /= fileName;
 
+    if (!std::filesystem::exists(finalFileName)) {
+        throw std::runtime_error{"Texture file does not exist"};
+    }
+
     // Add a new value to the map
     textureObjects.emplace(id, 0);
     // Set the new value to a valid texture object
@@ -22,11 +26,6 @@ void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
     // Load texture from file and upload to GPU
     int width, height;
     unsigned char* image;
-
-    
-    if (!std::filesystem::exists(finalFileName)) {
-        throw std::runtime_error{"Texture file does not exist"};
-    }
 
     image = stbi_load(finalFileName.string().c_str(), &width, &height, 0, 3);
 
