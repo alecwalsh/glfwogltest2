@@ -80,14 +80,8 @@ int main() {
 
     using Direction = Camera::Direction;
 
-    // Create a lambda that translates the camera in a certain direction
     auto translateCamera = [&camera](Direction d) {
-        return [&, d] {
-            // TODO: Get key bindings from files
-            // TODO: Figure out how to use control key
-
-            camera.ModifyPosition(camera.speed * static_cast<float>(timeManager.deltaTime) * camera.vectors[d]);
-        };
+        return camera.TranslateCamera(d);
     };
 
     using KeyState = InputManager::KeyState;

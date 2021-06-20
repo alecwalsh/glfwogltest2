@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameObject.hpp"
+#include "TimeManager.hpp"
 
 #include <Physics/Collision.hpp>
 
@@ -31,7 +32,7 @@ class Camera : public GameObject {
 
     enum class Direction : std::uint8_t { Forward, Backward, Right, Left, Up, Down };
 
-    struct vectors {
+    struct Vectors {
         using vec3 = glm::vec3;
 
         vec3 front{0.0f};
@@ -46,4 +47,31 @@ class Camera : public GameObject {
     } vectors;
 
     float speed = 1.0f;
+
+    // ParallelToGround means moving forward, back, left, and right results in movement parallel to the ground(pitch is 0)
+    // Up and down movement simply moves up or down
+    // With RelativeToCameraDirection, the camera's pitch applies to movement forward or backward
+    enum class MovementStyle : std::uint8_t { ParallelToGround, RelativeToCameraDirection };
+
+    MovementStyle movementStyle = MovementStyle::ParallelToGround;
+
+    // Create a lambda that translates the camera in a certain direction
+    auto TranslateCamera(Camera::Direction d) {
+        return [this, d] {
+            // TODO: Get key bindings from files
+            // TODO: Figure out how to use control key
+
+            auto vec = vectors[d];
+
+            if (movementStyle == MovementStyle::ParallelToGround) {
+                if (!(d == Camera::Direction::Up || d == Camera::Direction::Down)) {
+                    vec.y = 0;
+
+                    vec = glm::normalize(vec);
+                }
+            }
+
+            ModifyPosition(speed * static_cast<float>(timeManager.deltaTime) * vec);
+        };
+    };
 };

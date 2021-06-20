@@ -50,14 +50,14 @@ void Camera::Tick() {
     SetPosition(collider.position);
 }
 
-const glm::vec3& Camera::vectors::operator[](Direction d) const noexcept {
+const glm::vec3& Camera::Vectors::operator[](Direction d) const noexcept {
     // Uses array of pointers so returning a reference works right
     const vec3* vectorsArray[]{&front, &back, &right, &left, &up, &down};
 
     return *vectorsArray[static_cast<std::uint8_t>(d)];
 }
 
-glm::vec3& Camera::vectors::operator[](Direction d) noexcept {
+glm::vec3& Camera::Vectors::operator[](Direction d) noexcept {
     // Uses array of pointers so returning a reference works right
     vec3* vectorsArray[]{&front, &back, &right, &left, &up, &down};
 
