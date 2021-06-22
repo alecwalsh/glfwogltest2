@@ -78,13 +78,14 @@ int main() {
     // The scene is rendered to a texture and the texture is applied to the quad
     PostProcess& fsq = PostProcess::GetInstance();
 
-    using Direction = Camera::Direction;
-
-    auto translateCamera = [&camera](Direction d) {
-        return camera.TranslateCamera(d);
-    };
+    #if __cpp_lib_bind_front >= 201907L
+        auto translateCamera = std::bind_front(&Camera::TranslateCamera, &camera);
+    #else
+        auto translateCamera = std::bind(&Camera::TranslateCamera, &camera, std::placeholders::_1);
+    #endif
 
     using KeyState = InputManager::KeyState;
+    using Direction = Camera::Direction;
 
 #define KEY(k) GLFW_KEY_##k
 
