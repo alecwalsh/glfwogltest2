@@ -7,13 +7,16 @@
 #include <assimp/scene.h>       // Output data structure
 
 Mesh::Mesh(const std::string& fileName) {
-    usesElementArray = true;
-    ImportMesh(fileName);
+    meshData = ImportMesh(fileName);
+
     UploadToGPU();
 }
 
 // TODO: .blend files normals are per vertex, not per face; .fbx works fine
-void Mesh::ImportMesh(const std::string& fileName) {
+MeshData Mesh::ImportMesh(const std::string& fileName) {
+    std::vector<MeshData::Vertex> vertices;
+    std::vector<std::uint32_t> elements;
+    
     Assimp::Importer importer;
     // TODO: Change/add postprocessing flags
     const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
@@ -25,6 +28,9 @@ void Mesh::ImportMesh(const std::string& fileName) {
     }
 
     auto mesh = scene->mMeshes[0];
+
+    vertices.reserve(mesh->mNumVertices);
+    elements.reserve(mesh->mNumFaces * 3); // Each face has 3 vertices
 
     if (!mesh->HasNormals()) {
         std::cerr << "Mesh doesn't have normals." << std::endl;
@@ -62,4 +68,6 @@ void Mesh::ImportMesh(const std::string& fileName) {
             texcoords                    // Texture coordinates
         });
     }
+
+    return {vertices, elements, true};
 }

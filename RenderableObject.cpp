@@ -9,7 +9,7 @@ RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram,
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);
-    if (mesh.usesElementArray) {
+    if (mesh.meshData.usesElementArray) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers.ebo);
     }
 
@@ -59,15 +59,15 @@ void RenderableObject::Draw(const Camera& camera) const {
     GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(camera.viewMat));
 
-    if (mesh.vertices.size() > std::numeric_limits<GLsizei>::max()) {
+    if (mesh.meshData.vertices.size() > std::numeric_limits<GLsizei>::max()) {
         std::cerr << "Too many vertices" << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
-    if (mesh.usesElementArray) {
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.elements.size()), GL_UNSIGNED_INT, 0);
+    if (mesh.meshData.usesElementArray) {
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.meshData.elements.size()), GL_UNSIGNED_INT, 0);
     } else {
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mesh.vertices.size()));
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mesh.meshData.vertices.size()));
     }
 }
 
