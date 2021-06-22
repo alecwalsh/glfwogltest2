@@ -22,30 +22,30 @@ class Window {
     bool showCursor = false;
 
     // Need to set gl_version, width, and height before calling this
-    [[nodiscard]] static Window& GetInstance();
+    [[nodiscard]] static Window& GetInstance() noexcept;
     // Deleted to prevent copies
     Window(const Window&) = delete;
     void operator=(const Window&) = delete;
 
-    void SwapBuffers();
-    [[nodiscard]] bool ShouldClose();
+    void SwapBuffers() noexcept;
+    [[nodiscard]] bool ShouldClose() noexcept;
     // Calls glfwSetWindowShouldClose, will close the window on next frame
-    void Close();
+    void Close() noexcept;
 
     // Creates the window
     void Create();
-    void Destroy();
+    void Destroy() noexcept;
 
     void LoadGL();
 
-    void Resize(int width, int height);
+    void Resize(int width, int height) noexcept;
 
-    static void framebufferSizeCallback(GLFWwindow* glfwwindow, int width, int height);
+    static void FramebufferSizeCallback(GLFWwindow* glfwwindow, int width, int height) noexcept;
     
-    void ReleaseMouse();
-    void CaptureMouse();
+    void ReleaseMouse() noexcept;
+    void CaptureMouse() noexcept;
     
-    void InitGui();
+    void InitGui() noexcept;
   private:
     Window() = default;
     ~Window();

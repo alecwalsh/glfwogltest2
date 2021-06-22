@@ -11,7 +11,7 @@
 
 extern double lastX, lastY;
 
-void Window::framebufferSizeCallback([[maybe_unused]] GLFWwindow* glfwwindow, int width, int height) {
+void Window::FramebufferSizeCallback([[maybe_unused]] GLFWwindow* glfwwindow, int width, int height) noexcept {
     glViewport(0, 0, width, height);
 
     auto& window = Window::GetInstance();
@@ -58,9 +58,9 @@ void Window::Create() {
 
     CaptureMouse();
 
-    glfwSetKeyCallback(window, InputManager::keyCallback);
-    glfwSetCursorPosCallback(window, InputManager::mouseCallback);
-    glfwSetFramebufferSizeCallback(window, Window::framebufferSizeCallback);
+    glfwSetKeyCallback(window, InputManager::KeyCallback);
+    glfwSetCursorPosCallback(window, InputManager::MouseCallback);
+    glfwSetFramebufferSizeCallback(window, Window::FramebufferSizeCallback);
 
     lastX = width / 2.0f;
     lastY = height / 2.0f;
@@ -70,11 +70,11 @@ void Window::Create() {
     LoadGL();
 }
 
-void Window::InitGui() {
+void Window::InitGui() noexcept {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
 }
 
-void Window::Destroy() { glfwDestroyWindow(window); }
+void Window::Destroy() noexcept { glfwDestroyWindow(window); }
 
 void Window::LoadGL() {
     int load_result = (glVersion.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
@@ -91,19 +91,19 @@ Window::~Window() {
     glfwTerminate();
 }
 
-Window& Window::GetInstance() {
+Window& Window::GetInstance() noexcept {
     static Window w{};
     return w;
 }
 
-void Window::SwapBuffers() { glfwSwapBuffers(window); }
+void Window::SwapBuffers() noexcept { glfwSwapBuffers(window); }
 
-bool Window::ShouldClose() { return glfwWindowShouldClose(window); }
+bool Window::ShouldClose() noexcept { return glfwWindowShouldClose(window); }
 
-void Window::Close() { glfwSetWindowShouldClose(window, true); }
+void Window::Close() noexcept { glfwSetWindowShouldClose(window, true); }
 
-void Window::Resize(int width, int height) { glfwSetWindowSize(window, width, height); }
+void Window::Resize(int width, int height) noexcept { glfwSetWindowSize(window, width, height); }
 
-void Window::ReleaseMouse() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
+void Window::ReleaseMouse() noexcept { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
 
-void Window::CaptureMouse() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
+void Window::CaptureMouse() noexcept { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }

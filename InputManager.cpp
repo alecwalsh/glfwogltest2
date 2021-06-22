@@ -9,8 +9,8 @@ extern double lastX, lastY;
 extern double yaw, pitch;
 
 
-void InputManager::keyCallback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
-    [[maybe_unused]] int mode) {
+void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
+    [[maybe_unused]] int mode) noexcept {
     if (InputManager::GetInstance().keyboardEnabled ||
         key == GLFW_KEY_U && !ImGui::GetIO().WantCaptureKeyboard) { // TODO: Don't hardcode key to hide UI
         auto& keystates = InputManager::keystates;
@@ -34,7 +34,7 @@ void InputManager::keyCallback([[maybe_unused]] GLFWwindow* window, int key, [[m
 }
 
 // TODO: Mouse callback gets called when maximizing and restoring window, causing the camera to jump
-void InputManager::mouseCallback([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) {
+void InputManager::MouseCallback([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) noexcept {
     if(InputManager::GetInstance().mouseEnabled) {
         InputManager::mouseMoved = true;
         if(InputManager::firstMouse) {
@@ -59,11 +59,10 @@ void InputManager::mouseCallback([[maybe_unused]] GLFWwindow* window, double xpo
     }
 }
 
-void InputManager::HandleInput() {
+void InputManager::HandleInput() noexcept {
     glfwPollEvents();
 
-    for (const auto& keybinding : key_bindings) {
-        const auto& [keycode, desired_state, func] = keybinding;
+    for (const auto& [keycode, desired_state, func] : keyBindings) {
         auto& current_state = keystates[keycode];
         if (desired_state == KeyState::AnyPress) {
             if (current_state == KeyState::InitialPress || current_state == KeyState::RepeatPress) {
@@ -79,23 +78,23 @@ void InputManager::HandleInput() {
     }
 }
 
-void InputManager::DisableMouseInput() { mouseEnabled = false; }
-void InputManager::EnableMouseInput() { mouseEnabled = true; }
+void InputManager::DisableMouseInput() noexcept { mouseEnabled = false; }
+void InputManager::EnableMouseInput() noexcept { mouseEnabled = true; }
 
-void InputManager::DisableKeyboardInput() { keyboardEnabled = false; }
-void InputManager::EnableKeyboardInput() { keyboardEnabled = true; }
+void InputManager::DisableKeyboardInput() noexcept { keyboardEnabled = false; }
+void InputManager::EnableKeyboardInput() noexcept { keyboardEnabled = true; }
 
-void InputManager::DisableInput() {
+void InputManager::DisableInput() noexcept {
     DisableMouseInput();
     DisableKeyboardInput();
 }
 
-void InputManager::EnableInput() {
+void InputManager::EnableInput() noexcept {
     EnableMouseInput();
     EnableKeyboardInput();
 }
 
-InputManager& InputManager::GetInstance() {
+InputManager& InputManager::GetInstance() noexcept {
     static InputManager im{};
     return im;
 }

@@ -14,7 +14,7 @@
 // TODO: Input key as string, eg AddKeyBinding("Ctrl-A", []{})
 class InputManager {
   public:
-    using keycode_t = int;
+    using Keycode = int;
 
     enum class KeyState : std::uint8_t { NotPressed, InitialPress, RepeatPress, AnyPress };
 
@@ -22,28 +22,28 @@ class InputManager {
     static inline bool mouseMoved = false;
     static inline bool firstMouse = true;
 
-    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
-    static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+    static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) noexcept;
+    static void MouseCallback(GLFWwindow* window, double xpos, double ypos) noexcept;
 
     static inline double min_pitch = -89.0;
     static inline double max_pitch = 89.0;
 
-    template <typename F> void AddKeyBinding(InputManager::keycode_t key, KeyState state, F&& f) {
-        key_bindings.emplace_back(key, state, std::forward<F>(f));
+    template <typename F> void AddKeyBinding(InputManager::Keycode key, KeyState state, F&& f) {
+        keyBindings.emplace_back(key, state, std::forward<F>(f));
     }
 
-    void HandleInput();
+    void HandleInput() noexcept;
 
-    void DisableMouseInput();
-    void EnableMouseInput();
+    void DisableMouseInput() noexcept;
+    void EnableMouseInput() noexcept;
     
-    void DisableKeyboardInput();
-    void EnableKeyboardInput();
+    void DisableKeyboardInput() noexcept;
+    void EnableKeyboardInput() noexcept;
     
-    void DisableInput();
-    void EnableInput();
+    void DisableInput() noexcept;
+    void EnableInput() noexcept;
 
-    [[nodiscard]] static InputManager& GetInstance();
+    [[nodiscard]] static InputManager& GetInstance() noexcept;
     // Deleted to prevent copies
     InputManager(const InputManager&) = delete;
     void operator=(const InputManager&) = delete;
@@ -55,5 +55,5 @@ class InputManager {
     bool mouseEnabled = true;
     bool keyboardEnabled = true;
 
-    std::vector<std::tuple<keycode_t, KeyState, std::function<void()>>> key_bindings;
+    std::vector<std::tuple<Keycode, KeyState, std::function<void()>>> keyBindings;
 };
