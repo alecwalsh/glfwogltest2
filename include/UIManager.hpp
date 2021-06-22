@@ -8,7 +8,7 @@ class UIManager {
   public:
     void Draw();
 
-    static UIManager& GetInstance();
+    static UIManager& GetInstance() noexcept;
     // Deleted to prevent copies
     UIManager(const UIManager&) = delete;
     void operator=(const UIManager&) = delete;
@@ -24,6 +24,8 @@ class UIManager {
     void AddToUI(F&& f) {
         registeredFunctions.push(std::forward<F>(f));
     }
+
+    static void ToggleUI() noexcept;
   private:
     UIManager() = default;
     ~UIManager();

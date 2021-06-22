@@ -1,17 +1,18 @@
 #include "UIManager.hpp"
 
 #include "TimeManager.hpp"
+#include "InputManager.hpp"
 #include "Window.hpp"
 
 #include <imgui/imgui.h>
 
 #include <imgui/imgui_impl_glfw.h>
-#include <imgui/imgui_impl_opengl3.h>"
+#include <imgui/imgui_impl_opengl3.h>
 
 #include <iterator>
 #include <cfloat>
 
-UIManager& UIManager::GetInstance() {
+UIManager& UIManager::GetInstance() noexcept {
     thread_local UIManager uim{};
     return uim;
 }
@@ -113,4 +114,27 @@ void UIManager::Destroy() {
 
 UIManager::~UIManager() {
     if (initialized) Destroy(); // Don't destroy the context if it hasn't been initialized
+}
+
+void UIManager::ToggleUI() noexcept {
+    auto& window = Window::GetInstance();
+    auto& im = InputManager::GetInstance();
+
+    if (window.showCursor) {
+        window.CaptureMouse();
+        im.EnableInput();
+
+        UIManager::GetInstance().guiActive = false;
+
+        window.showCursor = false;
+    } else {
+        InputManager::firstMouse = true; // Prevent camera from jumping to previous cursor location
+
+        window.ReleaseMouse();
+        im.DisableInput();
+
+        UIManager::GetInstance().guiActive = true;
+
+        window.showCursor = true;
+    }
 }

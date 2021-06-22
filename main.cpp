@@ -108,25 +108,7 @@ int main() {
         }
     });
 
-    im.AddKeyBinding(KEY(U), KeyState::InitialPress, [&window, &im] {
-        if (window.showCursor) {
-            window.CaptureMouse();
-            im.EnableInput();
-
-            UIManager::GetInstance().guiActive = false;
-
-            window.showCursor = false;
-        } else {
-            InputManager::firstMouse = true; // Prevent camera from jumping to previous cursor location
-
-            window.ReleaseMouse();
-            im.DisableInput();
-
-            UIManager::GetInstance().guiActive = true;
-
-            window.showCursor = true;
-        }
-    });
+    im.AddKeyBinding(KEY(U), KeyState::InitialPress, UIManager::ToggleUI);
 
     ShaderProgram* pCubeShader;
     ShaderProgram* pLightShader;
