@@ -11,7 +11,7 @@
 #endif
 
 class CubeObject : public RenderableObject {
-    float size = 1;
+    glm::vec3 size = {1, 1, 1};
 
     std::unique_ptr<Physics::Collider> collider;
   public:
@@ -37,6 +37,12 @@ class CubeObject : public RenderableObject {
     template <typename T>
     #endif
     void SetCollider() {
-        collider = std::make_unique<T>(position, size, glm::vec3{});
+        if constexpr (std::is_same_v<T, Physics::SphereCollider>) {
+            collider = std::make_unique<T>(position, size.x, glm::vec3{});
+        } else if constexpr (std::is_same_v<T, Physics::SimplePlaneCollider>) {
+            collider = std::make_unique<T>(position.y);
+        } else {
+            collider = std::make_unique<T>(position, size, glm::vec3{});
+        }
     }
 };

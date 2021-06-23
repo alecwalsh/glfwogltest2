@@ -37,6 +37,8 @@
 
 #include "version.hpp"
 
+std::vector<CubeObject*> physicsObjects;
+
 // TODO: figure out where to put these, avoid extern in other files
 double lastX, lastY;
 double yaw, pitch;
@@ -164,22 +166,53 @@ int main() {
         yaw = -yaw;
     }
 
+    vec_uniq<RenderableObject> gameObjects;
+
     // Creates a CubeObject
-    auto go = std::make_unique<CubeObject>(mesh, cubeShader, texman);
-    go->SetPosition({0.0f, 25.0f, 0.0f});
-    go->name = "cube1";
-    go->SetCollider<Physics::SimpleCubeCollider>();
+    auto go1 = std::make_unique<CubeObject>(mesh, cubeShader, texman);
+    go1->SetPosition({0.0f, 25.0f, 0.0f});
+    go1->name = "cube1";
+    go1->SetCollider<Physics::SimpleCubeCollider>();
 
     auto go2 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
     go2->SetPosition({0, 0, 2.0f});
     go2->name = "sphere1";
     go2->texture_name = "gradient";
+    go2->SetCollider<Physics::SphereCollider>();
 
     auto go3 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
-    go3->SetPosition({0, 5.0f, 2.0f});
+    go3->SetPosition({0, 50.0f, 2.0f});
     go3->name = "sphere2";
     go3->texture_name = "gradient";
     go3->SetCollider<Physics::SphereCollider>();
+
+    auto go4 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
+    go4->SetPosition({0, 5.0f, 2.0f});
+    go4->name = "sphere3";
+    go4->texture_name = "gradient";
+    go4->SetCollider<Physics::SphereCollider>();
+    go4->GetCollider().velocity = {2, 10, 0};
+
+    auto go5 = std::make_unique<CubeObject>(mesh, cubeShader, texman);
+    go5->SetPosition({5.0f, 5.0f, 0.0f});
+    go5->name = "cube2";
+    go5->SetCollider<Physics::SimpleCubeCollider>();
+
+    physicsObjects.push_back(go1.get());
+    physicsObjects.push_back(go2.get());
+    physicsObjects.push_back(go3.get());
+    physicsObjects.push_back(go4.get());
+    physicsObjects.push_back(go5.get());
+
+    im.AddKeyBinding(KEY(L), KeyState::InitialPress, [ptr = go5.get()] {
+        ptr->ModifyPosition({-1, 0, 0});    
+    });
+
+    gameObjects.push_back(std::move(go1));
+    gameObjects.push_back(std::move(go2));
+    gameObjects.push_back(std::move(go3));
+    gameObjects.push_back(std::move(go4));
+    gameObjects.push_back(std::move(go5));
     
     mat4 floorRotation = glm::rotate(mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
     auto floor =
@@ -189,6 +222,19 @@ int main() {
     floor->name = "floor";
     floor->texture_name = "container";
     floor->spec_texture_name = "container_specular";
+    floor->SetCollider<Physics::SimplePlaneCollider>();
+
+    auto floor2 = std::make_unique<CubeObject>(floorMesh, cubeShader, texman);
+    floor2->SetScale({10.0f, 10.0f, 1.0f});
+    floor2->SetPosition({0.0f, -10.0f, 0.0f});
+    floor2->rotation = floorRotation;
+    floor2->name = "floor";
+    floor2->texture_name = "container";
+    floor2->spec_texture_name = "container_specular";
+    floor2->SetCollider<Physics::SimplePlaneCollider>();
+
+    physicsObjects.push_back(floor.get());
+    physicsObjects.push_back(floor2.get());
 
     vec_uniq<Light> lights;
 
@@ -270,13 +316,18 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        go->Tick();
-        go3->Tick();
+        // Call Tick on all GameObjects
+        for (auto& go : gameObjects) {
+            go->Tick();
+        }
 
-        render(*go, lights, camera);
-        render(*go2, lights, camera);
-        render(*go3, lights, camera);
+        // Render all of the GameObjects
+        for (const auto& go : gameObjects) {
+            render(*go, lights, camera);
+        }
+
         render(*floor, lights, camera);
+        render(*floor2, lights, camera);
 
         // Render all of the lights
         for (auto& lo : lightObjects) {

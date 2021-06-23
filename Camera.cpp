@@ -4,6 +4,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "CubeObject.hpp"
+
 static Physics::SimplePlaneCollider floorCollider = {0};
 
 Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : 
@@ -62,4 +64,30 @@ glm::vec3& Camera::Vectors::operator[](Direction d) noexcept {
     vec3* vectorsArray[]{&front, &back, &right, &left, &up, &down};
 
     return *vectorsArray[static_cast<std::uint8_t>(d)];
+}
+
+extern std::vector<CubeObject*> physicsObjects;
+
+bool Camera::CheckCollision(glm::vec3 translation) const {
+    auto newCollider = collider;
+    newCollider.position += translation;
+
+    bool anyCollide = false;
+
+    for (auto go2 : physicsObjects) {
+        if (!go2->HasCollider())
+            continue;
+
+        auto& collider2 = go2->GetCollider();
+        if (&collider == &collider2)
+            continue;
+        if (!newCollider.SupportsCollisionWith(collider2))
+            continue;
+
+        if (newCollider.CollidesWith(collider2)) {
+            anyCollide = true;
+        }
+    }
+
+    return anyCollide;
 }

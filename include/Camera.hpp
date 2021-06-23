@@ -14,7 +14,7 @@ class Camera : public GameObject {
     void UpdateViewMatrix() noexcept;
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept;
 
-    Physics::SimpleCubeCollider collider = {{}, 3, {}};
+    Physics::SimpleCubeCollider collider = {{}, {1.75, 3, 1.75}, {}};
   public:
     Camera(glm::vec3 position, glm::vec3 target,
         float speed = 1.0f,
@@ -55,6 +55,8 @@ class Camera : public GameObject {
 
     MovementStyle movementStyle = MovementStyle::ParallelToGround;
 
+    bool CheckCollision(glm::vec3 translation) const;
+
     // Create a lambda that translates the camera in a certain direction
     auto TranslateCamera(Camera::Direction d) {
         return [this, d] {
@@ -71,7 +73,13 @@ class Camera : public GameObject {
                 }
             }
 
-            ModifyPosition(speed * static_cast<float>(timeManager.deltaTime) * vec);
+            auto translation = speed * static_cast<float>(timeManager.deltaTime) * vec;
+
+            bool willCollide = CheckCollision(translation);
+
+            if (!willCollide) {
+                  ModifyPosition(translation);
+            }
         };
     };
 };

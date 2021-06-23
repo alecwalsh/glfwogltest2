@@ -76,14 +76,10 @@ void CubeObject::SetPosition(glm::vec3 position) {
 
 void CubeObject::SetScale(glm::vec3 scale) {
     RenderableObject::SetScale(scale);
-    this->size = scale.y;
-
-    if (scale.x != scale.y || scale.x != scale.z) {
-        // TODO: disable collision for non uniform scales, or add support for more types of collision
-    }
+    this->size = scale;
 
     if (collider) {
-        this->collider->size = scale.y;
+        this->collider->size = scale;
     }
 }
 
