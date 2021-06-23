@@ -15,10 +15,10 @@ class RenderableObject : public GameObject {
         glm::vec3 ambient;
         glm::vec3 diffuse;
         glm::vec3 specular;
-        GLfloat shininess;
+        float shininess;
     } material = {};
 
-    GLuint vao;
+    std::uint32_t vao;
     TextureManager& texman;
 
   public:

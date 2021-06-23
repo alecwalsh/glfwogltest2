@@ -1,5 +1,7 @@
 #include "RenderableObject.hpp"
 
+#include "glad/glad.h"
+
 #include "Window.hpp"
 
 #include <iostream>

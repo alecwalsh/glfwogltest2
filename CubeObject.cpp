@@ -1,5 +1,7 @@
 #include "CubeObject.hpp"
 
+#include "glad/glad.h"
+
 #include "TimeManager.hpp"
 #include "UIManager.hpp"
 

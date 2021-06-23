@@ -1,5 +1,7 @@
 #include "TextureManager.hpp"
 
+#include "glad/glad.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -40,7 +42,7 @@ void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-void TextureManager::AddTextureFromGLObject(const char* id, GLuint texture) {
+void TextureManager::AddTextureFromGLObject(const char* id, std::uint32_t texture) {
     // Add the texture to the map
     textureObjects.emplace(id, texture);
 }
