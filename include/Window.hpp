@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdexcept>
+#include "GLVersion.hpp"
 
-#include "ShaderManager.hpp"
+#include <stdexcept>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -13,7 +13,7 @@ class WindowError : public std::runtime_error {
 
 class Window {
   public:
-    gl_version_t glVersion;
+    GameEngine::GLVersion glVersion;
     
     int width = 0;
     int height = 0;

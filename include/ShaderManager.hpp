@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GLVersion.hpp"
+
 #include <string>
 #include <functional>
 #include <optional>
@@ -21,24 +23,10 @@ class ShaderLinkError : public ShaderError {
     using ShaderError::ShaderError;
 };
 
-struct gl_version_t {
-    std::uint8_t major;
-    std::uint8_t minor;
-    bool is_gles; // OpenGL or OpenGL ES
-
-#ifdef __cpp_impl_three_way_comparison
-    friend constexpr bool operator==(const gl_version_t& lhs, const gl_version_t& rhs) noexcept = default;
-#else
-    friend constexpr bool operator==(const gl_version_t& lhs, const gl_version_t& rhs) noexcept {
-        return lhs.major == rhs.major && lhs.minor == rhs.minor && lhs.is_gles == rhs.is_gles;
-    }
-#endif // __cpp_impl_three_way_comparison
-};
-
 struct ShaderIdentifier {
     const std::string vertShader;
     const std::string fragShader;
-    const gl_version_t version;
+    const GameEngine::GLVersion version;
 
 #ifdef __cpp_impl_three_way_comparison
     #ifdef __cpp_lib_constexpr_string
@@ -83,7 +71,7 @@ class [[nodiscard]] ShaderProgram {
     [[nodiscard]] std::uint32_t ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
     std::optional<std::string> GetCompileErrors(std::uint32_t shader);
     std::optional<std::string> GetLinkErrors(std::uint32_t shaderProgram);
-    gl_version_t version;
+    GameEngine::GLVersion version;
 
     // Move constructor and assignment need to set shaderProgram to 0
     [[nodiscard]] ShaderProgram(ShaderProgram&& sp) noexcept;

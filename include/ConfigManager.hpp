@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShaderManager.hpp"
+#include "GLVersion.hpp"
 
 #include <stdexcept>
 #include <cstdint>
@@ -16,5 +16,5 @@ class ConfigManager {
 
     std::uint16_t width = 800;
     std::uint16_t height = 600;
-    const gl_version_t glVersion = {3, 3, false};
+    const GameEngine::GLVersion glVersion = {3, 3, false};
 };
