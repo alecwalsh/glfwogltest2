@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "CubeObject.hpp"
+#include "World.hpp"
 
 static Physics::SimplePlaneCollider floorCollider = {0};
 
@@ -66,15 +67,13 @@ glm::vec3& Camera::Vectors::operator[](Direction d) noexcept {
     return *vectorsArray[static_cast<std::uint8_t>(d)];
 }
 
-extern std::vector<CubeObject*> physicsObjects;
-
 bool Camera::CheckCollision(glm::vec3 translation) const {
     auto newCollider = collider;
     newCollider.position += translation;
 
     bool anyCollide = false;
 
-    for (auto go2 : physicsObjects) {
+    for (auto go2 : World::physicsObjects) {
         if (!go2->HasCollider())
             continue;
 

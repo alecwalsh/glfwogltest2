@@ -27,7 +27,10 @@ void CubeObject::Tick() {
         });
     }
 
-    collider->ApplyCollision(*otherCollider);
+    if (collider->SupportsCollisionWith(*otherCollider)) {
+        collider->ApplyCollision(*otherCollider);
+    }
+    
     SetPosition(collider->position);
 }
 
