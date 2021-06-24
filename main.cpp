@@ -21,7 +21,6 @@
 #include "version.hpp"
 
 // TODO: figure out where to put these, avoid extern in other files
-double lastX, lastY;
 double yaw, pitch;
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;

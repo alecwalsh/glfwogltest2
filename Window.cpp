@@ -9,8 +9,6 @@
 #include <cassert>
 #include <iostream>
 
-extern double lastX, lastY;
-
 void Window::FramebufferSizeCallback([[maybe_unused]] GLFWwindow* glfwwindow, int width, int height) noexcept {
     glViewport(0, 0, width, height);
 

@@ -1,13 +1,13 @@
 #include "InputManager.hpp"
 
+#include "Window.hpp"
+
 #include <iostream>
 #include <algorithm>
 
 #include <imgui/imgui.h>
 
-extern double lastX, lastY;
 extern double yaw, pitch;
-
 
 void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
     [[maybe_unused]] int mode) noexcept {
@@ -35,6 +35,9 @@ void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[m
 
 // TODO: Mouse callback gets called when maximizing and restoring window, causing the camera to jump
 void InputManager::MouseCallback([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) noexcept {
+    double& lastX = Window::GetInstance().lastX;
+    double& lastY = Window::GetInstance().lastY;
+
     if(InputManager::GetInstance().mouseEnabled) {
         InputManager::mouseMoved = true;
         if(InputManager::firstMouse) {

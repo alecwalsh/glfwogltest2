@@ -13,6 +13,9 @@ class WindowError : public std::runtime_error {
 
 class Window {
   public:
+    double lastX;
+    double lastY;
+
     GameEngine::GLVersion glVersion;
     
     int width = 0;
