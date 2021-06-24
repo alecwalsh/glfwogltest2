@@ -1,22 +1,22 @@
 #pragma once
 
-#include "glad/glad.h"
-
 #include "ShaderManager.hpp"
-#include "Window.hpp"
+
+#include <cstdint>
 
 // Used for postprocessing effects
 // Renders the main scene to a texture and applies that texture to a fullscreen quad
 class PostProcess {
     ShaderProgram* shaderProgram;
-    GLuint vao;
+    std::uint32_t vao;
     struct buffers {
-        GLuint vbo;
-        GLuint ebo;
+        std::uint32_t vbo;
+        std::uint32_t ebo;
     } buffers;
-    GLuint fbo;
-    GLuint rbo;       // Renderbuffer for depth attachment
-    GLuint fbTexture; // Texture for color attachment
+    std::uint32_t fbo;
+    std::uint32_t rbo; // Renderbuffer for depth attachment
+    std::uint32_t fbTexture; // Texture for color attachment
+
     void SetupFramebuffer();
 
     // gl_version needs to be set before insantiating this struct with the default constructor

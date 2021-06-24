@@ -2,6 +2,10 @@
 
 #include <stdexcept>
 
+#include "Window.hpp"
+
+#include "glad/glad.h"
+
 //Vertices and indices for a full screen rectangle
 static const GLfloat vertices[20]{1.0f,  1.0f,  0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
                            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f,  0.0f, 0.0f, 1.0f};
