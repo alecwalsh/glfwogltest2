@@ -103,8 +103,12 @@ PostProcess::~PostProcess() {
     glDeleteFramebuffers(1, &fbo);
 }
 
+void PostProcess::ReloadShader(ShaderIdentifier id) {
+    shaderProgram = &shaderManager.AddShader(id);
+}
+
 void PostProcess::ReloadShader(const char* vertShader, const char* fragShader, GameEngine::GLVersion version) {
-    shaderProgram = &shaderManager.AddShader({vertShader, fragShader, version});
+    ReloadShader({vertShader, fragShader, version});
 }
 
 void PostProcess::ReloadShader(const char* vertShader, const char* fragShader) {

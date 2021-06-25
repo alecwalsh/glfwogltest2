@@ -35,6 +35,7 @@ class PostProcess {
 
     // TODO: Support multiple postprocess effects
     // Replaces the current postprocess shader with a different shader
+    void ReloadShader(ShaderIdentifier id);
     void ReloadShader(const char* vertShader, const char* fragShader, GameEngine::GLVersion version);
     void ReloadShader(const char* vertShader, const char* fragShader);
     
