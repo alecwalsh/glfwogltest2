@@ -73,7 +73,7 @@ bool Camera::CheckCollision(glm::vec3 translation) const {
 
     bool anyCollide = false;
 
-    for (auto go2 : World::physicsObjects) {
+    for (auto go2 : GameEngine::World::physicsObjects) {
         if (!go2->HasCollider())
             continue;
 

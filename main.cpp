@@ -49,11 +49,12 @@ int main() {
     InputManager& im = InputManager::GetInstance();
 
     glEnable(GL_MULTISAMPLE);
+
     // A fullscreen quad
     // The scene is rendered to a texture and the texture is applied to the quad
     PostProcess& fsq = PostProcess::GetInstance();
 
-    World world;
+    GameEngine::World world;
 
     // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
     // for the first time

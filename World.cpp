@@ -20,27 +20,49 @@
 #include <functional>
 #include <iostream>
 
+#define KEY(k) GLFW_KEY_##k
+
+static InputManager& im = InputManager::GetInstance();
+
+using KeyState = InputManager::KeyState;
+
 using glm::vec3, glm::mat4;
 
+namespace GameEngine {
+
 World::World() {
-    InputManager& im = InputManager::GetInstance();
+    SetupKeyBindings();
 
-    // A fullscreen quad
-    // The scene is rendered to a texture and the texture is applied to the quad
-    PostProcess& fsq = PostProcess::GetInstance();
+    CreateMeshes();
 
-    Window& window = Window::GetInstance();
+    try {
+        CreateTextures();
+    } catch (const std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
 
+    CreateGameObjects();
+
+    CreateLights();
+
+    CreateLightObjects();
+}
+
+void World::TickAll() {
+    for (auto& go : gameObjects) {
+        go->Tick();
+    }
+}
+
+void World::SetupKeyBindings() {
 #if __cpp_lib_bind_front >= 201907L
     auto translateCamera = std::bind_front(&Camera::TranslateCamera, &camera);
 #else
     auto translateCamera = std::bind(&Camera::TranslateCamera, &camera, std::placeholders::_1);
 #endif
 
-    using KeyState = InputManager::KeyState;
     using Direction = Camera::Direction;
-
-#define KEY(k) GLFW_KEY_##k
 
     // Set key bindings
     // TODO: Set in config file
@@ -50,8 +72,10 @@ World::World() {
     im.AddKeyBinding(KEY(D), KeyState::AnyPress, translateCamera(Direction::Right));
     im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, translateCamera(Direction::Up));
     im.AddKeyBinding(KEY(C), KeyState::AnyPress, translateCamera(Direction::Down));
-    im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [&] { window.Close(); });
+    im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [] { Window::GetInstance().Close(); });
     im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&] {
+        PostProcess& fsq = PostProcess::GetInstance();
+
         static bool toggled = false;
         if (toggled) {
             fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl");
@@ -63,6 +87,10 @@ World::World() {
     });
 
     im.AddKeyBinding(KEY(U), KeyState::InitialPress, UIManager::ToggleUI);
+}
+
+std::pair<ShaderProgram&, ShaderProgram&> World::CreateShaders() {
+    Window& window = Window::GetInstance();
 
     ShaderProgram* pCubeShader;
     ShaderProgram* pLightShader;
@@ -76,41 +104,21 @@ World::World() {
         std::exit(EXIT_FAILURE);
     }
 
-    // TODO: Add AssetManager, like TextureManager but for all assets
-    // Compile and link shaders
-    ShaderProgram& cubeShader = *pCubeShader;
-    ShaderProgram& lightShader = *pLightShader;
+    pCubeShader->SetupTextures();
 
-    cubeShader.SetupTextures();
+    return {*pCubeShader, *pLightShader};
+}
 
+void World::CreateGameObjects() {
+    MeshBase& cubeMesh = *meshManager.meshes["cubeMesh"];
+    MeshBase& sphereMesh = *meshManager.meshes["sphereMesh"];
 
-    meshes.push_back(std::make_unique<PlaneMesh>());
-    MeshBase& floorMesh = *meshes.back().get();
-    
-    // TODO: use different format
-    meshes.push_back(std::make_unique<Mesh>("data/cube_irreg.fbx"));
-    MeshBase& mesh = *meshes.back().get();
-    
-    meshes.push_back(std::make_unique<CuboidMesh>());
-    MeshBase& lightMesh = *meshes.back().get();
+    MeshBase& floorMesh = *meshManager.meshes["floorMesh"];
 
-    meshes.push_back(std::make_unique<SphereMesh>());
-    MeshBase& sphereMesh = *meshes.back().get();
-
-    try {
-        texman.AddTextureFromFile("container", "container2.png");
-        texman.AddTextureFromFile("container_specular", "container2_specular.png");
-        texman.AddTextureFromFile("normalmaptest1", "normalmaptest1.png");
-        texman.AddTextureFromFile("puppy", "sample2.png");
-        texman.AddTextureFromFile("gradient", "gradient.png");
-    } catch (const std::runtime_error& e) {
-        std::cerr << e.what() << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-
+    auto [cubeShader, lightShader] = CreateShaders();
 
     // Creates a CubeObject
-    auto go1 = std::make_unique<CubeObject>(mesh, cubeShader, texman);
+    auto go1 = std::make_unique<CubeObject>(cubeMesh, cubeShader, texman);
     go1->SetPosition({0.0f, 25.0f, 0.0f});
     go1->name = "cube1";
     go1->SetCollider<Physics::SimpleCubeCollider>();
@@ -134,12 +142,10 @@ World::World() {
     go4->SetCollider<Physics::SphereCollider>();
     go4->GetCollider().velocity = {2, 10, 0};
 
-    auto go5 = std::make_unique<CubeObject>(mesh, cubeShader, texman);
+    auto go5 = std::make_unique<CubeObject>(cubeMesh, cubeShader, texman);
     go5->SetPosition({5.0f, 5.0f, 0.0f});
     go5->name = "cube2";
     go5->SetCollider<Physics::SimpleCubeCollider>();
-
-    auto& physicsObjects = World::physicsObjects;
 
     physicsObjects.push_back(go1.get());
     physicsObjects.push_back(go2.get());
@@ -147,9 +153,7 @@ World::World() {
     physicsObjects.push_back(go4.get());
     physicsObjects.push_back(go5.get());
 
-    im.AddKeyBinding(KEY(L), KeyState::InitialPress, [ptr = go5.get()] {
-        ptr->ModifyPosition({-1, 0, 0});    
-    });
+    im.AddKeyBinding(KEY(L), KeyState::InitialPress, [ptr = go5.get()] { ptr->ModifyPosition({-1, 0, 0}); });
 
     gameObjects.push_back(std::move(go1));
     gameObjects.push_back(std::move(go2));
@@ -180,28 +184,48 @@ World::World() {
 
     gameObjects.push_back(std::move(floor));
     gameObjects.push_back(std::move(floor2));
+}
 
+void World::CreateMeshes() {
+    meshManager.meshes.emplace("floorMesh", std::make_unique<PlaneMesh>());
+    // TODO: use different format
+    meshManager.meshes.emplace("cubeMesh", std::make_unique<Mesh>("data/cube_irreg.fbx"));
+    meshManager.meshes.emplace("lightMesh", std::make_unique<CuboidMesh>());
+    meshManager.meshes.emplace("sphereMesh", std::make_unique<SphereMesh>());
+}
 
+void World::CreateTextures() {
+    texman.AddTextureFromFile("container", "container2.png");
+    texman.AddTextureFromFile("container_specular", "container2_specular.png");
+    texman.AddTextureFromFile("normalmaptest1", "normalmaptest1.png");
+    texman.AddTextureFromFile("puppy", "sample2.png");
+    texman.AddTextureFromFile("gradient", "gradient.png");
+}
 
+void World::CreateLights() {
     auto pointLight = std::make_unique<PointLight>(vec3{3.0f, 1.0f, 2.0f}, vec3{0.5f}, vec3{1.0f});
     auto pointLight2 = std::make_unique<PointLight>(vec3{-6.0f, 1.0f, -2.0f}, vec3{0.5f}, vec3{1.0f});
-    lights.push_back(std::move(pointLight));
-    lights.push_back(std::move(pointLight2));
 
-    auto dirLight = std::make_unique<DirLight>(vec3{-1.0f, 0.0f, 0.0f}, vec3{3.0f}, vec3{3.0f});
-
-    lights.push_back(std::move(dirLight));
+    auto dirLight = std::make_unique<DirLight>(vec3{-1.0f, -0.25f, 0.0f}, vec3{3.0f}, vec3{3.0f});
 
     auto spotLight = std::make_unique<SpotLight>(vec3{3.0f, 0.75f, 0.0f}, vec3{-1.0f, -0.25f, 0.0f}, vec3{3.0f},
                                                  vec3{3.0f}, glm::cos(glm::radians(15.5f)));
-    lights.push_back(std::move(spotLight));
-
     auto flashlight = std::make_unique<Flashlight>(vec3{-1.0f, -0.25f, 0.0f}, vec3{3.0f}, vec3{3.0f},
-                                                   glm::cos(glm::radians(15.5f)), camera);
-    flashlight->ToggleActive();
+                                                   glm::cos(glm::radians(15.5f)), camera, false);
+
+    lights.push_back(std::move(pointLight));
+    lights.push_back(std::move(pointLight2));
+    lights.push_back(std::move(dirLight));
+    lights.push_back(std::move(spotLight));
     lights.push_back(std::move(flashlight));
 
-    std::size_t flashlight_idx = lights.size() - 1;
+    im.AddKeyBinding(KEY(F), KeyState::InitialPress, [&fl = lights.back()] { fl->ToggleActive(); });
+}
+
+void World::CreateLightObjects() {
+    MeshBase& lightMesh = *meshManager.meshes["lightMesh"];
+
+    auto [cubeShader, lightShader] = CreateShaders();
 
     // TODO: Light objects appear in the wrong place compared to the location of the light
     for (size_t i = 0; i < lights.size(); i++) {
@@ -216,13 +240,6 @@ World::World() {
             lightObjects.push_back(std::move(lo));
         }
     }
-
-    im.AddKeyBinding(KEY(F), KeyState::InitialPress,
-                     [&lights = this->lights, flashlight_idx] { lights[flashlight_idx]->ToggleActive(); });
 }
 
-void World::TickAll() {
-    for (auto& go : gameObjects) {
-        go->Tick();
-    }
-}
+} // namespace GameEngine
