@@ -28,27 +28,16 @@ struct ShaderIdentifier {
     const std::string fragShader;
     const GameEngine::GLVersion version;
 
-#ifdef __cpp_impl_three_way_comparison
-    #ifdef __cpp_lib_constexpr_string
-        #define STRING_CONSTEXPR constexpr
-    #else
-        #define STRING_CONSTEXPR
-    #endif // __cpp_lib_constexpr_string
-    
-    friend STRING_CONSTEXPR inline bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept = default;
-    #undef STRING_CONSTEXPR
+#ifdef __cpp_impl_three_way_comparison    
+    friend bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) = default;
 #else
-    friend inline bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
+    friend bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
         return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
     }
 #endif // __cpp_impl_three_way_comparison
 };
 
-#ifndef __cpp_impl_three_way_comparison
-
-#endif // !__cpp_impl_three_way_comparison
-
-//TODO: Find a better way to combine hashes
+// TODO: Find a better way to combine hashes
 namespace std {
 template <> struct hash<ShaderIdentifier> {
     std::size_t operator()(const ShaderIdentifier& id) const {
