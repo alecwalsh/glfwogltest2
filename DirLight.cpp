@@ -2,8 +2,8 @@
 
 #include "glad/glad.h"
 
-DirLight::DirLight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular) noexcept
-    : Light{diffuse, specular, LightType::Directional}, direction{direction} {}
+DirLight::DirLight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular, bool active) noexcept
+    : Light{diffuse, specular, LightType::Directional, active}, direction{direction} {}
 
 void DirLight::SetUniforms(std::uint32_t program, std::size_t index) {
     auto getLightUniLoc = GetLightUniLocGenerator(program, index);

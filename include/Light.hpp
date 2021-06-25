@@ -29,5 +29,5 @@ class Light {
 
     bool active = true;
     
-    Light(glm::vec3 diffuse, glm::vec3 specular, LightType type) noexcept;
+    Light(glm::vec3 diffuse, glm::vec3 specular, LightType type, bool active = true) noexcept;
 };

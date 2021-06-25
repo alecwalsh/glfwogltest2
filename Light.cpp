@@ -4,8 +4,8 @@
 
 #include <sstream>
 
-Light::Light(glm::vec3 diffuse, glm::vec3 specular, LightType type) noexcept
-    : type{type}, diffuse{diffuse}, specular{specular} {}
+Light::Light(glm::vec3 diffuse, glm::vec3 specular, LightType type, bool active) noexcept
+    : type{type}, diffuse{diffuse}, specular{specular}, active{active} {}
  
 // Gets the uniform location for light struct members
 GLint Light::GetLightUniLoc(const char* member, std::size_t index, GLuint program) {

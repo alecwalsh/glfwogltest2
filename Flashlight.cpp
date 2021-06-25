@@ -3,8 +3,8 @@
 #include <glad/glad.h>
 
 Flashlight::Flashlight(glm::vec3 direction, glm::vec3 diffuse, glm::vec3 specular, float cutoffAngleCos,
-                       const Camera& camera) noexcept
-    : SpotLight{glm::vec3{0.0f}, direction, diffuse, specular, cutoffAngleCos}, camera{camera} {}
+                       const Camera& camera, bool active) noexcept
+    : SpotLight{{}, direction, diffuse, specular, cutoffAngleCos, active}, camera{camera} {}
 
 void Flashlight::SetUniforms(std::uint32_t program, std::size_t index) {
     auto getLightUniLoc = GetLightUniLocGenerator(program, index);
