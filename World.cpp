@@ -7,7 +7,7 @@
 
 #include "Window.hpp"
 
-#include "Mesh.hpp"
+#include "FileMesh.hpp"
 #include "ProceduralMesh.hpp"
 
 #include "DirLight.hpp"
@@ -189,7 +189,7 @@ void World::CreateGameObjects() {
 void World::CreateMeshes() {
     meshManager.meshes.emplace("floorMesh", std::make_unique<PlaneMesh>());
     // TODO: use different format
-    meshManager.meshes.emplace("cubeMesh", std::make_unique<Mesh>("data/cube_irreg.fbx"));
+    meshManager.meshes.emplace("cubeMesh", std::make_unique<FileMesh>("data/cube_irreg.fbx"));
     meshManager.meshes.emplace("lightMesh", std::make_unique<CuboidMesh>());
     meshManager.meshes.emplace("sphereMesh", std::make_unique<SphereMesh>());
 }

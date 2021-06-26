@@ -1,4 +1,4 @@
-#include "Mesh.hpp"
+#include "FileMesh.hpp"
 
 #include <iostream>
 
@@ -6,10 +6,10 @@
 #include <assimp/postprocess.h> // Post processing flags
 #include <assimp/scene.h>       // Output data structure
 
-Mesh::Mesh(const std::string& fileName) : MeshBase{ImportMesh(fileName)} {}
+FileMesh::FileMesh(const std::string& fileName) : MeshBase{ImportMesh(fileName)} {}
 
 // TODO: .blend files normals are per vertex, not per face; .fbx works fine
-MeshData Mesh::ImportMesh(const std::string& fileName) {
+MeshData FileMesh::ImportMesh(const std::string& fileName) {
     std::vector<MeshData::Vertex> vertices;
     std::vector<std::uint32_t> elements;
     
