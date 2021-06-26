@@ -36,13 +36,8 @@ void MeshBase::UploadToGPU() {
     }
 }
 
-MeshBase::MeshBase(const std::vector<MeshData::Vertex>& vertices) : meshData{vertices} {
-    UploadToGPU();
-}
-
-MeshBase::MeshBase(const std::vector<MeshData::Vertex>& vertices, const std::vector<std::uint32_t>& elements)
-    : meshData{vertices, elements, true} {
-    UploadToGPU();
+MeshBase::MeshBase(MeshData meshData) : meshData{std::move(meshData)} {
+        UploadToGPU();
 }
 
 MeshBase::~MeshBase() {

@@ -6,11 +6,7 @@
 #include <assimp/postprocess.h> // Post processing flags
 #include <assimp/scene.h>       // Output data structure
 
-Mesh::Mesh(const std::string& fileName) {
-    meshData = ImportMesh(fileName);
-
-    UploadToGPU();
-}
+Mesh::Mesh(const std::string& fileName) : MeshBase{ImportMesh(fileName)} {}
 
 // TODO: .blend files normals are per vertex, not per face; .fbx works fine
 MeshData Mesh::ImportMesh(const std::string& fileName) {

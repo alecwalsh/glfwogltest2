@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <vector>
 
-#include <glm/glm.hpp>
-
 class MeshBase {
+    // Generates buffers and uploads data to graphics card
+    void UploadToGPU();
   public:
     MeshData meshData;
 
@@ -16,12 +16,13 @@ class MeshBase {
         std::uint32_t ebo;
     } buffers = {};
 
-    // TODO: copy/move constructors
-    MeshBase() = default;
-    [[nodiscard]] MeshBase(const std::vector<MeshData::Vertex>& vertices);
-    [[nodiscard]] MeshBase(const std::vector<MeshData::Vertex>& vertices, const std::vector<std::uint32_t>& elements);
-    virtual ~MeshBase();
+    [[nodiscard]] MeshBase(MeshData meshData);
 
-    // Generates buffers and uploads data to graphics card
-    void UploadToGPU();
+    [[nodiscard]] MeshBase(const MeshBase& m) = default;
+    [[nodiscard]] MeshBase(MeshBase&& m) = default;
+
+    MeshBase& operator=(const MeshBase& m) = default;
+    MeshBase& operator=(MeshBase&& m) = default;
+
+    virtual ~MeshBase();
 };
