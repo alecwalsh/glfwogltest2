@@ -1,3 +1,5 @@
+#pragma once
+
 #include "MeshData.hpp"
 
 #include <array>
