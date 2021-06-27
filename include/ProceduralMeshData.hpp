@@ -132,8 +132,8 @@ MESHDATA_VECTOR_CONSTEXPR MeshData CreateCuboidMeshData(double xSize, double ySi
     std::vector<MeshData::Vertex> vertices;
     std::vector<std::uint32_t> elements;
 
-    vertices.reserve(36);
-    elements.reserve(24);
+    vertices.reserve(24);
+    elements.reserve(36);
 
     vec3 topRightFront{xSize / 2, ySize / 2, zSize / 2};
 
