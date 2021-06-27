@@ -36,6 +36,13 @@ World::World() {
     CreateMeshes();
 
     try {
+        CreateShaders();
+    } catch (const ShaderError& e) {
+        std::cerr << e.what() << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    try {
         CreateTextures();
     } catch (const std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
@@ -72,16 +79,18 @@ void World::SetupKeyBindings() {
     im.AddKeyBinding(KEY(D), KeyState::AnyPress, translateCamera(Direction::Right));
     im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, translateCamera(Direction::Up));
     im.AddKeyBinding(KEY(C), KeyState::AnyPress, translateCamera(Direction::Down));
+
     im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [] { Window::GetInstance().Close(); });
+    
     im.AddKeyBinding(KEY(R), KeyState::InitialPress, [&] {
         PostProcess& fsq = PostProcess::GetInstance();
 
         static bool toggled = false;
         if (toggled) {
-            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl");
+            fsq.ReloadShader("postprocess_passthrough");
             toggled = false;
         } else {
-            fsq.ReloadShader("shaders/vert_postprocess.glsl", "shaders/frag_postprocess_sobel.glsl");
+            fsq.ReloadShader("postprocess_sobel");
             toggled = true;
         }
     });
@@ -89,24 +98,12 @@ void World::SetupKeyBindings() {
     im.AddKeyBinding(KEY(U), KeyState::InitialPress, UIManager::ToggleUI);
 }
 
-std::pair<ShaderProgram&, ShaderProgram&> World::CreateShaders() {
-    Window& window = Window::GetInstance();
+void World::CreateShaders() {
+    auto glVersion = Window::GetInstance().glVersion;
 
-    ShaderProgram* pCubeShader;
-    ShaderProgram* pLightShader;
-
-    try {
-        pCubeShader = &shaderManager.AddShader({"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", window.glVersion});
-        pLightShader =
-            &shaderManager.AddShader({"shaders/vert_light.glsl", "shaders/frag_light.glsl", window.glVersion});
-    } catch (const ShaderError& e) {
-        std::cerr << e.what() << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    pCubeShader->SetupTextures();
-
-    return {*pCubeShader, *pLightShader};
+    shaderManager.AddShader("cubeShader", {"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", glVersion})
+        .SetupTextures();
+    shaderManager.AddShader("lightShader", {"shaders/vert_light.glsl", "shaders/frag_light.glsl", glVersion});
 }
 
 void World::CreateGameObjects() {
@@ -115,7 +112,7 @@ void World::CreateGameObjects() {
 
     MeshBase& floorMesh = *meshManager.meshes["floorMesh"];
 
-    auto [cubeShader, lightShader] = CreateShaders();
+    auto& cubeShader = shaderManager.FromName("cubeShader");
 
     // Creates a CubeObject
     auto go1 = std::make_unique<CubeObject>(cubeMesh, cubeShader, texman);
@@ -225,7 +222,7 @@ void World::CreateLights() {
 void World::CreateLightObjects() {
     MeshBase& lightMesh = *meshManager.meshes["lightMesh"];
 
-    auto [cubeShader, lightShader] = CreateShaders();
+    auto& lightShader = shaderManager.FromName("lightShader");
 
     // TODO: Light objects appear in the wrong place compared to the location of the light
     for (size_t i = 0; i < lights.size(); i++) {

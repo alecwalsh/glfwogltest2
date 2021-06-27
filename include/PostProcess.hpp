@@ -9,7 +9,7 @@
 class PostProcess {
     ShaderProgram* shaderProgram;
     std::uint32_t vao;
-    struct buffers {
+    struct {
         std::uint32_t vbo;
         std::uint32_t ebo;
     } buffers;
@@ -35,9 +35,7 @@ class PostProcess {
 
     // TODO: Support multiple postprocess effects
     // Replaces the current postprocess shader with a different shader
-    void ReloadShader(ShaderIdentifier id);
-    void ReloadShader(const char* vertShader, const char* fragShader, GameEngine::GLVersion version);
-    void ReloadShader(const char* vertShader, const char* fragShader);
+    void ReloadShader(const std::string& name);
     
     // Resize framebuffer texture and renderbuffer to match the current window size
     void Resize();

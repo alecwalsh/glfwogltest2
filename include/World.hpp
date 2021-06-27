@@ -48,8 +48,7 @@ class World {
     // Calls Tick on all GameObjects
     void TickAll();
 
-    // TODO: Don't return pair of hardcoded shaders
-    std::pair<ShaderProgram&, ShaderProgram&> CreateShaders();
+    void CreateShaders();
     void CreateGameObjects();
     void CreateMeshes();
     void CreateTextures();

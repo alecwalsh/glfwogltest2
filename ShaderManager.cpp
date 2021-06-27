@@ -135,11 +135,27 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
     return *this;
 }
 
-ShaderProgram& ShaderManager::AddShader(const ShaderIdentifier& id) {
+// TODO: Don't compile shader until it is used
+ShaderProgram& ShaderManager::AddShader(std::string name, const ShaderIdentifier& id) {
+    auto nameIter = shaderNameMap.find(name);
+
+    if (nameIter != shaderNameMap.end()) {
+        const auto& newID = nameIter->second;
+
+        if (newID != id) {
+            throw std::runtime_error{"Attempted to reassign shader " + name};
+        }
+
+        return shaderMap.at(newID);
+    }
+
+    shaderNameMap.emplace(std::move(name), id);
+
     auto shaderIter = shaderMap.find(id);
+
     if (shaderIter == shaderMap.end()) {
         // Shader is not already in shaderMap, so add it
-        const auto& [newShaderIter, b] = shaderMap.emplace(id, id);
+        const auto& newShaderIter = shaderMap.emplace(id, id).first;
         return newShaderIter->second;
     }
 
@@ -159,6 +175,10 @@ void ShaderManager::UpdateProjectionMatrix(float width, float height) noexcept {
         GLint uniProj = glGetUniformLocation(sp.shaderProgram, "proj");
         glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
     }
+}
+
+ShaderProgram& ShaderManager::FromName(const std::string& name) { 
+    return shaderMap.at(shaderNameMap.at(name));
 }
 
 void ShaderProgram::SetupTextures() const noexcept {

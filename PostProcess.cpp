@@ -70,13 +70,19 @@ void PostProcess::SetupFramebuffer() {
 }
 
 PostProcess::PostProcess() {
-    shaderProgram =
-        &shaderManager.AddShader({"shaders/vert_postprocess.glsl", "shaders/frag_postprocess_passthrough.glsl",
-                                  Window::GetInstance().glVersion});
+    auto postProcessVert = "shaders/vert_postprocess.glsl";
+    auto glVersion = Window::GetInstance().glVersion;
+
+    shaderProgram = &shaderManager.AddShader("postprocess_passthrough",
+                                             {postProcessVert, "shaders/frag_postprocess_passthrough.glsl", glVersion});
+
+    shaderManager.AddShader("postprocess_sobel", {postProcessVert, "shaders/frag_postprocess_sobel.glsl", glVersion});
+
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    glGenBuffers(2, (GLuint*)&buffers);
+    glGenBuffers(1, &buffers.vbo);
+    glGenBuffers(1, &buffers.ebo);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers.vbo);
     glBufferData(GL_ARRAY_BUFFER, 20 * sizeof(vertices[0]), vertices, GL_STATIC_DRAW);
@@ -99,20 +105,15 @@ PostProcess::PostProcess() {
 
 PostProcess::~PostProcess() {
     glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(2, (GLuint*)&buffers);
+
+    GLuint bufarray[] = {buffers.vbo, buffers.ebo};
+    glDeleteBuffers(2, bufarray);
+
     glDeleteFramebuffers(1, &fbo);
 }
 
-void PostProcess::ReloadShader(ShaderIdentifier id) {
-    shaderProgram = &shaderManager.AddShader(id);
-}
-
-void PostProcess::ReloadShader(const char* vertShader, const char* fragShader, GameEngine::GLVersion version) {
-    ReloadShader({vertShader, fragShader, version});
-}
-
-void PostProcess::ReloadShader(const char* vertShader, const char* fragShader) {
-    ReloadShader(vertShader, fragShader, Window::GetInstance().glVersion);
+void PostProcess::ReloadShader(const std::string& name) {
+    shaderProgram = &shaderManager.FromName(name);
 }
 
 void PostProcess::Resize() {

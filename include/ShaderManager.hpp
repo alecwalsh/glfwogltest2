@@ -86,9 +86,16 @@ class [[nodiscard]] ShaderProgram {
 
 class ShaderManager {
     std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
+    std::unordered_map<std::string, ShaderIdentifier> shaderNameMap;
+
     ShaderManager() = default;
   public:
-    [[nodiscard]] ShaderProgram& AddShader(const ShaderIdentifier& id);
+    ShaderProgram& FromName(const std::string& name);
+
+    // Adds a shader named name using the files specified in id
+    // Calling this function multiple times with the same arguments does nothing
+    // Calling this function with an existing name but a different id throws a runtime_exeption
+    ShaderProgram& AddShader(std::string name, const ShaderIdentifier& id);
 
     [[nodiscard]] static ShaderManager& GetInstance();
     // Deleted to prevent copies
