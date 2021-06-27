@@ -10,6 +10,8 @@ class SphereMesh : public MeshBase {
 
 class CuboidMesh : public MeshBase {
   public:
+    using MeshBase::MeshBase;
+
     CuboidMesh();
     CuboidMesh(double size);
     CuboidMesh(double x, double y, double z);
@@ -17,6 +19,8 @@ class CuboidMesh : public MeshBase {
 
 class PlaneMesh : public MeshBase {
   public:
+    using MeshBase::MeshBase;
+
     PlaneMesh();
     PlaneMesh(double size);
     PlaneMesh(double x, double y);

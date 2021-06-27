@@ -5,7 +5,9 @@
 #include <array>
 #include <utility>
 
-#if __cpp_lib_constexpr_vector >= 201907L
+#ifdef MESHDATA_USE_CONSTEXPR
+#include <ranges>
+
 #define MESHDATA_VECTOR_CONSTEXPR constexpr
 #else
 #define MESHDATA_VECTOR_CONSTEXPR inline
@@ -17,7 +19,6 @@ using std::numbers::pi;
 #else
 constexpr double pi = 3.14159265358979323846;
 #endif
-
 
 // Assumes elements are either clockwise or counterclockwise
 constexpr std::array<std::uint32_t, 6> QuadToTrisElements() noexcept { return {0, 1, 2, 2, 3, 0}; }
@@ -247,7 +248,11 @@ MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double xSize, double ySiz
 
     for (int i = 0; i < 4; i++) {
 #if __cpp_designated_initializers >= 201707L
-        vertices.push_back({.position = verticesArray[i], .normal = normal, .texcoord = texCoords[i]});
+        vertices.push_back({
+            .position = verticesArray[i],
+            .normal = normal,
+            .texcoord = texCoords[i]
+        });
 #else
         vertices.push_back({verticesArray[i], normal, texCoords[i]});
 #endif
@@ -259,3 +264,62 @@ MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double xSize, double ySiz
 MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double size) noexcept { return CreatePlaneMeshData(size, size); }
 
 MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData() noexcept { return CreatePlaneMeshData(1); }
+
+#ifdef MESHDATA_USE_CONSTEXPR
+
+template <std::size_t SubdivisionLevel = 0>
+constexpr auto CreateCuboidMeshDataConstexpr(double xSize, double ySize, double zSize) noexcept {
+    auto meshData = CreateCuboidMeshData(xSize, ySize, zSize);
+
+    constexpr std::size_t VertexCount = 24;
+    constexpr std::size_t ElementCount = 36;
+
+    ConstexprMeshData<VertexCount, ElementCount> result = {
+        .usesElementArray = meshData.usesElementArray
+    };
+
+    std::ranges::copy(meshData.vertices, result.vertices.begin());
+    std::ranges::copy(meshData.elements, result.elements.begin());
+
+    return result;
+}
+
+template <std::size_t SubdivisionLevel = 0>
+constexpr auto CreateCuboidMeshDataConstexpr(double size) noexcept {
+    return CreateCuboidMeshDataConstexpr<SubdivisionLevel>(size, size, size);
+}
+
+template <std::size_t SubdivisionLevel = 0>
+constexpr auto CreateCuboidMeshDataConstexpr() noexcept {
+    return CreateCuboidMeshDataConstexpr<SubdivisionLevel>(1);
+}
+
+
+template <std::size_t SubdivisionLevel = 0>
+constexpr auto CreatePlaneMeshDataConstexpr(double xSize, double ySize) noexcept {
+    auto meshData = CreatePlaneMeshData(xSize, ySize);
+
+    constexpr std::size_t VertexCount = 4;
+    constexpr std::size_t ElementCount = 6;
+
+    ConstexprMeshData<VertexCount, ElementCount> result = {
+        .usesElementArray = meshData.usesElementArray
+    };
+
+    std::ranges::copy(meshData.vertices, result.vertices.begin());
+    std::ranges::copy(meshData.elements, result.elements.begin());
+
+    return result;
+}
+
+template <std::size_t SubdivisionLevel = 0>
+constexpr auto CreatePlaneMeshDataConstexpr(double size) noexcept {
+    return CreatePlaneMeshDataConstexpr<SubdivisionLevel>(size, size);
+}
+
+template <std::size_t SubdivisionLevel = 0>
+constexpr auto CreatePlaneMeshDataConstexpr() noexcept {
+    return CreatePlaneMeshDataConstexpr<SubdivisionLevel>(1);
+}
+
+#endif

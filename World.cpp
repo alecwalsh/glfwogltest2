@@ -10,6 +10,10 @@
 #include "FileMesh.hpp"
 #include "ProceduralMesh.hpp"
 
+#ifdef MESHDATA_USE_CONSTEXPR
+#include "ProceduralMeshData.hpp"
+#endif
+
 #include "DirLight.hpp"
 #include "Flashlight.hpp"
 #include "PointLight.hpp"
@@ -184,10 +188,21 @@ void World::CreateGameObjects() {
 }
 
 void World::CreateMeshes() {
-    meshManager.meshes.emplace("floorMesh", std::make_unique<PlaneMesh>());
+#ifdef MESHDATA_USE_CONSTEXPR
+    constexpr auto cubeMeshData = CreateCuboidMeshDataConstexpr();
+    constexpr auto planeMeshData = CreatePlaneMeshDataConstexpr();
+
+    auto cubeMesh = std::make_unique<CuboidMesh>(cubeMeshData);
+    auto planeMesh = std::make_unique<PlaneMesh>(planeMeshData);
+#else
+    auto cubeMesh = std::make_unique<CuboidMesh>();
+    auto planeMesh = std::make_unique<PlaneMesh>();
+#endif
+
+    meshManager.meshes.emplace("floorMesh", std::move(planeMesh));
     // TODO: use different format
     meshManager.meshes.emplace("cubeMesh", std::make_unique<FileMesh>("data/cube_irreg.fbx"));
-    meshManager.meshes.emplace("lightMesh", std::make_unique<CuboidMesh>());
+    meshManager.meshes.emplace("lightMesh", std::move(cubeMesh));
     meshManager.meshes.emplace("sphereMesh", std::make_unique<SphereMesh>());
 }
 

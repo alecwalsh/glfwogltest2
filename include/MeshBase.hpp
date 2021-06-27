@@ -18,6 +18,11 @@ class MeshBase {
 
     [[nodiscard]] MeshBase(MeshData meshData);
 
+#ifdef MESHDATA_USE_CONSTEXPR
+    template <std::size_t I, std::size_t J>
+    [[nodiscard]] MeshBase(ConstexprMeshData<I, J> meshData) : MeshBase{FromConstexpr(meshData)} {}
+#endif
+
     [[nodiscard]] MeshBase(const MeshBase& m) = default;
     [[nodiscard]] MeshBase(MeshBase&& m) = default;
 
