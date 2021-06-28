@@ -14,18 +14,17 @@ ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
 GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile) {
     using std::to_string;
 
-    // std::string version = "#version 300 es\n";
-    std::string version_string = "#version ";
-    version_string += to_string(version.major) + to_string(version.minor) + '0';
-    version_string += version.is_gles ? " es" : "";
-    version_string += '\n';
+    std::string versionString = "#version ";
+    versionString += to_string(version.major) + to_string(version.minor) + '0';
+    versionString += version.is_gles ? " es" : " core";
+    versionString += '\n';
 
-    auto getSource = [version_string](auto shaderFile) {
-        std::ifstream shader_file;
-        shader_file.open(shaderFile);
+    auto getSource = [versionString](auto shaderFileName) {
+        std::ifstream shaderFile;
+        shaderFile.open(shaderFileName);
 
         std::stringstream buffer;
-        buffer << version_string << shader_file.rdbuf();
+        buffer << versionString << shaderFile.rdbuf();
 
         return buffer.str();
     };
