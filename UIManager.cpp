@@ -107,13 +107,17 @@ void UIManager::Initialize() {
 }
 
 void UIManager::Destroy() {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    if (initialized) {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+
+        initialized = false;
+    }
 }
 
 UIManager::~UIManager() {
-    if (initialized) Destroy(); // Don't destroy the context if it hasn't been initialized
+    Destroy();
 }
 
 void UIManager::ToggleUI() noexcept {
