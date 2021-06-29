@@ -9,6 +9,36 @@
 #include <cassert>
 #include <iostream>
 
+#include <unordered_set>
+#include <string_view>
+
+// glGetString returns UTF-8 encoded strings
+// Use char8_t if available
+using GLCharType = decltype(u8' ');
+
+static std::unordered_set<std::basic_string_view<GLCharType>> GetGLExtensions() {
+    GLint numExtensions;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+
+    std::unordered_set<std::basic_string_view<GLCharType>> extensions;
+
+    extensions.reserve(numExtensions);
+
+    for (int i = 0; i < numExtensions; i++) {
+        // Reading from a char* through a char8_t* is technically undefined behavior
+        // This seems to work, though, and memcpy won't let us use a string_view
+
+        extensions.emplace(reinterpret_cast<const GLCharType*>(glGetStringi(GL_EXTENSIONS, i)));
+    }
+
+    return extensions;
+}
+
+bool Window::SupportsGLExtension(std::basic_string_view<GLCharType> str) {
+    auto extensions = GetGLExtensions();
+    return extensions.find(str) != extensions.end();
+}
+
 void Window::FramebufferSizeCallback([[maybe_unused]] GLFWwindow* glfwwindow, int width, int height) noexcept {
     glViewport(0, 0, width, height);
 
@@ -83,7 +113,6 @@ void Window::LoadGL() {
         throw WindowError{"Error loading OpenGL function"};
     }
 }
-
 
 Window::~Window() {
     glfwTerminate();

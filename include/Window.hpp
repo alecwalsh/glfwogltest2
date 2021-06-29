@@ -7,6 +7,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <string_view>
+
 class WindowError : public std::runtime_error {
     using std::runtime_error::runtime_error;
 };
@@ -40,6 +42,10 @@ class Window {
     void Destroy() noexcept;
 
     void LoadGL();
+
+    // Use char8_t if available
+    using GLCharType = decltype(u8' ');
+    bool SupportsGLExtension(std::basic_string_view<GLCharType> str);
 
     void Resize(int width, int height) noexcept;
 
