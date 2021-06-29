@@ -1,11 +1,13 @@
 #include "Camera.hpp"
 
+#include "World.hpp"
+#include "InputManager.hpp"
+
 #include <cmath>
+#include <algorithm>
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "CubeObject.hpp"
-#include "World.hpp"
 
 static Physics::SimplePlaneCollider floorCollider = {0};
 
@@ -16,6 +18,18 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) 
     // Set the front, right, up, etc vectors to their initial values
     UpdateVectors(target - position, up);
     UpdateViewMatrix();
+
+    // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
+    // for the first time
+    // This is just the inverse of the code in Camera::Rotate
+    const auto& cf = vectors.front;
+
+    pitch = glm::degrees(asin(cf.y));
+    yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
+
+    if (cf.z < 0) {
+        yaw = -yaw;
+    }
 }
 
 void Camera::SetPosition(glm::vec3 position) {
@@ -38,7 +52,7 @@ void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept {
     vectors.left = -vectors.right;
 }
 
-void Camera::Rotate(double pitch, double yaw) noexcept {
+void Camera::Rotate() noexcept {
     double x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     double y = sin(glm::radians(pitch));
     double z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -47,7 +61,21 @@ void Camera::Rotate(double pitch, double yaw) noexcept {
     UpdateViewMatrix();
 }
 
+void Camera::CalculatePitchAndYaw(double deltaX, double deltaY) noexcept {
+    yaw -= deltaX * xSensitivity;
+    pitch += deltaY * ySensitivity;
+
+    pitch = std::clamp(pitch, minPitch, maxPitch);
+
+    Rotate();
+}
+
 void Camera::Tick() {
+    if (InputManager::mouseMoved) {
+        auto& im = InputManager::GetInstance();
+        CalculatePitchAndYaw(im.deltaX, im.deltaY);
+    }
+
     // TODO: This sets collider.position, then SetPosition sets collider.position again, redundantly
     collider.ApplyCollision(floorCollider);
     SetPosition(collider.position);

@@ -3,11 +3,8 @@
 #include "Window.hpp"
 
 #include <iostream>
-#include <algorithm>
 
 #include <imgui/imgui.h>
-
-extern double yaw, pitch;
 
 void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
     [[maybe_unused]] int mode) noexcept {
@@ -34,35 +31,31 @@ void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[m
 }
 
 // TODO: Mouse callback gets called when maximizing and restoring window, causing the camera to jump
-void InputManager::MouseCallback([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) noexcept {
+void InputManager::MouseCallback([[maybe_unused]] GLFWwindow* window, double xPos, double yPos) noexcept {
     double& lastX = Window::GetInstance().lastX;
     double& lastY = Window::GetInstance().lastY;
 
-    if(InputManager::GetInstance().mouseEnabled) {
+    auto& im = InputManager::GetInstance();
+
+    if(im.mouseEnabled) {
         InputManager::mouseMoved = true;
         if(InputManager::firstMouse) {
-            lastX = xpos;
-            lastY = ypos;
+            lastX = xPos;
+            lastY = yPos;
             firstMouse = false;
         }
 
-        float xSensitivity = 0.2f;
-        float ySensitivity = 0.2f;
+        im.deltaX = lastX - xPos;
+        im.deltaY = lastY - yPos;
 
-        auto deltaX = lastX - xpos;
-        auto deltaY = lastY - ypos;
-
-        lastX = xpos;
-        lastY = ypos;
-
-        yaw -= deltaX * xSensitivity;
-        pitch += deltaY * ySensitivity;
-
-        pitch = std::clamp(pitch, InputManager::min_pitch, InputManager::max_pitch);
+        lastX = xPos;
+        lastY = yPos;
     }
 }
 
 void InputManager::HandleInput() noexcept {
+    InputManager::mouseMoved = false;
+
     glfwPollEvents();
 
     for (const auto& [keycode, desired_state, func] : keyBindings) {

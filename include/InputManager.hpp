@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 // TODO: Allow events to fire on key release
@@ -14,6 +15,9 @@
 // TODO: Input key as string, eg AddKeyBinding("Ctrl-A", []{})
 class InputManager {
   public:
+    // The mouse movement during the last frame
+    double deltaX, deltaY;
+
     using Keycode = int;
 
     enum class KeyState : std::uint8_t { NotPressed, InitialPress, RepeatPress, AnyPress };
@@ -23,10 +27,7 @@ class InputManager {
     static inline bool firstMouse = true;
 
     static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) noexcept;
-    static void MouseCallback(GLFWwindow* window, double xpos, double ypos) noexcept;
-
-    static inline double min_pitch = -89.0;
-    static inline double max_pitch = 89.0;
+    static void MouseCallback(GLFWwindow* window, double xPos, double yPos) noexcept;
 
     template <typename F> void AddKeyBinding(InputManager::Keycode key, KeyState state, F&& f) {
         keyBindings.emplace_back(key, state, std::forward<F>(f));

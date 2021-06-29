@@ -20,9 +20,6 @@
 
 #include "version.hpp"
 
-// TODO: figure out where to put these, avoid extern in other files
-double yaw, pitch;
-
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
 void render(const RenderableObject& go, const vec_uniq<Light>& lights, const Camera& camera);
@@ -56,18 +53,6 @@ int main() {
 
     GameEngine::World world;
 
-    // Sets pitch and yaw based on the cameraFront vector;  this prevents the camera from jumping when moving the mouse
-    // for the first time
-    // This is just the inverse of the code in Camera::Rotate
-    const auto& cf = world.camera.vectors.front;
-
-    pitch = glm::degrees(asin(cf.y));
-    yaw = glm::degrees(acos(cf.x / cos(asin(cf.y))));
-
-    if (cf.z < 0) {
-        yaw = -yaw;
-    }
-
     TimeManagerShim tms{timeManager.elapsedTime, timeManager.deltaTime};
     Physics::timeManager = &tms;
 
@@ -93,11 +78,6 @@ int main() {
         }
 
         im.HandleInput();
-
-        if (InputManager::mouseMoved) {
-            InputManager::mouseMoved = false;
-            world.camera.Rotate(pitch, yaw);
-        }
 
         // Clear the screen to black
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

@@ -15,6 +15,15 @@ class Camera : public GameObject {
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept;
 
     Physics::SimpleCubeCollider collider = {{}, {1.75, 3, 1.75}, {}};
+
+    double xSensitivity = 0.2f;
+    double ySensitivity = 0.2f;
+
+    double minPitch = -89.0;
+    double maxPitch = 89.0;
+
+    double pitch;
+    double yaw;
   public:
     Camera(glm::vec3 position, glm::vec3 target,
         float speed = 1.0f,
@@ -26,7 +35,10 @@ class Camera : public GameObject {
 
     void SetPosition(glm::vec3 position) override;
 
-    void Rotate(double pitch, double yaw) noexcept;
+    void Rotate() noexcept;
+
+    // Takes the mouse movement during the last frame and translates it into pitch and yaw
+    void CalculatePitchAndYaw(double deltaX, double deltaY) noexcept;
 
     glm::mat4 viewMat{1.0f};
 
