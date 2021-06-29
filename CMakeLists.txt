@@ -29,7 +29,7 @@ target_compile_features(glfwogltest2 PUBLIC c_std_11 cxx_std_17)
 
 target_include_directories(glfwogltest2 PUBLIC "include" "external")
 
-target_link_libraries(glfwogltest2 PRIVATE glm::glm glfw assimp::assimp glfwogltest2_physics)
+target_link_libraries(glfwogltest2 PRIVATE ${CMAKE_DL_LIBS} glm::glm glfw assimp::assimp glfwogltest2_physics)
 
 if(UNIX)
     target_link_libraries(glfwogltest2 PRIVATE stdc++fs) # Need to link with stdc++fs for std::filesystem support on some older compilers
