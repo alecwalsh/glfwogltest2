@@ -10,9 +10,11 @@ RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram,
     : mesh{mesh}, texman{texman}, shaderProgram{shaderProgram} {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.buffers.vbo);
+
+    mesh.buffers.vbo.Bind(GL_ARRAY_BUFFER);
+    
     if (mesh.meshData.usesElementArray) {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.buffers.ebo);
+        mesh.buffers.ebo.Bind(GL_ELEMENT_ARRAY_BUFFER);
     }
 
     shaderProgram.UseProgram();
