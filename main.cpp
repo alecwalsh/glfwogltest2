@@ -84,16 +84,8 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Call Tick on everything
-
-        world.camera.Tick();
-        // Call Tick on all GameObjects
         world.TickAll();
 
-        // Call Tick on all of the lights
-        for (auto& lo : world.lightObjects) {
-            lo->Tick();
-            render(*lo, world.lights, world.camera);
-        }
 
         // Now render everything
 

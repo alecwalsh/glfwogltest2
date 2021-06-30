@@ -61,8 +61,17 @@ World::World() {
 }
 
 void World::TickAll() {
+    // Call Tick on the camera
+    camera.Tick();
+
+    // Call Tick on all GameObjects
     for (auto& go : gameObjects) {
         go->Tick();
+    }
+
+    // Call Tick on all of the lights
+    for (auto& lo : lightObjects) {
+        lo->Tick();
     }
 }
 
@@ -191,7 +200,7 @@ void World::CreateMeshes() {
 #ifdef MESHDATA_USE_CONSTEXPR
     constexpr auto cubeMeshData = CreateCuboidMeshDataConstexpr();
     constexpr auto planeMeshData = CreatePlaneMeshDataConstexpr();
-
+    
     auto cubeMesh = std::make_unique<CuboidMesh>(cubeMeshData);
     auto planeMesh = std::make_unique<PlaneMesh>(planeMeshData);
 #else

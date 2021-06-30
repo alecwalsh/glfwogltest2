@@ -45,7 +45,7 @@ class World {
 
     World();
 
-    // Calls Tick on all GameObjects
+    // Calls Tick on all GameObjects, LightObjects, and the camera
     void TickAll();
 
     void CreateShaders();
