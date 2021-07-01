@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <utility>
 
 ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
     : version{id.version}, shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
@@ -121,15 +122,22 @@ ShaderProgram::~ShaderProgram() {
     glDeleteProgram(shaderProgram);
 }
 
+void swap(ShaderProgram& sp1, ShaderProgram& sp2) noexcept {
+    using std::swap;
+
+    swap(sp1.version, sp2.version);
+    swap(sp1.shaderProgram, sp2.shaderProgram);
+}
+
 ShaderProgram::ShaderProgram(ShaderProgram&& sp) noexcept {
     *this = std::move(sp);
 }
 
-// Move constructor and assignment need to set shaderProgram to 0
 ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
-    shaderProgram = std::move(sp.shaderProgram);
-    sp.shaderProgram = 0;
-    version = std::move(sp.version);
+    if (this != &sp) {
+        using std::swap;
+        swap(*this, sp);
+    }
     
     return *this;
 }

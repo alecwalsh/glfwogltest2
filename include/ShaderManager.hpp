@@ -63,13 +63,15 @@ class [[nodiscard]] ShaderProgram {
     [[nodiscard]] std::uint32_t ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
     std::optional<std::string> GetCompileErrors(std::uint32_t shader);
     std::optional<std::string> GetLinkErrors(std::uint32_t shaderProgram);
-    GameEngine::GLVersion version;
 
-    // Move constructor and assignment need to set shaderProgram to 0
+    GameEngine::GLVersion version = {};
+
+    friend void swap(ShaderProgram& sp1, ShaderProgram& sp2) noexcept;
+
     [[nodiscard]] ShaderProgram(ShaderProgram&& sp) noexcept;
     ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
   public:
-    std::uint32_t shaderProgram;
+    std::uint32_t shaderProgram = 0;
 
     void SetupTextures() const noexcept;
     // Calls glUseProgram
