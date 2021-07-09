@@ -8,25 +8,45 @@
 
 void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
     [[maybe_unused]] int mods) noexcept {
-    if (InputManager::GetInstance().keyboardEnabled ||
-        key == GLFW_KEY_U && !ImGui::GetIO().WantCaptureKeyboard) { // TODO: Don't hardcode key to hide UI
-        auto& keyStates = InputManager::GetInstance().keyStates;
+    // Don't want to use -1 as an array index
+    if (key == GLFW_KEY_UNKNOWN) {
+        std::cerr << "Unknown key pressed" << std::endl;
+        return;
+    }
 
-        // Don't want to use -1 as an array index
-        if (key == GLFW_KEY_UNKNOWN) {
-            std::cerr << "Unknown key pressed" << std::endl;
-            return;
-        }
+    auto& im = InputManager::GetInstance();
 
-        if (action == GLFW_PRESS) {
-            if (keyStates[key] == KeyState::NotPressed) {
-                keyStates[key] = KeyState::InitialPress;
-            } else {
-                keyStates[key] = KeyState::RepeatPress;
-            }
-        } else if (action == GLFW_RELEASE) {
-            keyStates[key] = KeyState::NotPressed;
+    Keycode hideUIKey = im.hideUIKey;
+
+    bool shouldProcess = false;
+
+    if (im.keyboardEnabled) {
+        // If the keyboard is enabled, process the key press
+        shouldProcess = true;
+    } else {
+        // If the keyboard is disabled and a text box is active, then the key press is consumed by the text box
+        // However, if the keyboard is disabled, no text box is enabled, and the key is the Hide UI button,
+        // then the key press should be processed like normal
+        if (key == hideUIKey && !ImGui::GetIO().WantCaptureKeyboard) {
+            shouldProcess = true;
         }
+    }
+
+    // Return early if we aren't processing the key press
+    if (!shouldProcess) return;
+
+
+    // Now we can process the key press
+    auto& keyStates = im.keyStates;
+
+    if (action == GLFW_PRESS) {
+        if (keyStates[key] == KeyState::NotPressed) {
+            keyStates[key] = KeyState::InitialPress;
+        } else {
+            keyStates[key] = KeyState::RepeatPress;
+        }
+    } else if (action == GLFW_RELEASE) {
+        keyStates[key] = KeyState::NotPressed;
     }
 }
 

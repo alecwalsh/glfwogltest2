@@ -21,6 +21,8 @@ class InputManager {
     using Keycode = int;
     using MouseButton = int;
 
+    Keycode hideUIKey = GLFW_KEY_UNKNOWN;
+
     enum class KeyState : std::uint8_t { NotPressed, InitialPress, RepeatPress, AnyPress };
 
     std::array<KeyState, GLFW_KEY_LAST> keyStates;

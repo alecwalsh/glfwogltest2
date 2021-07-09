@@ -108,7 +108,8 @@ void World::SetupKeyBindings() {
         }
     });
 
-    im.AddKeyBinding(KEY(U), KeyState::InitialPress, UIManager::ToggleUI);
+    im.hideUIKey = KEY(U);
+    im.AddKeyBinding(im.hideUIKey, KeyState::InitialPress, UIManager::ToggleUI);
 }
 
 void World::CreateShaders() {
