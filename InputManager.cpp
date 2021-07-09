@@ -7,10 +7,10 @@
 #include <imgui/imgui.h>
 
 void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action,
-    [[maybe_unused]] int mode) noexcept {
+    [[maybe_unused]] int mods) noexcept {
     if (InputManager::GetInstance().keyboardEnabled ||
         key == GLFW_KEY_U && !ImGui::GetIO().WantCaptureKeyboard) { // TODO: Don't hardcode key to hide UI
-        auto& keystates = InputManager::keystates;
+        auto& keyStates = InputManager::GetInstance().keyStates;
 
         // Don't want to use -1 as an array index
         if (key == GLFW_KEY_UNKNOWN) {
@@ -19,14 +19,28 @@ void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[m
         }
 
         if (action == GLFW_PRESS) {
-            if (keystates[key] == KeyState::NotPressed) {
-                keystates[key] = KeyState::InitialPress;
+            if (keyStates[key] == KeyState::NotPressed) {
+                keyStates[key] = KeyState::InitialPress;
             } else {
-                keystates[key] = KeyState::RepeatPress;
+                keyStates[key] = KeyState::RepeatPress;
             }
         } else if (action == GLFW_RELEASE) {
-            keystates[key] = KeyState::NotPressed;
+            keyStates[key] = KeyState::NotPressed;
         }
+    }
+}
+
+void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) noexcept {
+    auto& mouseButtonStates = InputManager::GetInstance().mouseButtonStates;
+
+    if (action == GLFW_PRESS) {
+        if (mouseButtonStates[button] == KeyState::NotPressed) {
+            mouseButtonStates[button] = KeyState::InitialPress;
+        } else {
+            mouseButtonStates[button] = KeyState::RepeatPress;
+        }
+    } else if (action == GLFW_RELEASE) {
+        mouseButtonStates[button] = KeyState::NotPressed;
     }
 }
 
@@ -53,13 +67,13 @@ void InputManager::MouseCallback([[maybe_unused]] GLFWwindow* window, double xPo
     }
 }
 
-void InputManager::HandleInput() noexcept {
-    InputManager::mouseMoved = false;
+// Handles mouse or keyboard input, depending on the arguments
+template<typename T, typename U>
+static auto HandleInputGeneric(const T& bindings, U& states) {
+    using KeyState = InputManager::KeyState;
 
-    glfwPollEvents();
-
-    for (const auto& [keycode, desired_state, func] : keyBindings) {
-        auto& current_state = keystates[keycode];
+    for (const auto& [keycode, desired_state, func] : bindings) {
+        auto& current_state = states[keycode];
         if (desired_state == KeyState::AnyPress) {
             if (current_state == KeyState::InitialPress || current_state == KeyState::RepeatPress) {
                 func();
@@ -72,6 +86,18 @@ void InputManager::HandleInput() noexcept {
             current_state = KeyState::RepeatPress;
         }
     }
+}
+
+void InputManager::HandleInput() noexcept {
+    InputManager::mouseMoved = false;
+
+    glfwPollEvents();
+
+    // Handle keyboard keys
+    HandleInputGeneric(keyBindings, keyStates);
+
+    // Handle mouse buttons
+    HandleInputGeneric(mouseButtonBindings, mouseButtonStates);
 }
 
 void InputManager::DisableMouseInput() noexcept { mouseEnabled = false; }

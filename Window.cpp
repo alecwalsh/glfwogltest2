@@ -88,6 +88,7 @@ void Window::Create() {
 
     glfwSetKeyCallback(window, InputManager::KeyCallback);
     glfwSetCursorPosCallback(window, InputManager::MouseCallback);
+    glfwSetMouseButtonCallback(window, InputManager::MouseButtonCallback);
     glfwSetFramebufferSizeCallback(window, Window::FramebufferSizeCallback);
 
     lastX = width / 2.0f;

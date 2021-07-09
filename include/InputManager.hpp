@@ -19,18 +19,25 @@ class InputManager {
     double deltaX, deltaY;
 
     using Keycode = int;
+    using MouseButton = int;
 
     enum class KeyState : std::uint8_t { NotPressed, InitialPress, RepeatPress, AnyPress };
 
-    static inline std::array<KeyState, GLFW_KEY_LAST> keystates;
+    std::array<KeyState, GLFW_KEY_LAST> keyStates;
+    std::array<KeyState, GLFW_MOUSE_BUTTON_LAST> mouseButtonStates;
     static inline bool mouseMoved = false;
     static inline bool firstMouse = true;
 
-    static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) noexcept;
+    static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
+    static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) noexcept;
     static void MouseCallback(GLFWwindow* window, double xPos, double yPos) noexcept;
 
     template <typename F> void AddKeyBinding(InputManager::Keycode key, KeyState state, F&& f) {
         keyBindings.emplace_back(key, state, std::forward<F>(f));
+    }
+
+    template <typename F> void AddMouseButtonBinding(MouseButton button, KeyState state, F&& f) {
+        mouseButtonBindings.emplace_back(button, state, std::forward<F>(f));
     }
 
     void HandleInput() noexcept;
@@ -57,4 +64,5 @@ class InputManager {
     bool keyboardEnabled = true;
 
     std::vector<std::tuple<Keycode, KeyState, std::function<void()>>> keyBindings;
+    std::vector<std::tuple<MouseButton, KeyState, std::function<void()>>> mouseButtonBindings;
 };
