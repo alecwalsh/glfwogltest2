@@ -12,30 +12,26 @@
 #include <unordered_set>
 #include <string_view>
 
-// glGetString returns UTF-8 encoded strings
-// Use char8_t if available
-using GLCharType = decltype(u8' ');
-
-static std::unordered_set<std::basic_string_view<GLCharType>> GetGLExtensions() {
+static std::unordered_set<std::string_view> GetGLExtensions() {
     GLint numExtensions;
     glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
 
-    std::unordered_set<std::basic_string_view<GLCharType>> extensions;
+    std::unordered_set<std::string_view> extensions;
 
     extensions.reserve(numExtensions);
 
     for (int i = 0; i < numExtensions; i++) {
-        // Reading from a char* through a char8_t* is technically undefined behavior
-        // This seems to work, though, and memcpy won't let us use a string_view
-
-        extensions.emplace(reinterpret_cast<const GLCharType*>(glGetStringi(GL_EXTENSIONS, i)));
+        extensions.emplace(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
     }
 
     return extensions;
 }
 
-bool Window::SupportsGLExtension(std::basic_string_view<GLCharType> str) {
-    auto extensions = GetGLExtensions();
+bool Window::SupportsGLExtension(std::string_view str) {    
+    static const auto extensions = GetGLExtensions();
+
+    // TODO: Use C++20 contains method
+    // return extensions.contains(str);
     return extensions.find(str) != extensions.end();
 }
 

@@ -43,9 +43,16 @@ class Window {
 
     void LoadGL();
 
-    // Use char8_t if available
-    using GLCharType = decltype(u8' ');
-    bool SupportsGLExtension(std::basic_string_view<GLCharType> str);
+    bool SupportsGLExtension(std::string_view str);
+#if __cpp_lib_char8_t >= 201907L
+    // glGetString returns UTF-8 encoded strings
+    // Support char8_t if available
+    bool SupportsGLExtension(std::u8string_view str) {
+        return SupportsGLExtension(
+            reinterpret_cast<const char*>(str.data())
+        );
+    }
+#endif
 
     void Resize(int width, int height) noexcept;
 
