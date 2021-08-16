@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ShaderManager.hpp"
+#include "GLBuffer.hpp"
 
 #include <cstdint>
 
@@ -10,8 +11,8 @@ class PostProcess {
     ShaderProgram* shaderProgram;
     std::uint32_t vao;
     struct {
-        std::uint32_t vbo;
-        std::uint32_t ebo;
+        GLBuffer vbo;
+        GLBuffer ebo;
     } buffers;
     std::uint32_t fbo;
     std::uint32_t rbo; // Renderbuffer for depth attachment

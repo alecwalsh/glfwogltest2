@@ -81,13 +81,13 @@ PostProcess::PostProcess() {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    glGenBuffers(1, &buffers.vbo);
-    glGenBuffers(1, &buffers.ebo);
+    buffers.vbo.GenBuffer();
+    buffers.ebo.GenBuffer();
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.vbo);
+    buffers.vbo.Bind(GL_ARRAY_BUFFER);
     glBufferData(GL_ARRAY_BUFFER, 20 * sizeof(vertices[0]), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers.ebo);
+    buffers.ebo.Bind(GL_ELEMENT_ARRAY_BUFFER);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(elements[0]), elements, GL_STATIC_DRAW);
 
     GLint posAttrib = VertexShaderAttribute::position;
@@ -105,10 +105,7 @@ PostProcess::PostProcess() {
 
 PostProcess::~PostProcess() {
     glDeleteVertexArrays(1, &vao);
-
-    GLuint bufarray[] = {buffers.vbo, buffers.ebo};
-    glDeleteBuffers(2, bufarray);
-
+    glDeleteRenderbuffers(1, &rbo);
     glDeleteFramebuffers(1, &fbo);
 }
 
