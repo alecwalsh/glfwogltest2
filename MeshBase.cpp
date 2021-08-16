@@ -5,7 +5,6 @@
 #include <iostream>
 #include <limits>
 #include <cstdlib>
-#include <stdexcept>
 
 // Generates buffers and uploads data to graphics card
 void MeshBase::UploadToGPU() {
@@ -41,37 +40,4 @@ void MeshBase::UploadToGPU() {
 
 MeshBase::MeshBase(MeshData meshData) : meshData{std::move(meshData)} {
         UploadToGPU();
-}
-
-void swap(GLBuffer& b1, GLBuffer& b2) noexcept {
-    using std::swap;
-
-    swap(b1.id, b2.id);
-}
-
-[[nodiscard]] GLBuffer::GLBuffer(GLBuffer&& b) noexcept {
-    *this = std::move(b);
-}
-
-GLBuffer& GLBuffer::operator=(GLBuffer&& b) noexcept {
-    if (this != &b) {
-        using std::swap;
-        swap(*this, b);
-    }
-
-    return *this;
-}
-
-GLBuffer::~GLBuffer() {
-    std::cout << "Deleting buffer " << id << std::endl;
-    glDeleteBuffers(1, &id);
-}
-
-void GLBuffer::Bind(std::uint32_t target) { glBindBuffer(target, id); }
-
-void GLBuffer::GenBuffer() { 
-    if (id != 0) {
-        throw std::runtime_error{"Buffer has already been generated"};
-    }
-    glGenBuffers(1, &id);
 }

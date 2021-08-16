@@ -2,28 +2,10 @@
 
 #include "MeshData.hpp"
 
-#include <cstdint>
+#include "GLBuffer.hpp"
+
+#include <cstddef>
 #include <vector>
-
-class GLBuffer {
-    std::uint32_t id = 0;
-  public:
-    friend void swap(GLBuffer& b1, GLBuffer& b2) noexcept;
-
-    GLBuffer() = default;
-
-    // OpenGL objects don't support copying
-    GLBuffer(const GLBuffer&) = delete;
-    GLBuffer& operator=(const GLBuffer&) = delete;
-
-    [[nodiscard]] GLBuffer(GLBuffer&& b) noexcept;
-    GLBuffer& operator=(GLBuffer&& b) noexcept;
-
-    ~GLBuffer();
-
-    void GenBuffer();
-    void Bind(std::uint32_t target);
-};
 
 class MeshBase {
     // Generates buffers and uploads data to graphics card
