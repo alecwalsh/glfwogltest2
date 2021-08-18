@@ -5,10 +5,7 @@
 #include <Physics/Collision.hpp>
 
 #include <memory>
-
-#if __cpp_concepts >= 201907L
 #include <concepts>
-#endif
 
 class CubeObject : public RenderableObject {
     glm::vec3 size = {1, 1, 1};
@@ -31,11 +28,7 @@ class CubeObject : public RenderableObject {
     Physics::Collider& GetCollider();
     void SetCollider(std::unique_ptr<Physics::Collider> collider);
 
-    #if __cpp_concepts >= 201907L
     template <std::derived_from<Physics::Collider> T>
-    #else
-    template <typename T>
-    #endif
     void SetCollider() {
         if constexpr (std::is_same_v<T, Physics::SphereCollider>) {
             collider = std::make_unique<T>(position, size.x, glm::vec3{});

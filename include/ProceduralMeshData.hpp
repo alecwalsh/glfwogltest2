@@ -4,6 +4,7 @@
 
 #include <array>
 #include <utility>
+#include <numbers>
 
 #ifdef MESHDATA_USE_CONSTEXPR
 #include <ranges>
@@ -11,13 +12,6 @@
 #define MESHDATA_VECTOR_CONSTEXPR constexpr
 #else
 #define MESHDATA_VECTOR_CONSTEXPR inline
-#endif
-
-#ifdef __cpp_lib_math_constants
-#include <numbers>
-using std::numbers::pi;
-#else
-constexpr double pi = 3.14159265358979323846;
 #endif
 
 // Assumes elements are either clockwise or counterclockwise
@@ -45,6 +39,7 @@ inline glm::vec3 SphericalToCartesian(double r, double theta, double phi) noexce
 
 inline MeshData CreateSphereMeshData(double radius) noexcept { // TODO: Generate UV coordinates
     using glm::vec3;
+    using std::numbers::pi;
 
     std::vector<MeshData::Vertex> vertices;
     std::vector<std::uint32_t> elements;
@@ -247,15 +242,11 @@ MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double xSize, double ySiz
     };
 
     for (int i = 0; i < 4; i++) {
-#if __cpp_designated_initializers >= 201707L
         vertices.push_back({
             .position = verticesArray[i],
             .normal = normal,
             .texcoord = texCoords[i]
         });
-#else
-        vertices.push_back({verticesArray[i], normal, texCoords[i]});
-#endif
     }
 
     return {vertices, elements, true};

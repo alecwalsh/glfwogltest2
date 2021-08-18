@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8.0)
+cmake_minimum_required(VERSION 3.18.0)
 
 project(glfwogltest2 VERSION 0.0.0.2)
 
@@ -25,15 +25,11 @@ else()
     target_compile_options(glfwogltest2 PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-target_compile_features(glfwogltest2 PUBLIC c_std_11 cxx_std_17)
+target_compile_features(glfwogltest2 PUBLIC c_std_11 cxx_std_20)
 
 target_include_directories(glfwogltest2 PUBLIC "include" "external")
 
 target_link_libraries(glfwogltest2 PRIVATE ${CMAKE_DL_LIBS} glm::glm glfw assimp::assimp glfwogltest2_physics)
-
-if(UNIX)
-    target_link_libraries(glfwogltest2 PRIVATE stdc++fs) # Need to link with stdc++fs for std::filesystem support on some older compilers
-endif()
 
 configure_file(include/version.hpp.in include/version.hpp)
 target_include_directories(glfwogltest2 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/include)

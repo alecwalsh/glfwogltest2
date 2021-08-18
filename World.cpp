@@ -76,11 +76,7 @@ void World::TickAll() {
 }
 
 void World::SetupKeyBindings() {
-#if __cpp_lib_bind_front >= 201907L
     auto translateCamera = std::bind_front(&Camera::TranslateCamera, &camera);
-#else
-    auto translateCamera = std::bind(&Camera::TranslateCamera, &camera, std::placeholders::_1);
-#endif
 
     using Direction = Camera::Direction;
 

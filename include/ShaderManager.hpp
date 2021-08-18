@@ -28,16 +28,7 @@ struct ShaderIdentifier {
     const std::string fragShader;
     const GameEngine::GLVersion version;
 
-#ifdef __cpp_impl_three_way_comparison    
-    friend bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) = default;
-#else
-    friend bool operator==(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
-        return lhs.vertShader == rhs.vertShader && lhs.fragShader == rhs.fragShader && lhs.version == rhs.version;
-    }
-    friend bool operator!=(const ShaderIdentifier& lhs, const ShaderIdentifier& rhs) noexcept {
-        return !(lhs == rhs);
-    }
-#endif // __cpp_impl_three_way_comparison
+    friend bool operator==(const ShaderIdentifier&, const ShaderIdentifier&) noexcept = default;
 };
 
 // TODO: Find a better way to combine hashes

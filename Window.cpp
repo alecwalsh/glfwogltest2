@@ -30,9 +30,7 @@ static std::unordered_set<std::string_view> GetGLExtensions() {
 bool Window::SupportsGLExtension(std::string_view str) {    
     static const auto extensions = GetGLExtensions();
 
-    // TODO: Use C++20 contains method
-    // return extensions.contains(str);
-    return extensions.find(str) != extensions.end();
+    return extensions.contains(str);
 }
 
 void Window::FramebufferSizeCallback([[maybe_unused]] GLFWwindow* glfwwindow, int width, int height) noexcept {
