@@ -117,10 +117,14 @@ std::optional<std::string> ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
     return {};
 }
 
-ShaderProgram::~ShaderProgram() {
+void ShaderProgram::Delete() noexcept {
     std::cout << "Deleting shader program " << shaderProgram << std::endl;
+
+    shaderProgram = 0;
     glDeleteProgram(shaderProgram);
 }
+
+ShaderProgram::~ShaderProgram() { Delete(); }
 
 void swap(ShaderProgram& sp1, ShaderProgram& sp2) noexcept {
     using std::swap;
@@ -135,6 +139,7 @@ ShaderProgram::ShaderProgram(ShaderProgram&& sp) noexcept {
 
 ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
     if (this != &sp) {
+        Delete();
         using std::swap;
         swap(*this, sp);
     }

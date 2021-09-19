@@ -74,6 +74,9 @@ class [[nodiscard]] ShaderProgram {
     ShaderProgram(const ShaderProgram& sp) = delete;
     ShaderProgram& operator=(const ShaderProgram& sp) = delete;
 
+    // Calls glDeleteProgram and sets shaderProgram to 0
+    void Delete() noexcept;
+
     ~ShaderProgram();
 };
 
