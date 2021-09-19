@@ -8,11 +8,12 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
+#include <filesystem>
 
 ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
     : version{id.version}, shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
 
-GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile) {
+GLuint ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile) {
     using std::to_string;
 
     std::string versionString = "#version ";
@@ -20,7 +21,7 @@ GLuint ShaderProgram::ShaderProgramFromFiles(const std::string& vertShaderFile, 
     versionString += version.is_gles ? " es" : " core";
     versionString += '\n';
 
-    auto getSource = [versionString](auto shaderFileName) {
+    auto getSource = [versionString](std::filesystem::path shaderFileName) {
         std::ifstream shaderFile;
         shaderFile.open(shaderFileName);
 
@@ -161,7 +162,7 @@ ShaderProgram& ShaderManager::AddShader(std::string_view name, const ShaderIdent
         return shaderMap.at(newID);
     }
 
-    shaderNameMap.emplace(std::move(name), id);
+    shaderNameMap.emplace(name, id);
 
     auto shaderIter = shaderMap.find(id);
 

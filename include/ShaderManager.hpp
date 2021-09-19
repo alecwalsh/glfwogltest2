@@ -17,8 +17,8 @@ class ShaderError : public std::runtime_error {
 
 class ShaderCompileError : public ShaderError {
   public:
-    ShaderCompileError(const std::string& fileName, const std::string& message)
-        : ShaderError{"Error compiling shader file \"" + fileName + "\"\n" + message} {}
+    ShaderCompileError(std::string_view fileName, std::string_view message)
+        : ShaderError{"Error compiling shader file \"" + std::string{fileName} + "\"\n" + std::string{message}} {}
 };
 
 class ShaderLinkError : public ShaderError {
@@ -54,7 +54,7 @@ template <> struct hash<ShaderIdentifier> {
 } // namespace std
 
 class [[nodiscard]] ShaderProgram {
-    [[nodiscard]] std::uint32_t ShaderProgramFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);
+    [[nodiscard]] std::uint32_t ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile);
     std::optional<std::string> GetCompileErrors(std::uint32_t shader);
     std::optional<std::string> GetLinkErrors(std::uint32_t shaderProgram);
 
