@@ -3,8 +3,10 @@
 #include "GLVersion.hpp"
 
 #include <string>
+#include <string_view>
 #include <functional>
 #include <optional>
+#include <map>
 #include <unordered_map>
 #include <cstdint>
 #include <stdexcept>
@@ -31,21 +33,22 @@ struct ShaderIdentifier {
     friend bool operator==(const ShaderIdentifier&, const ShaderIdentifier&) noexcept = default;
 };
 
-// TODO: Find a better way to combine hashes
 namespace std {
 template <> struct hash<ShaderIdentifier> {
+    // This technique for combining hashes was taken from Boost.ContainerHash
+    template <typename T, typename... Ts>
+    static constexpr std::size_t hash_combine(const T& first, const Ts&... rest) noexcept {
+        auto seed = std::hash<T>{}(first);
+
+        ((seed ^= std::hash<Ts>{}(rest) + 0x9e3779b9 + (seed << 6) + (seed >> 2)), ...);
+
+        return seed;
+    }
+
     std::size_t operator()(const ShaderIdentifier& id) const {
-        using std::to_string;
-
-        std::string concat = id.vertShader + id.fragShader;
-            
         auto [major, minor, es] = id.version;
-            
-        concat += to_string(major);
-        concat += to_string(minor);
-        concat += to_string(es);
 
-        return std::hash<std::string>{}(concat);
+        return hash_combine(id.vertShader, id.fragShader, major, minor, es);
     }
 };
 } // namespace std
@@ -82,16 +85,16 @@ class [[nodiscard]] ShaderProgram {
 
 class ShaderManager {
     std::unordered_map<ShaderIdentifier, ShaderProgram> shaderMap;
-    std::unordered_map<std::string, ShaderIdentifier> shaderNameMap;
+    std::map<std::string, ShaderIdentifier, std::less<>> shaderNameMap;
 
     ShaderManager() = default;
   public:
-    ShaderProgram& FromName(const std::string& name);
+    ShaderProgram& FromName(std::string_view name);
 
     // Adds a shader named name using the files specified in id
     // Calling this function multiple times with the same arguments does nothing
     // Calling this function with an existing name but a different id throws a runtime_exeption
-    ShaderProgram& AddShader(std::string name, const ShaderIdentifier& id);
+    ShaderProgram& AddShader(std::string_view name, const ShaderIdentifier& id);
 
     [[nodiscard]] static ShaderManager& GetInstance();
     // Deleted to prevent copies
@@ -105,8 +108,8 @@ class ShaderManager {
 thread_local inline ShaderManager& shaderManager = ShaderManager::GetInstance();
 
 struct VertexShaderAttribute {
-    static constexpr int position = 0;
-    static constexpr int normal = 1;
-    static constexpr int texcoord = 2;
-    static constexpr int color = 3;
+    static constexpr std::uint32_t position = 0;
+    static constexpr std::uint32_t normal = 1;
+    static constexpr std::uint32_t texcoord = 2;
+    static constexpr std::uint32_t color = 3;
 };

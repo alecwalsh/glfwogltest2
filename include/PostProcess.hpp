@@ -36,7 +36,7 @@ class PostProcess {
 
     // TODO: Support multiple postprocess effects
     // Replaces the current postprocess shader with a different shader
-    void ReloadShader(const std::string& name);
+    void ReloadShader(std::string_view name);
     
     // Resize framebuffer texture and renderbuffer to match the current window size
     void Resize();

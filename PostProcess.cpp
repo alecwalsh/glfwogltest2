@@ -109,7 +109,7 @@ PostProcess::~PostProcess() {
     glDeleteFramebuffers(1, &fbo);
 }
 
-void PostProcess::ReloadShader(const std::string& name) {
+void PostProcess::ReloadShader(std::string_view name) {
     shaderProgram = &shaderManager.FromName(name);
 }
 

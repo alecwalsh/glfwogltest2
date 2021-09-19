@@ -148,14 +148,14 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
 }
 
 // TODO: Don't compile shader until it is used
-ShaderProgram& ShaderManager::AddShader(std::string name, const ShaderIdentifier& id) {
+ShaderProgram& ShaderManager::AddShader(std::string_view name, const ShaderIdentifier& id) {
     auto nameIter = shaderNameMap.find(name);
 
     if (nameIter != shaderNameMap.end()) {
         const auto& newID = nameIter->second;
 
         if (newID != id) {
-            throw std::runtime_error{"Attempted to reassign shader " + name};
+            throw std::runtime_error{"Attempted to reassign shader " + std::string{name}};
         }
 
         return shaderMap.at(newID);
@@ -189,8 +189,11 @@ void ShaderManager::UpdateProjectionMatrix(float width, float height) noexcept {
     }
 }
 
-ShaderProgram& ShaderManager::FromName(const std::string& name) { 
-    return shaderMap.at(shaderNameMap.at(name));
+ShaderProgram& ShaderManager::FromName(std::string_view name) { 
+    auto it = shaderNameMap.find(name);
+    if (it == shaderNameMap.end()) throw std::out_of_range{"Shader not found"};
+
+    return shaderMap.at(it->second);
 }
 
 void ShaderProgram::SetupTextures() const noexcept {
