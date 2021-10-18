@@ -16,19 +16,12 @@ ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
     : version{id.version}, shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
 
 GLuint ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile) {
-    using std::to_string;
-
-    std::string versionString = "#version ";
-    versionString += to_string(version.major) + to_string(version.minor) + '0';
-    versionString += version.is_gles ? " es" : " core";
-    versionString += '\n';
-
-    auto getSource = [versionString](std::filesystem::path shaderFileName) {
+    auto getSource = [this](std::filesystem::path shaderFileName) {
         std::ifstream shaderFile;
         shaderFile.open(shaderFileName);
 
         std::stringstream buffer;
-        buffer << versionString << shaderFile.rdbuf();
+        buffer << version.toString() << shaderFile.rdbuf();
 
         return buffer.str();
     };

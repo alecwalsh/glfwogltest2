@@ -87,8 +87,6 @@ void UIManager::Initialize() {
     // Initialization only needs to be done once
     if (initialized) return;
 
-    const char* glsl_version = "#version 130";
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
@@ -96,7 +94,7 @@ void UIManager::Initialize() {
     // io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Medium.ttf", 16);
 
     Window::GetInstance().InitGui();
-    ImGui_ImplOpenGL3_Init(glsl_version);
+    ImGui_ImplOpenGL3_Init(Window::GetInstance().glVersion.toString().c_str());
 
     using namespace std::chrono_literals;
     timeManager.AddTimer(Timer::Type::Repeat, 1s, [this] {
