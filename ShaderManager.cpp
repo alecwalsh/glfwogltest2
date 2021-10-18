@@ -12,16 +12,18 @@
 
 #include <cassert>
 
-ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
-    : version{id.version}, shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
+#include "Window.hpp"
 
-GLuint ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile) {
-    auto getSource = [this](std::filesystem::path shaderFileName) {
+ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
+    : shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
+
+std::uint32_t ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile) {
+    auto getSource = [](std::filesystem::path shaderFileName) {
         std::ifstream shaderFile;
         shaderFile.open(shaderFileName);
 
         std::stringstream buffer;
-        buffer << version.toString() << shaderFile.rdbuf();
+        buffer << Window::GetInstance().VersionString() << shaderFile.rdbuf();
 
         return buffer.str();
     };
@@ -127,7 +129,6 @@ ShaderProgram::~ShaderProgram() { Delete(); }
 void swap(ShaderProgram& sp1, ShaderProgram& sp2) noexcept {
     using std::swap;
 
-    swap(sp1.version, sp2.version);
     swap(sp1.shaderProgram, sp2.shaderProgram);
 }
 

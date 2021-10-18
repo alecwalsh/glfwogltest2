@@ -109,11 +109,9 @@ void World::SetupKeyBindings() {
 }
 
 void World::CreateShaders() {
-    auto glVersion = Window::GetInstance().glVersion;
-
-    shaderManager.AddShader("cubeShader", {"shaders/vert_cube.glsl", "shaders/frag_cube.glsl", glVersion})
+    shaderManager.AddShader("cubeShader", {"shaders/vert_cube.glsl", "shaders/frag_cube.glsl"})
         .SetupTextures();
-    shaderManager.AddShader("lightShader", {"shaders/vert_light.glsl", "shaders/frag_light.glsl", glVersion});
+    shaderManager.AddShader("lightShader", {"shaders/vert_light.glsl", "shaders/frag_light.glsl"});
 }
 
 void World::CreateGameObjects() {

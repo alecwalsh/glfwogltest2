@@ -59,6 +59,9 @@ class Window {
     void CaptureMouse() noexcept;
     
     void InitGui() noexcept;
+    
+    // Returns a string suitable for including at the beginning of GLSL files
+    const char* VersionString() const noexcept;
   private:
     Window() = default;
     ~Window();

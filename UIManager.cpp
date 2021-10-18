@@ -94,7 +94,7 @@ void UIManager::Initialize() {
     // io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Medium.ttf", 16);
 
     Window::GetInstance().InitGui();
-    ImGui_ImplOpenGL3_Init(Window::GetInstance().glVersion.toString().c_str());
+    ImGui_ImplOpenGL3_Init(Window::GetInstance().VersionString());
 
     using namespace std::chrono_literals;
     timeManager.AddTimer(Timer::Type::Repeat, 1s, [this] {

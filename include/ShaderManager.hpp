@@ -28,7 +28,6 @@ class ShaderLinkError : public ShaderError {
 struct ShaderIdentifier {
     const std::string vertShader;
     const std::string fragShader;
-    const GameEngine::GLVersion version;
 
     friend bool operator==(const ShaderIdentifier&, const ShaderIdentifier&) noexcept = default;
 };
@@ -46,9 +45,7 @@ template <> struct hash<ShaderIdentifier> {
     }
 
     std::size_t operator()(const ShaderIdentifier& id) const {
-        auto [major, minor, es] = id.version;
-
-        return hash_combine(id.vertShader, id.fragShader, major, minor, es);
+        return hash_combine(id.vertShader, id.fragShader);
     }
 };
 } // namespace std
@@ -57,8 +54,6 @@ class [[nodiscard]] ShaderProgram final {
     [[nodiscard]] std::uint32_t ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile);
     std::optional<std::string> GetCompileErrors(std::uint32_t shader);
     std::optional<std::string> GetLinkErrors(std::uint32_t shaderProgram);
-
-    GameEngine::GLVersion version = {};
 
     friend void swap(ShaderProgram& sp1, ShaderProgram& sp2) noexcept;
 

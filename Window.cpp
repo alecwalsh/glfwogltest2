@@ -10,7 +10,19 @@
 #include <iostream>
 
 #include <unordered_set>
-#include <string_view>
+
+#include <cstring>
+
+static char8_t GLVersionString[19] = u8"#version xx0 core\n";
+
+static void SetGLVersionString(GameEngine::GLVersion version) {
+    GLVersionString[9] = u8'0' + version.major;
+    GLVersionString[10] = u8'0' + version.minor;
+    
+    if(version.is_gles) {
+        std::memcpy(GLVersionString + 13, u8"es\n\0", 4);
+    }
+}
 
 static std::unordered_set<std::string_view> GetGLExtensions() {
     GLint numExtensions;
@@ -45,6 +57,8 @@ void Window::FramebufferSizeCallback([[maybe_unused]] GLFWwindow* glfwwindow, in
 
 void Window::Create() {
     // TODO: check if gl_version is valid
+    SetGLVersionString(glVersion);
+    
     using std::get;
 
     glfwSetErrorCallback([](int i, const char* desc) {
@@ -105,7 +119,7 @@ void Window::LoadGL() {
     if (load_result == 0) {
         std::cerr << "Error initializing glad" << std::endl;
         glfwTerminate();
-        throw WindowError{"Error loading OpenGL function"};
+        throw WindowError{"Error loading OpenGL functions"};
     }
 }
 
@@ -129,3 +143,7 @@ void Window::Resize(int width, int height) noexcept { glfwSetWindowSize(window, 
 void Window::ReleaseMouse() noexcept { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
 
 void Window::CaptureMouse() noexcept { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
+
+const char* Window::VersionString() const noexcept {
+    return reinterpret_cast<const char*>(GLVersionString);
+}

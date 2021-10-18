@@ -71,12 +71,11 @@ void PostProcess::SetupFramebuffer() {
 
 PostProcess::PostProcess() {
     auto postProcessVert = "shaders/vert_postprocess.glsl";
-    auto glVersion = Window::GetInstance().glVersion;
 
     shaderProgram = &shaderManager.AddShader("postprocess_passthrough",
-                                             {postProcessVert, "shaders/frag_postprocess_passthrough.glsl", glVersion});
+                                             {postProcessVert, "shaders/frag_postprocess_passthrough.glsl"});
 
-    shaderManager.AddShader("postprocess_sobel", {postProcessVert, "shaders/frag_postprocess_sobel.glsl", glVersion});
+    shaderManager.AddShader("postprocess_sobel", {postProcessVert, "shaders/frag_postprocess_sobel.glsl"});
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
