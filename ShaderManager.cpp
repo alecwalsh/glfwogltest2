@@ -10,6 +10,8 @@
 #include <utility>
 #include <filesystem>
 
+#include <cassert>
+
 ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
     : version{id.version}, shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
 
@@ -71,7 +73,7 @@ GLuint ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderFile, st
     glDetachShader(shaderProgram, vertexShader);
     glDeleteShader(vertexShader);
 
-    std::cout << "Compiled shader " << shaderProgram << std::endl;
+    std::cout << "Compiled shader program " << shaderProgram << std::endl;
 
     return shaderProgram;
 }
@@ -119,10 +121,12 @@ std::optional<std::string> ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
 }
 
 void ShaderProgram::Delete() noexcept {
-    std::cout << "Deleting shader program " << shaderProgram << std::endl;
+    if (shaderProgram != 0) {
+        std::cout << "Deleting shader program " << shaderProgram << std::endl;
 
-    shaderProgram = 0;
-    glDeleteProgram(shaderProgram);
+        glDeleteProgram(shaderProgram);
+        shaderProgram = 0;
+    }
 }
 
 ShaderProgram::~ShaderProgram() { Delete(); }
@@ -141,8 +145,11 @@ ShaderProgram::ShaderProgram(ShaderProgram&& sp) noexcept {
 ShaderProgram& ShaderProgram::operator=(ShaderProgram&& sp) noexcept {
     if (this != &sp) {
         Delete();
+
         using std::swap;
         swap(*this, sp);
+
+        assert(sp.shaderProgram == 0);
     }
     
     return *this;

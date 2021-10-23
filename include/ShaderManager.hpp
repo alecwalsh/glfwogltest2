@@ -53,7 +53,7 @@ template <> struct hash<ShaderIdentifier> {
 };
 } // namespace std
 
-class [[nodiscard]] ShaderProgram {
+class [[nodiscard]] ShaderProgram final {
     [[nodiscard]] std::uint32_t ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile);
     std::optional<std::string> GetCompileErrors(std::uint32_t shader);
     std::optional<std::string> GetLinkErrors(std::uint32_t shaderProgram);
@@ -64,6 +64,9 @@ class [[nodiscard]] ShaderProgram {
 
     [[nodiscard]] ShaderProgram(ShaderProgram&& sp) noexcept;
     ShaderProgram& operator=(ShaderProgram&& sp) noexcept;
+
+    // Calls glDeleteProgram and sets shaderProgram to 0
+    void Delete() noexcept;
   public:
     std::uint32_t shaderProgram = 0;
 
@@ -76,9 +79,6 @@ class [[nodiscard]] ShaderProgram {
     // Copy constructor and assignment are deleted because you can't copy OpenGL objects
     ShaderProgram(const ShaderProgram& sp) = delete;
     ShaderProgram& operator=(const ShaderProgram& sp) = delete;
-
-    // Calls glDeleteProgram and sets shaderProgram to 0
-    void Delete() noexcept;
 
     ~ShaderProgram();
 };

@@ -6,6 +6,8 @@
 #include <utility>
 #include <stdexcept>
 
+#include <cassert>
+
 void swap(GLBuffer& b1, GLBuffer& b2) noexcept {
     using std::swap;
 
@@ -18,13 +20,14 @@ GLBuffer& GLBuffer::operator=(GLBuffer&& b) noexcept {
     if (this != &b) {
         Delete();
 
+        using std::swap;
         swap(*this, b);
+
+        assert(b.id == 0);
     }
 
     return *this;
 }
-
-GLBuffer::~GLBuffer() { Delete(); }
 
 void GLBuffer::Delete() noexcept {
     if (id != 0) {
@@ -34,6 +37,8 @@ void GLBuffer::Delete() noexcept {
         id = 0;
     }
 }
+
+GLBuffer::~GLBuffer() { Delete(); }
 
 void GLBuffer::Bind(std::uint32_t target) { glBindBuffer(target, id); }
 
