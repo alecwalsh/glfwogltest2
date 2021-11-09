@@ -2,6 +2,8 @@
 
 #include "MeshBase.hpp"
 
+#include <cstdint>
+
 class SphereMesh : public MeshBase {
   public:
     SphereMesh();
@@ -24,4 +26,6 @@ class PlaneMesh : public MeshBase {
     PlaneMesh();
     PlaneMesh(double size);
     PlaneMesh(double x, double y);
+    PlaneMesh(double x, double y, std::uint32_t subdivisionLevel);
+    PlaneMesh(double x, double y, std::uint32_t xSubdivisionLevel, std::uint32_t ySubdivisionLevel);
 };

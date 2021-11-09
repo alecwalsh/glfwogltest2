@@ -210,46 +210,60 @@ MESHDATA_VECTOR_CONSTEXPR MeshData CreateCuboidMeshData(double size) noexcept {
 
 MESHDATA_VECTOR_CONSTEXPR MeshData CreateCuboidMeshData() noexcept { return CreateCuboidMeshData(1); }
 
-// TODO: Support subdivision, UV coordinates
-MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double xSize, double ySize) noexcept {
-    using glm::vec3;
+// TODO: Support tiling texture
+MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double xSize, double ySize, std::uint32_t xSubdivisionLevel, std::uint32_t ySubdivisionLevel) noexcept {
+    using glm::vec2, glm::vec3;
+
+    xSubdivisionLevel++; // xSubdivisionLevel is now equal to the number of edges along the x axis
+    ySubdivisionLevel++; // ySubdivisionLevel is now equal to the number of edges along the y axis
 
     std::vector<MeshData::Vertex> vertices;
+    std::vector<std::uint32_t> elements;
 
-    const auto elementsArray = QuadToTrisElements();
-    std::vector<std::uint32_t> elements{elementsArray.begin(), elementsArray.end()};
-
-    vertices.reserve(4);
+    vertices.reserve((xSubdivisionLevel + 1) * (ySubdivisionLevel + 1));
+    elements.reserve(xSubdivisionLevel * ySubdivisionLevel * 6);
 
     vec3 topRight{xSize / 2, ySize / 2, 0};
 
     vec3 normal{0, 0, 1};
 
-    std::array verticesArray = {
-        topRight,
-        topRight - vec3{xSize, 0, 0},
-        topRight - vec3{xSize, ySize, 0},
-        topRight - vec3{0, ySize, 0},
-    };
+    for (std::uint32_t i = 0; i <= ySubdivisionLevel; i++) {
+        for (std::uint32_t j = 0; j <= xSubdivisionLevel; j++) {
+            double xSubDivFraction = 1.0 / xSubdivisionLevel;
+            double ySubDivFraction = 1.0 / ySubdivisionLevel;
 
-    using glm::vec2;
+            double xSizeSubDivFraction = xSize / xSubdivisionLevel;
+            double ySizeSubDivFraction = ySize / ySubdivisionLevel;
 
-    std::array texCoords = {
-        vec2{1, 1},
-        vec2{0, 1},
-        vec2{0, 0},
-        vec2{1, 0},
-    };
-
-    for (int i = 0; i < 4; i++) {
-        vertices.push_back({
-            .position = verticesArray[i],
-            .normal = normal,
-            .texcoord = texCoords[i]
-        });
+            vertices.push_back({
+                .position = topRight - vec3{xSizeSubDivFraction * j, ySizeSubDivFraction * i, 0},
+                .normal = normal,
+                .texcoord = vec2{1 - xSubDivFraction * j, 1 - ySubDivFraction * i}
+            });
+        }
     }
 
-    return {vertices, elements, true};
+    for (std::uint32_t i = 0; i < ySubdivisionLevel; i++) {
+        for (std::uint32_t j = 0; j < xSubdivisionLevel; j++) {
+            elements.push_back((xSubdivisionLevel + 1) * i + j);
+            elements.push_back((xSubdivisionLevel + 1) * i + j + 1);
+            elements.push_back((xSubdivisionLevel + 1) * (i + 1) + j);
+
+            elements.push_back((xSubdivisionLevel + 1) * (i + 1) + j);
+            elements.push_back((xSubdivisionLevel + 1) * (i + 1) + j + 1);
+            elements.push_back((xSubdivisionLevel + 1) * i + j + 1);
+        }
+    }
+
+    return { vertices, elements, true };
+}
+
+MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double xSize, double ySize, std::uint32_t subdivisionLevel) noexcept {
+    return CreatePlaneMeshData(xSize, ySize, subdivisionLevel, subdivisionLevel);
+}
+
+MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double xSize, double ySize) noexcept {
+    return CreatePlaneMeshData(xSize, ySize, 0);
 }
 
 MESHDATA_VECTOR_CONSTEXPR MeshData CreatePlaneMeshData(double size) noexcept { return CreatePlaneMeshData(size, size); }
@@ -286,12 +300,12 @@ constexpr auto CreateCuboidMeshDataConstexpr() noexcept {
 }
 
 
-template <std::size_t SubdivisionLevel = 0>
+template <std::uint32_t XSubdivisionLevel = 0, std::uint32_t YSubdivisionLevel = XSubdivisionLevel>
 constexpr auto CreatePlaneMeshDataConstexpr(double xSize, double ySize) noexcept {
-    auto meshData = CreatePlaneMeshData(xSize, ySize);
+    auto meshData = CreatePlaneMeshData(xSize, ySize, XSubdivisionLevel, YSubdivisionLevel);
 
-    constexpr std::size_t VertexCount = 4;
-    constexpr std::size_t ElementCount = 6;
+    constexpr std::size_t VertexCount = (XSubdivisionLevel + 2) * (YSubdivisionLevel + 2);
+    constexpr std::size_t ElementCount = (XSubdivisionLevel + 1) * (YSubdivisionLevel + 1) * 6;
 
     ConstexprMeshData<VertexCount, ElementCount> result = {
         .usesElementArray = meshData.usesElementArray
@@ -303,14 +317,14 @@ constexpr auto CreatePlaneMeshDataConstexpr(double xSize, double ySize) noexcept
     return result;
 }
 
-template <std::size_t SubdivisionLevel = 0>
+template <std::uint32_t XSubdivisionLevel = 0, std::uint32_t YSubdivisionLevel = XSubdivisionLevel>
 constexpr auto CreatePlaneMeshDataConstexpr(double size) noexcept {
-    return CreatePlaneMeshDataConstexpr<SubdivisionLevel>(size, size);
+    return CreatePlaneMeshDataConstexpr<XSubdivisionLevel, YSubdivisionLevel>(size, size);
 }
 
-template <std::size_t SubdivisionLevel = 0>
+template <std::uint32_t XSubdivisionLevel = 0, std::uint32_t YSubdivisionLevel = XSubdivisionLevel>
 constexpr auto CreatePlaneMeshDataConstexpr() noexcept {
-    return CreatePlaneMeshDataConstexpr<SubdivisionLevel>(1);
+    return CreatePlaneMeshDataConstexpr<XSubdivisionLevel, YSubdivisionLevel>(1);
 }
 
 #endif

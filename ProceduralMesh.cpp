@@ -12,7 +12,11 @@ CuboidMesh::CuboidMesh(double size) : CuboidMesh{size, size, size} {}
 
 CuboidMesh::CuboidMesh() : CuboidMesh{1} {}
 
-PlaneMesh::PlaneMesh(double x, double y) : MeshBase{CreatePlaneMeshData(x, y)} {}
+PlaneMesh::PlaneMesh(double x, double y, std::uint32_t xSubdivisionLevel, std::uint32_t ySubdivisionLevel) : MeshBase{CreatePlaneMeshData(x, y, xSubdivisionLevel, ySubdivisionLevel)} {}
+
+PlaneMesh::PlaneMesh(double x, double y, std::uint32_t subdivisionLevel) : PlaneMesh{x, y, subdivisionLevel, subdivisionLevel} {}
+
+PlaneMesh::PlaneMesh(double x, double y) : PlaneMesh{x, y, 0} {}
 
 PlaneMesh::PlaneMesh(double size) : PlaneMesh{size, size} {}
 
