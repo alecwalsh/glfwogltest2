@@ -101,18 +101,19 @@ bool Camera::CheckCollision(glm::vec3 translation) const {
 
     bool anyCollide = false;
 
-    for (auto go2 : GameEngine::World::physicsObjects) {
-        if (!go2->HasCollider())
-            continue;
+    for (auto& go : GameEngine::world->gameObjects) {
+        if (auto* go2 = dynamic_cast<GameEngine::CubeObject*>(go.get()); go2->HasCollider()) {
+            auto& collider2 = go2->GetCollider();
 
-        auto& collider2 = go2->GetCollider();
-        if (&collider == &collider2)
-            continue;
-        if (!newCollider.SupportsCollisionWith(collider2))
-            continue;
+            if (&collider == &collider2) {
+                assert(false);
+            }
+            if (!newCollider.SupportsCollisionWith(collider2))
+                continue;
 
-        if (newCollider.CollidesWith(collider2)) {
-            anyCollide = true;
+            if (newCollider.CollidesWith(collider2)) {
+                anyCollide = true;
+            }
         }
     }
 

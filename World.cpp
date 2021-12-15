@@ -152,19 +152,13 @@ void World::CreateGameObjects() {
     go5->name = "cube2";
     go5->SetCollider<Physics::SimpleCubeCollider>();
 
-    physicsObjects.push_back(go1.get());
-    physicsObjects.push_back(go2.get());
-    physicsObjects.push_back(go3.get());
-    physicsObjects.push_back(go4.get());
-    physicsObjects.push_back(go5.get());
-
     im.AddKeyBinding(KEY(L), KeyState::InitialPress, [ptr = go5.get()] { ptr->ModifyPosition({-1, 0, 0}); });
 
-    gameObjects.push_back(std::move(go1));
-    gameObjects.push_back(std::move(go2));
-    gameObjects.push_back(std::move(go3));
-    gameObjects.push_back(std::move(go4));
-    gameObjects.push_back(std::move(go5));
+    AddGameObject(std::move(go1));
+    AddGameObject(std::move(go2));
+    AddGameObject(std::move(go3));
+    AddGameObject(std::move(go4));
+    AddGameObject(std::move(go5));
 
     mat4 floorRotation = glm::rotate(mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
     auto floor = std::make_unique<CubeObject>(floorMesh, cubeShader, texman);
@@ -184,11 +178,8 @@ void World::CreateGameObjects() {
     floor2->spec_texture_name = "container_specular";
     floor2->SetCollider<Physics::SimplePlaneCollider>();
 
-    physicsObjects.push_back(floor.get());
-    physicsObjects.push_back(floor2.get());
-
-    gameObjects.push_back(std::move(floor));
-    gameObjects.push_back(std::move(floor2));
+    AddGameObject(std::move(floor));
+    AddGameObject(std::move(floor2));
 }
 
 void World::CreateMeshes() {
@@ -256,6 +247,10 @@ void World::CreateLightObjects() {
             lightObjects.push_back(std::move(lo));
         }
     }
+}
+
+void World::AddGameObject(std::unique_ptr<RenderableObject> object) {
+    gameObjects.push_back(std::move(object));
 }
 
 } // namespace GameEngine

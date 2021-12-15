@@ -38,9 +38,6 @@ class World {
 
     std::vector<std::unique_ptr<Light>> lights;
 
-    // TODO: Make this a non-static member
-    static inline std::vector<CubeObject*> physicsObjects;
-
     Camera camera{{3.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, 2.5f};
 
     World();
@@ -56,6 +53,10 @@ class World {
     void CreateLightObjects();
 
     void SetupKeyBindings();
+
+    void AddGameObject(std::unique_ptr<RenderableObject> object);
 };
 
+
+inline World* world = nullptr;
 } // namespace GameEngine

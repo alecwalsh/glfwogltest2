@@ -9,6 +9,8 @@
 
 #include <stdexcept>
 
+namespace GameEngine {
+
 static Physics::SimplePlaneCollider floorCollider = {0};
 static Physics::SphereCollider sphere1Collider = {{0, 0, 2.0f}, 1, {}};
 
@@ -16,7 +18,7 @@ void CubeObject::Tick() {
     if (!collider) return;
 
     Physics::Collider* otherCollider = &floorCollider;
-    
+
     if (name == "sphere2") {
         otherCollider = &sphere1Collider;
 
@@ -30,7 +32,7 @@ void CubeObject::Tick() {
     if (collider->SupportsCollisionWith(*otherCollider)) {
         collider->ApplyCollision(*otherCollider);
     }
-    
+
     SetPosition(collider->position);
 }
 
@@ -68,7 +70,6 @@ CubeObject::CubeObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureMana
     material.shininess = 32.0f;
 }
 
-
 void CubeObject::SetPosition(glm::vec3 position) {
     RenderableObject::SetPosition(position);
 
@@ -86,9 +87,9 @@ void CubeObject::SetScale(glm::vec3 scale) {
     }
 }
 
-bool CubeObject::HasCollider() { return static_cast<bool>(collider); }
+bool CubeObject::HasCollider() const noexcept { return static_cast<bool>(collider); }
 
-Physics::Collider& CubeObject::GetCollider() {
+Physics::Collider& CubeObject::GetCollider() const {
     if (!collider) {
         throw std::runtime_error{"Attempted to access nonexistent collider"};
     }
@@ -98,3 +99,5 @@ Physics::Collider& CubeObject::GetCollider() {
 void CubeObject::SetCollider(std::unique_ptr<Physics::Collider> collider) {
     this->collider = std::move(collider);
 }
+
+} // namespace GameEngine

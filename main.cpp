@@ -53,6 +53,8 @@ int main() {
 
     GameEngine::World world;
 
+    GameEngine::world = &world;
+
     TimeManagerShim tms{timeManager.elapsedTime, timeManager.deltaTime};
     Physics::timeManager = &tms;
 
