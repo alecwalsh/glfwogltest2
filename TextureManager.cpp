@@ -15,7 +15,8 @@ void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
     finalFileName /= fileName;
 
     if (!std::filesystem::exists(finalFileName)) {
-        throw std::runtime_error{"Texture file does not exist"};
+        std::string message = "Texture file " + finalFileName.generic_string() + " does not exist";
+        throw std::runtime_error{message};
     }
 
     // Add a new value to the map
