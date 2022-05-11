@@ -43,6 +43,8 @@ class Window {
 
     void LoadGL();
 
+    void MakeContextCurrent();
+
     bool SupportsGLExtension(std::string_view str);
     // glGetString returns UTF-8 encoded strings
     bool SupportsGLExtension(std::u8string_view str) {

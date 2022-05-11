@@ -63,6 +63,8 @@ int main() {
 
     // main loop
     while (!window.ShouldClose()) {
+        window.MakeContextCurrent();
+
         // Enable depth test when rendering main scene
         glEnable(GL_DEPTH_TEST);
 

@@ -39,6 +39,10 @@ static std::unordered_set<std::string_view> GetGLExtensions() {
     return extensions;
 }
 
+void Window::MakeContextCurrent() { 
+    glfwMakeContextCurrent(window);
+}
+
 bool Window::SupportsGLExtension(std::string_view str) {    
     static const auto extensions = GetGLExtensions();
 
