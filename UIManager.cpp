@@ -57,13 +57,19 @@ void UIManager::Draw() {
     EndFrame();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // Update and Render additional Platform Windows
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+    }
 }
 
 void UIManager::DrawOptional() {
     ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
 
     ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
-    ImGui::InputText("", textBuffer, std::size(textBuffer));
+    ImGui::InputText("##label", textBuffer, std::size(textBuffer)); // Need a dummy label to avoid an ID collision
 
     ImGui::End();
 }
@@ -90,8 +96,13 @@ void UIManager::Initialize() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    // ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     // io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Medium.ttf", 16);
+
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    #ifdef _WIN32
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    #endif
 
     Window::GetInstance().InitGui();
     ImGui_ImplOpenGL3_Init(Window::GetInstance().VersionString());
