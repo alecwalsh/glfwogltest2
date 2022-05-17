@@ -3,6 +3,7 @@
 #include "MeshData.hpp"
 
 #include <array>
+#include <algorithm>
 #include <utility>
 #include <numbers>
 
