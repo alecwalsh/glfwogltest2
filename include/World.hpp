@@ -23,7 +23,6 @@ struct MeshManager {
 
 namespace GameEngine {
 
-// TODO: Move render function to a method of this class
 class World {
     TextureManager texman;
 
@@ -55,6 +54,8 @@ class World {
     void SetupKeyBindings();
 
     void AddGameObject(std::unique_ptr<RenderableObject> object);
+
+    void RenderWorld();
 };
 
 

@@ -253,4 +253,16 @@ void World::AddGameObject(std::unique_ptr<RenderableObject> object) {
     gameObjects.push_back(std::move(object));
 }
 
+void World::RenderWorld() {
+    // Render all of the GameObjects
+    for (const auto& go : gameObjects) {
+        go->RenderObject(lights, camera);
+    }
+
+    // Render all of the lights
+    for (const auto& lo : lightObjects) {
+        lo->RenderObject(lights, camera);
+    }
+}
+
 } // namespace GameEngine

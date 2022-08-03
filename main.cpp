@@ -20,10 +20,6 @@
 
 #include "version.hpp"
 
-template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
-
-void render(const RenderableObject& go, const vec_uniq<Light>& lights, const GameEngine::CameraBase& camera);
-
 int main() {
     std::filesystem::current_path(BASE_DIR);
 
@@ -61,7 +57,7 @@ int main() {
     uiManager.Initialize();
     timeManager.Initialize();
 
-    // main loop
+    // Main loop
     while (!window.ShouldClose()) {
         window.MakeContextCurrent();
 
@@ -90,18 +86,8 @@ int main() {
         // Call Tick on everything
         world.TickAll();
 
-
         // Now render everything
-
-        // Render all of the GameObjects
-        for (const auto& go : world.gameObjects) {
-            render(*go, world.lights, world.camera);
-        }
-
-        // Render all of the lights
-        for (auto& lo : world.lightObjects) {
-            render(*lo, world.lights, world.camera);
-        }
+        world.RenderWorld();
 
         // Unbind the framebuffer and draw the fullscreen quad with the main scene as the texture
         fsq.UnbindFramebuffer();
@@ -119,33 +105,4 @@ int main() {
     window.Destroy();
 
     return EXIT_SUCCESS;
-}
-
-void render(const RenderableObject& go, const vec_uniq<Light>& lights, const GameEngine::CameraBase& camera) {
-    const auto& sp = go.shaderProgram;
-
-    sp.UseProgram();
-
-    GLint numLightsUniform = glGetUniformLocation(sp.shaderProgram, "numLights");
-    
-    std::size_t numLights = lights.size();
-    
-    if (numLights < 0 || numLights > std::numeric_limits<GLint>::max()) {
-        std::cerr << "Invalid number of lights" << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-    glUniform1i(numLightsUniform, static_cast<GLint>(numLights));
-
-    for (std::size_t i = 0; i < lights.size(); i++) {
-        // TODO: don't do this every frame
-        lights[i]->SetUniforms(sp.shaderProgram, i);
-    }
-
-    GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
-
-    float ambient = 0.5f;
-    // TODO: Don't hardcode ambient value
-    glUniform3f(ambientLoc, ambient, ambient, ambient);
-
-    go.Draw(camera);
 }

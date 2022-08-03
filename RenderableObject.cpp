@@ -5,6 +5,9 @@
 #include "Window.hpp"
 
 #include <iostream>
+#include <limits>
+
+namespace GameEngine {
 
 RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram, TextureManager& texman)
     : mesh{mesh}, texman{texman}, shaderProgram{shaderProgram} {
@@ -50,7 +53,7 @@ RenderableObject::RenderableObject(const RenderableObject& rhs)
 }
 
 // Renders the object
-void RenderableObject::Draw(const GameEngine::CameraBase& camera) const {
+void RenderableObject::Draw(const CameraBase& camera) const {
     // Make sure the right vertex array is bound
     glBindVertexArray(vao);
     BindTextures();
@@ -83,3 +86,37 @@ void RenderableObject::BindTextures() const {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texman.textureObjects[spec_texture_name]);
 }
+
+
+// Sets up the lights, then calls RenderableObject::Draw
+void RenderableObject::RenderObject(std::span<const std::unique_ptr<Light>> lights,
+                                    const CameraBase& camera) {
+    const auto& sp = shaderProgram;
+
+    sp.UseProgram();
+
+    GLint numLightsUniform = glGetUniformLocation(sp.shaderProgram, "numLights");
+
+    std::size_t numLights = lights.size();
+
+    if (numLights < 0 || numLights > std::numeric_limits<GLint>::max()) {
+        std::cerr << "Invalid number of lights" << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+    glUniform1i(numLightsUniform, static_cast<GLint>(numLights));
+
+    for (std::size_t i = 0; i < lights.size(); i++) {
+        // TODO: don't do this every frame
+        lights[i]->SetUniforms(sp.shaderProgram, i);
+    }
+
+    GLint ambientLoc = glGetUniformLocation(sp.shaderProgram, "uniAmbient");
+
+    float ambient = 0.5f;
+    // TODO: Don't hardcode ambient value
+    glUniform3f(ambientLoc, ambient, ambient, ambient);
+
+    Draw(camera);
+}
+
+} // namespace GameEngine

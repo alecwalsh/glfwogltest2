@@ -2,10 +2,16 @@
 
 #include "GameObject.hpp"
 
+#include "Light.hpp"
 #include "CameraBase.hpp"
 #include "MeshBase.hpp"
 #include "ShaderManager.hpp"
 #include "TextureManager.hpp"
+
+#include <span>
+#include <memory>
+
+namespace GameEngine {
 
 class RenderableObject : public GameObject {
   protected:
@@ -36,4 +42,8 @@ class RenderableObject : public GameObject {
     void BindTextures() const;
 
     ShaderProgram& shaderProgram;
+
+    void RenderObject(std::span<const std::unique_ptr<Light>> lights, const GameEngine::CameraBase& camera);
 };
+
+} // namespace GameEngine
