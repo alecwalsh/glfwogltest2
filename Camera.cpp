@@ -12,7 +12,7 @@
 static Physics::SimplePlaneCollider floorCollider = {0};
 
 Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : 
-    GameObject{position, {1, 1, 1}}, speed{speed} {
+    CameraBase{position, {1, 1, 1}}, speed{speed} {
     name = "Camera";
     collider.position = position;
     // Set the front, right, up, etc vectors to their initial values

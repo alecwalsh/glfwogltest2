@@ -50,7 +50,7 @@ RenderableObject::RenderableObject(const RenderableObject& rhs)
 }
 
 // Renders the object
-void RenderableObject::Draw(const Camera& camera) const {
+void RenderableObject::Draw(const GameEngine::CameraBase& camera) const {
     // Make sure the right vertex array is bound
     glBindVertexArray(vao);
     BindTextures();
@@ -61,7 +61,7 @@ void RenderableObject::Draw(const Camera& camera) const {
     glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(GetTransform()));
 
     GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(camera.viewMat));
+    glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
 
     if (mesh.meshData.vertices.size() > std::numeric_limits<GLsizei>::max()) {
         std::cerr << "Too many vertices" << std::endl;

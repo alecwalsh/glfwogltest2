@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameObject.hpp"
+#include "CameraBase.hpp"
 #include "TimeManager.hpp"
 
 #include <Physics/Collision.hpp>
@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 
 // TODO: Add support for roll
-class Camera : public GameObject {
+class Camera : public GameEngine::CameraBase {
     void UpdateViewMatrix() noexcept;
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept;
 
@@ -24,6 +24,8 @@ class Camera : public GameObject {
 
     double pitch;
     double yaw;
+
+    glm::mat4 viewMat{1.0f};
   public:
     Camera(glm::vec3 position, glm::vec3 target,
         float speed = 1.0f,
@@ -35,12 +37,12 @@ class Camera : public GameObject {
 
     void SetPosition(glm::vec3 position) override;
 
+    const glm::mat4& GetViewMatrix() const noexcept override { return viewMat; }
+
     void Rotate() noexcept;
 
     // Takes the mouse movement during the last frame and translates it into pitch and yaw
     void CalculatePitchAndYaw(double deltaX, double deltaY) noexcept;
-
-    glm::mat4 viewMat{1.0f};
 
     enum class Direction : std::uint8_t { Forward, Backward, Right, Left, Up, Down };
 

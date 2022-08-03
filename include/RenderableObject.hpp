@@ -2,7 +2,7 @@
 
 #include "GameObject.hpp"
 
-#include "Camera.hpp"
+#include "CameraBase.hpp"
 #include "MeshBase.hpp"
 #include "ShaderManager.hpp"
 #include "TextureManager.hpp"
@@ -31,7 +31,7 @@ class RenderableObject : public GameObject {
     RenderableObject(const RenderableObject&);
 
     // Renders the object
-    virtual void Draw(const Camera& camera) const;
+    virtual void Draw(const GameEngine::CameraBase& camera) const;
 
     void BindTextures() const;
 

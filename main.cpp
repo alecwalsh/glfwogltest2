@@ -22,7 +22,7 @@
 
 template <typename T> using vec_uniq = std::vector<std::unique_ptr<T>>;
 
-void render(const RenderableObject& go, const vec_uniq<Light>& lights, const Camera& camera);
+void render(const RenderableObject& go, const vec_uniq<Light>& lights, const GameEngine::CameraBase& camera);
 
 int main() {
     std::filesystem::current_path(BASE_DIR);
@@ -121,7 +121,7 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-void render(const RenderableObject& go, const vec_uniq<Light>& lights, const Camera& camera) {
+void render(const RenderableObject& go, const vec_uniq<Light>& lights, const GameEngine::CameraBase& camera) {
     const auto& sp = go.shaderProgram;
 
     sp.UseProgram();
