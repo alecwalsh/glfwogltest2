@@ -32,9 +32,11 @@ class GameObject {
     glm::mat4 rotation{1.0f}; // TODO: Use quaternion for rotation
     
     GameObject();
+    GameObject(glm::vec3 position);
     GameObject(glm::vec3 position, glm::vec3 scale);
-    virtual ~GameObject();
     GameObject(const GameObject&);
+
+    virtual ~GameObject();
 
     // Runs every frame
     virtual void Tick() = 0;

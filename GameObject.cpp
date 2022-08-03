@@ -18,15 +18,17 @@ GameObject::GameObject()
     std::cout << "GameObject constructor" << std::endl;
 }
 
+GameObject::GameObject(glm::vec3 position) : GameObject{position, {1, 1, 1}} {}
+
 GameObject::GameObject(glm::vec3 position, glm::vec3 scale) : GameObject{} {
     this->position = position;
     this->scale = scale;
 }
-
-GameObject::~GameObject() { std::cout << "GameObject destructor" << std::endl; }
 
 // Copy constructor
 GameObject::GameObject(const GameObject& rhs)
     : position{rhs.position}, scale{rhs.scale}, elapsedTime{rhs.elapsedTime}, deltaTime{rhs.deltaTime} {
     std::cout << "GameObject copy constructor" << std::endl;
 }
+
+GameObject::~GameObject() { std::cout << "GameObject destructor" << std::endl; }
