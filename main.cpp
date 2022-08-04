@@ -70,7 +70,10 @@ int main() {
         if (window.hasResized) {
             std::cout << "Window resized" << std::endl;
 
-            shaderManager.UpdateProjectionMatrix(window.width, window.height);
+            world.camera.SetWidth(window.width);
+            world.camera.SetHeight(window.height);
+
+            shaderManager.UpdateProjectionMatrix(world.camera);
 
             fsq.Resize();
 

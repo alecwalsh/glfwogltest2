@@ -2,6 +2,8 @@
 
 #include "GLVersion.hpp"
 
+#include "CameraBase.hpp"
+
 #include <string>
 #include <string_view>
 #include <functional>
@@ -97,7 +99,7 @@ class ShaderManager {
     ShaderManager& operator=(const ShaderManager&) = delete;
 
     // Calculates a new projection matrix and updates the shaders' uniforms
-    void UpdateProjectionMatrix(float width, float height) noexcept;
+    void UpdateProjectionMatrix(const GameEngine::CameraBase& camera) noexcept;
 };
 
 thread_local inline ShaderManager& shaderManager = ShaderManager::GetInstance();

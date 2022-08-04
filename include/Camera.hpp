@@ -37,7 +37,8 @@ class Camera : public GameEngine::CameraBase {
 
     void SetPosition(glm::vec3 position) override;
 
-    const glm::mat4& GetViewMatrix() const noexcept override { return viewMat; }
+    glm::mat4 GetViewMatrix() const noexcept override { return viewMat; }
+    glm::mat4 GetProjectionMatrix() const noexcept override;
 
     void Rotate() noexcept;
 

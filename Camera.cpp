@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 static Physics::SimplePlaneCollider floorCollider = {0};
@@ -118,4 +119,8 @@ bool Camera::CheckCollision(glm::vec3 translation) const {
     }
 
     return anyCollide;
+}
+
+glm::mat4 Camera::GetProjectionMatrix() const noexcept {
+    return glm::perspective(glm::radians(45.0f), width / height, 1.0f, 100.0f);
 }

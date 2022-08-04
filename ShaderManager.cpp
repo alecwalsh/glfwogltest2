@@ -181,8 +181,8 @@ ShaderManager& ShaderManager::GetInstance() {
     return sm;
 }
 
-void ShaderManager::UpdateProjectionMatrix(float width, float height) noexcept {
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), width / height, 1.0f, 100.0f);
+void ShaderManager::UpdateProjectionMatrix(const GameEngine::CameraBase& camera) noexcept {
+    glm::mat4 proj = camera.GetProjectionMatrix();
 
     for (const auto& [id, sp] : shaderMap) {
         sp.UseProgram();
