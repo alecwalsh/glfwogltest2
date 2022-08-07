@@ -36,13 +36,6 @@ RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram,
     glEnableVertexAttribArray(texAttrib);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
-    Window& window = Window::GetInstance();
-
-    // Set up projection matrix
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 1.0f, 100.0f);
-    GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
-
     std::cout << "RenderableObject constructor\n";
 }
 
@@ -59,12 +52,15 @@ void RenderableObject::Draw(const CameraBase& camera) const {
     BindTextures();
     shaderProgram.UseProgram();
 
+    // Set model, view, and projection matrices
     GLint uniModel = glGetUniformLocation(shaderProgram.shaderProgram, "model");
-
     glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(GetTransform()));
 
     GLint uniView = glGetUniformLocation(shaderProgram.shaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+
+    GLint uniProj = glGetUniformLocation(shaderProgram.shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
 
     if (mesh.meshData.vertices.size() > std::numeric_limits<GLsizei>::max()) {
         std::cerr << "Too many vertices" << std::endl;

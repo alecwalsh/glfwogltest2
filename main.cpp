@@ -73,8 +73,6 @@ int main() {
             world.camera.SetWidth(window.width);
             world.camera.SetHeight(window.height);
 
-            shaderManager.UpdateProjectionMatrix(world.camera);
-
             fsq.Resize();
 
             window.hasResized = false;

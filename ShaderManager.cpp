@@ -181,16 +181,6 @@ ShaderManager& ShaderManager::GetInstance() {
     return sm;
 }
 
-void ShaderManager::UpdateProjectionMatrix(const GameEngine::CameraBase& camera) noexcept {
-    glm::mat4 proj = camera.GetProjectionMatrix();
-
-    for (const auto& [id, sp] : shaderMap) {
-        sp.UseProgram();
-        GLint uniProj = glGetUniformLocation(sp.shaderProgram, "proj");
-        glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
-    }
-}
-
 ShaderProgram& ShaderManager::FromName(std::string_view name) { 
     auto it = shaderNameMap.find(name);
     if (it == shaderNameMap.end()) throw std::out_of_range{"Shader not found"};

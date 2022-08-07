@@ -97,9 +97,6 @@ class ShaderManager {
     // Deleted to prevent copies
     ShaderManager(const ShaderManager&) = delete;
     ShaderManager& operator=(const ShaderManager&) = delete;
-
-    // Calculates a new projection matrix and updates the shaders' uniforms
-    void UpdateProjectionMatrix(const GameEngine::CameraBase& camera) noexcept;
 };
 
 thread_local inline ShaderManager& shaderManager = ShaderManager::GetInstance();

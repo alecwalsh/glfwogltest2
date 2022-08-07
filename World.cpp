@@ -58,6 +58,10 @@ World::World() {
     CreateLights();
 
     CreateLightObjects();
+
+    auto& window = Window::GetInstance();
+    camera.SetWidth(window.width);
+    camera.SetHeight(window.height);
 }
 
 void World::TickAll() {
