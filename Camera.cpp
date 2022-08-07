@@ -6,10 +6,6 @@
 #include <cmath>
 #include <algorithm>
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-
 static Physics::SimplePlaneCollider floorCollider = {0};
 
 Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : 
