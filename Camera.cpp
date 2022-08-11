@@ -2,6 +2,7 @@
 
 #include "World.hpp"
 #include "InputManager.hpp"
+#include "TimeManager.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -117,6 +118,31 @@ bool Camera::CheckCollision(glm::vec3 translation) const {
     return anyCollide;
 }
 
+std::function<void()> Camera::TranslateCamera(CameraBase::Direction d) {
+    return [this, d] {
+        auto vec = vectors[d];
+
+        if (movementStyle == MovementStyle::ParallelToGround) {
+            if (!(d == CameraBase::Direction::Up || d == CameraBase::Direction::Down)) {
+                vec.y = 0;
+
+                vec = glm::normalize(vec);
+            }
+        }
+
+        auto translation = speed * static_cast<float>(timeManager.deltaTime) * vec;
+
+        bool willCollide = CheckCollision(translation);
+
+        if (!willCollide) {
+            ModifyPosition(translation);
+        }
+    };
+}
+
 glm::mat4 Camera::GetProjectionMatrix() const noexcept {
     return glm::perspective(glm::radians(45.0f), width / height, 1.0f, 100.0f);
+}
+glm::vec3 Camera::GetFrontVector() const noexcept {
+    return vectors.front;
 }

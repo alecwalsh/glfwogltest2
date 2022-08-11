@@ -80,12 +80,13 @@ void World::TickAll() {
 }
 
 void World::SetupKeyBindings() {
-    auto translateCamera = std::bind_front(&Camera::TranslateCamera, &camera);
+    auto translateCamera = std::bind_front(&CameraBase::TranslateCamera, &camera);
 
-    using Direction = Camera::Direction;
+    using Direction = CameraBase::Direction;
 
     // Set key bindings
-    // TODO: Set in config file
+    // TODO: Get key bindings from config file
+    // TODO: Figure out how to use control key
     im.AddKeyBinding(KEY(W), KeyState::AnyPress, translateCamera(Direction::Forward));
     im.AddKeyBinding(KEY(A), KeyState::AnyPress, translateCamera(Direction::Left));
     im.AddKeyBinding(KEY(S), KeyState::AnyPress, translateCamera(Direction::Backward));
