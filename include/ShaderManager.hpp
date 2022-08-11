@@ -2,7 +2,7 @@
 
 #include "GLVersion.hpp"
 
-#include "CameraBase.hpp"
+#include "Camera.hpp"
 
 #include <string>
 #include <string_view>

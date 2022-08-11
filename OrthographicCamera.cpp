@@ -5,7 +5,7 @@
 namespace GameEngine {
 
 OrthographicCamera::OrthographicCamera(glm::vec3 position, glm::vec3 direction, glm::vec3 up)
-    : CameraBase{position, {1, 1, 1}}, direction{direction}, up{up} {
+    : Camera{position, {1, 1, 1}}, direction{direction}, up{up} {
     name = "OrthographicCamera";
 }
 
@@ -21,7 +21,7 @@ glm::mat4 OrthographicCamera::GetProjectionMatrix() const noexcept {
     return glm::ortho(min, max, min, max, 1.0f, 100.0f);
 }
 
-std::function<void()> OrthographicCamera::TranslateCamera(CameraBase::Direction d) {
+std::function<void()> OrthographicCamera::TranslateCamera(Direction d) {
     return [this, d] {
         glm::vec3 vec = {};
 

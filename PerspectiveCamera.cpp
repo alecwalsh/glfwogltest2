@@ -12,8 +12,7 @@ static Physics::SimplePlaneCollider floorCollider = {0};
 namespace GameEngine {
 
 PerspectiveCamera::PerspectiveCamera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up)
-    : 
-    CameraBase{position, {1, 1, 1}}, speed{speed} {
+    : Camera{position, {1, 1, 1}}, speed{speed} {
     name = "PerspectiveCamera";
     collider.position = position;
     // Set the front, right, up, etc vectors to their initial values
@@ -123,12 +122,12 @@ bool PerspectiveCamera::CheckCollision(glm::vec3 translation) const {
     return anyCollide;
 }
 
-std::function<void()> PerspectiveCamera::TranslateCamera(CameraBase::Direction d) {
+std::function<void()> PerspectiveCamera::TranslateCamera(Direction d) {
     return [this, d] {
         auto vec = vectors[d];
 
         if (movementStyle == MovementStyle::ParallelToGround) {
-            if (!(d == CameraBase::Direction::Up || d == CameraBase::Direction::Down)) {
+            if (!(d == Direction::Up || d == Direction::Down)) {
                 vec.y = 0;
 
                 vec = glm::normalize(vec);

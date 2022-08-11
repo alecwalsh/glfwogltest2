@@ -24,7 +24,7 @@ class CubeObject : public RenderableObject {
 
     // Runs every frame
     void Tick() override;
-    void Draw(const GameEngine::CameraBase& camera) const override;
+    void Draw(const Camera& camera) const override;
 
     bool HasCollider() const noexcept;
     Physics::Collider& GetCollider() const;

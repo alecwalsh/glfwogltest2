@@ -46,7 +46,7 @@ RenderableObject::RenderableObject(const RenderableObject& rhs)
 }
 
 // Renders the object
-void RenderableObject::Draw(const CameraBase& camera) const {
+void RenderableObject::Draw(const Camera& camera) const {
     // Make sure the right vertex array is bound
     glBindVertexArray(vao);
     BindTextures();
@@ -86,7 +86,7 @@ void RenderableObject::BindTextures() const {
 
 // Sets up the lights, then calls RenderableObject::Draw
 void RenderableObject::RenderObject(std::span<const std::unique_ptr<Light>> lights,
-                                    const CameraBase& camera) {
+                                    const Camera& camera) {
     const auto& sp = shaderProgram;
 
     sp.UseProgram();

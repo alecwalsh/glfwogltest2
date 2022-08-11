@@ -80,9 +80,9 @@ void World::TickAll() {
 }
 
 void World::SetupKeyBindings() {
-    auto translateCamera = std::bind_front(&CameraBase::TranslateCamera, &camera);
+    auto translateCamera = std::bind_front(&Camera::TranslateCamera, &camera);
 
-    using Direction = CameraBase::Direction;
+    using Direction = Camera::Direction;
 
     // Set key bindings
     // TODO: Get key bindings from config file

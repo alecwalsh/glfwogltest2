@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CameraBase.hpp"
+#include "Camera.hpp"
 
 #include <glm/glm.hpp>
 
 namespace GameEngine {
 
-class OrthographicCamera : public CameraBase {
+class OrthographicCamera : public Camera {
     glm::vec3 direction;
     glm::vec3 up;
 
@@ -22,7 +22,7 @@ class OrthographicCamera : public CameraBase {
     glm::vec3 GetFrontVector() const noexcept override { return direction; }
 
     // Create a lambda that translates the camera in a certain direction
-    std::function<void()> TranslateCamera(CameraBase::Direction d) override;
+    std::function<void()> TranslateCamera(Direction d) override;
 };
 
 } // namespace GameEngine

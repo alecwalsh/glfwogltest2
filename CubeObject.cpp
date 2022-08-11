@@ -36,7 +36,7 @@ void CubeObject::Tick() {
     SetPosition(collider->position);
 }
 
-void CubeObject::Draw(const GameEngine::CameraBase& camera) const {
+void CubeObject::Draw(const Camera& camera) const {
     GLuint sp = shaderProgram.shaderProgram;
 
     // Set material properties

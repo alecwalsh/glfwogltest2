@@ -1,17 +1,15 @@
 #pragma once
 
-#include "CameraBase.hpp"
+#include "Camera.hpp"
 
 #include <Physics/Collision.hpp>
-
-#include <cstdint>
 
 #include <glm/glm.hpp>
 
 namespace GameEngine {
 
 // TODO: Add support for roll
-class PerspectiveCamera : public CameraBase {
+class PerspectiveCamera : public Camera {
     void UpdateViewMatrix() noexcept;
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept;
 
@@ -73,7 +71,7 @@ class PerspectiveCamera : public CameraBase {
     bool CheckCollision(glm::vec3 translation) const;
 
     // Create a lambda that translates the camera in a certain direction
-    std::function<void()> TranslateCamera(CameraBase::Direction d) override;
+    std::function<void()> TranslateCamera(Direction d) override;
 };
 
 }

@@ -3,7 +3,7 @@
 #include "GameObject.hpp"
 
 #include "Light.hpp"
-#include "CameraBase.hpp"
+#include "Camera.hpp"
 #include "MeshBase.hpp"
 #include "ShaderManager.hpp"
 #include "TextureManager.hpp"
@@ -37,13 +37,13 @@ class RenderableObject : public GameObject {
     RenderableObject(const RenderableObject&);
 
     // Renders the object
-    virtual void Draw(const GameEngine::CameraBase& camera) const;
+    virtual void Draw(const Camera& camera) const;
 
     void BindTextures() const;
 
     ShaderProgram& shaderProgram;
 
-    void RenderObject(std::span<const std::unique_ptr<Light>> lights, const GameEngine::CameraBase& camera);
+    void RenderObject(std::span<const std::unique_ptr<Light>> lights, const Camera& camera);
 };
 
 } // namespace GameEngine
