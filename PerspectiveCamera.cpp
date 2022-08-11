@@ -1,4 +1,4 @@
-#include "Camera.hpp"
+#include "PerspectiveCamera.hpp"
 
 #include "World.hpp"
 #include "InputManager.hpp"
@@ -9,9 +9,12 @@
 
 static Physics::SimplePlaneCollider floorCollider = {0};
 
-Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) : 
+namespace GameEngine {
+
+PerspectiveCamera::PerspectiveCamera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up)
+    : 
     CameraBase{position, {1, 1, 1}}, speed{speed} {
-    name = "Camera";
+    name = "PerspectiveCamera";
     collider.position = position;
     // Set the front, right, up, etc vectors to their initial values
     UpdateVectors(target - position, up);
@@ -30,16 +33,18 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, float speed, glm::vec3 up) 
     }
 }
 
-void Camera::SetPosition(glm::vec3 position) {
+void PerspectiveCamera::SetPosition(glm::vec3 position) {
     GameObject::SetPosition(position);
     collider.position = position;
 
     UpdateViewMatrix();
 }
 
-void Camera::UpdateViewMatrix() noexcept { viewMat = glm::lookAt(position, position + vectors.front, vectors.up); }
+void PerspectiveCamera::UpdateViewMatrix() noexcept {
+    viewMat = glm::lookAt(position, position + vectors.front, vectors.up);
+}
 
-void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept {
+void PerspectiveCamera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept {
     // Calculates vectors from the perspective of the camera
     // This allows the camera to work no matter how it is moved and rotated
     vectors.front = glm::normalize(frontVector);
@@ -50,7 +55,7 @@ void Camera::UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept {
     vectors.left = -vectors.right;
 }
 
-void Camera::Rotate() noexcept {
+void PerspectiveCamera::Rotate() noexcept {
     double x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     double y = sin(glm::radians(pitch));
     double z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -59,7 +64,7 @@ void Camera::Rotate() noexcept {
     UpdateViewMatrix();
 }
 
-void Camera::CalculatePitchAndYaw(double deltaX, double deltaY) noexcept {
+void PerspectiveCamera::CalculatePitchAndYaw(double deltaX, double deltaY) noexcept {
     yaw -= deltaX * xSensitivity;
     pitch += deltaY * ySensitivity;
 
@@ -68,7 +73,7 @@ void Camera::CalculatePitchAndYaw(double deltaX, double deltaY) noexcept {
     Rotate();
 }
 
-void Camera::Tick() {
+void PerspectiveCamera::Tick() {
     if (InputManager::mouseMoved) {
         auto& im = InputManager::GetInstance();
         CalculatePitchAndYaw(im.deltaX, im.deltaY);
@@ -79,21 +84,21 @@ void Camera::Tick() {
     SetPosition(collider.position);
 }
 
-const glm::vec3& Camera::Vectors::operator[](Direction d) const noexcept {
+const glm::vec3& PerspectiveCamera::Vectors::operator[](Direction d) const noexcept {
     // Uses array of pointers so returning a reference works right
     const vec3* vectorsArray[]{&front, &back, &right, &left, &up, &down};
 
     return *vectorsArray[static_cast<std::uint8_t>(d)];
 }
 
-glm::vec3& Camera::Vectors::operator[](Direction d) noexcept {
+glm::vec3& PerspectiveCamera::Vectors::operator[](Direction d) noexcept {
     // Uses array of pointers so returning a reference works right
     vec3* vectorsArray[]{&front, &back, &right, &left, &up, &down};
 
     return *vectorsArray[static_cast<std::uint8_t>(d)];
 }
 
-bool Camera::CheckCollision(glm::vec3 translation) const {
+bool PerspectiveCamera::CheckCollision(glm::vec3 translation) const {
     auto newCollider = collider;
     newCollider.position += translation;
 
@@ -118,7 +123,7 @@ bool Camera::CheckCollision(glm::vec3 translation) const {
     return anyCollide;
 }
 
-std::function<void()> Camera::TranslateCamera(CameraBase::Direction d) {
+std::function<void()> PerspectiveCamera::TranslateCamera(CameraBase::Direction d) {
     return [this, d] {
         auto vec = vectors[d];
 
@@ -140,9 +145,11 @@ std::function<void()> Camera::TranslateCamera(CameraBase::Direction d) {
     };
 }
 
-glm::mat4 Camera::GetProjectionMatrix() const noexcept {
+glm::mat4 PerspectiveCamera::GetProjectionMatrix() const noexcept {
     return glm::perspective(glm::radians(45.0f), width / height, 1.0f, 100.0f);
 }
-glm::vec3 Camera::GetFrontVector() const noexcept {
+glm::vec3 PerspectiveCamera::GetFrontVector() const noexcept {
     return vectors.front;
+}
+
 }

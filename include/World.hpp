@@ -15,7 +15,7 @@ struct MeshManager {
 #include <vector>
 #include <memory>
 
-#include "Camera.hpp"
+#include "PerspectiveCamera.hpp"
 #include "CubeObject.hpp"
 #include "MeshBase.hpp"
 #include "Light.hpp"
@@ -37,7 +37,7 @@ class World {
 
     std::vector<std::unique_ptr<Light>> lights;
 
-    Camera camera{{3.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, 2.5f};
+    PerspectiveCamera camera{{3.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, 2.5f};
 
     World();
 

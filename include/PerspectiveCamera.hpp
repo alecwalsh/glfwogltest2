@@ -8,8 +8,10 @@
 
 #include <glm/glm.hpp>
 
+namespace GameEngine {
+
 // TODO: Add support for roll
-class Camera : public GameEngine::CameraBase {
+class PerspectiveCamera : public CameraBase {
     void UpdateViewMatrix() noexcept;
     void UpdateVectors(glm::vec3 frontVector, glm::vec3 upVector) noexcept;
 
@@ -28,7 +30,7 @@ class Camera : public GameEngine::CameraBase {
 
     float speed = 1.0f;
   public:
-    Camera(glm::vec3 position, glm::vec3 target,
+    PerspectiveCamera(glm::vec3 position, glm::vec3 target,
         float speed = 1.0f,
         glm::vec3 up = {0.0f, 1.0f, 0.0f} // y-axis defaults to up
         );
@@ -73,3 +75,5 @@ class Camera : public GameEngine::CameraBase {
     // Create a lambda that translates the camera in a certain direction
     std::function<void()> TranslateCamera(CameraBase::Direction d) override;
 };
+
+}
