@@ -15,8 +15,8 @@ class PerspectiveCamera : public Camera {
 
     Physics::SimpleCubeCollider collider = {{}, {1.75, 3, 1.75}, {}};
 
-    double xSensitivity = 0.2f;
-    double ySensitivity = 0.2f;
+    double xSensitivity = 0.2;
+    double ySensitivity = 0.2;
 
     double minPitch = -89.0;
     double maxPitch = 89.0;

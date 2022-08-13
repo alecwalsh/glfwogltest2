@@ -50,7 +50,8 @@ void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[m
     }
 }
 
-void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) noexcept {
+void InputManager::MouseButtonCallback([[maybe_unused]] GLFWwindow* window, int button, int action,
+                                       [[maybe_unused]] int mods) noexcept {
     auto& mouseButtonStates = InputManager::GetInstance().mouseButtonStates;
 
     if (action == GLFW_PRESS) {

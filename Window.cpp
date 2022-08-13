@@ -62,8 +62,6 @@ void Window::FramebufferSizeCallback([[maybe_unused]] GLFWwindow* glfwwindow, in
 void Window::Create() {
     // TODO: check if gl_version is valid
     SetGLVersionString(glVersion);
-    
-    using std::get;
 
     glfwSetErrorCallback([](int i, const char* desc) {
         auto f = std::cout.flags();
