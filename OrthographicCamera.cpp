@@ -25,23 +25,25 @@ std::function<void()> OrthographicCamera::TranslateCamera(Direction d) {
     return [this, d] {
         glm::vec3 vec = {};
 
+        using enum Direction;
+
         switch (d) {
-        case Direction::Forward:
+        case Forward:
             vec = direction;
             break;
-        case Direction::Backward:
+        case Backward:
             vec = -direction;
             break;
-        case Direction::Right:
+        case Right:
             vec = glm::cross(direction, up);
             break;
-        case Direction::Left:
+        case Left:
             vec = -glm::cross(direction, up);
             break;
-        case Direction::Up:
+        case Up:
             vec = {0, 1, 0};
             break;
-        case Direction::Down:
+        case Down:
             vec = {0, -1, 0};
             break;
         default:

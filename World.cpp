@@ -82,17 +82,17 @@ void World::TickAll() {
 void World::SetupKeyBindings() {
     auto translateCamera = std::bind_front(&Camera::TranslateCamera, &camera);
 
-    using Direction = Camera::Direction;
+    using enum Camera::Direction;
 
     // Set key bindings
     // TODO: Get key bindings from config file
     // TODO: Figure out how to use control key
-    im.AddKeyBinding(KEY(W), KeyState::AnyPress, translateCamera(Direction::Forward));
-    im.AddKeyBinding(KEY(A), KeyState::AnyPress, translateCamera(Direction::Left));
-    im.AddKeyBinding(KEY(S), KeyState::AnyPress, translateCamera(Direction::Backward));
-    im.AddKeyBinding(KEY(D), KeyState::AnyPress, translateCamera(Direction::Right));
-    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, translateCamera(Direction::Up));
-    im.AddKeyBinding(KEY(C), KeyState::AnyPress, translateCamera(Direction::Down));
+    im.AddKeyBinding(KEY(W), KeyState::AnyPress, translateCamera(Forward));
+    im.AddKeyBinding(KEY(A), KeyState::AnyPress, translateCamera(Left));
+    im.AddKeyBinding(KEY(S), KeyState::AnyPress, translateCamera(Backward));
+    im.AddKeyBinding(KEY(D), KeyState::AnyPress, translateCamera(Right));
+    im.AddKeyBinding(KEY(SPACE), KeyState::AnyPress, translateCamera(Up));
+    im.AddKeyBinding(KEY(C), KeyState::AnyPress, translateCamera(Down));
 
     im.AddKeyBinding(KEY(ESCAPE), KeyState::InitialPress, [] { Window::GetInstance().Close(); });
     
