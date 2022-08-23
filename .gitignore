@@ -5,6 +5,9 @@ build/
 .kdev4/
 *.kdev4
 
+#CLion
+.idea
+
 .vs/
 
 imgui.ini
