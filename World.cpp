@@ -120,10 +120,10 @@ void World::CreateShaders() {
 }
 
 void World::CreateGameObjects() {
-    MeshBase& cubeMesh = *meshManager.meshes["cubeMesh"];
-    MeshBase& sphereMesh = *meshManager.meshes["sphereMesh"];
+    MeshBase& cubeMesh = meshManager.FromName("cubeMesh");
+    MeshBase& sphereMesh = meshManager.FromName("sphereMesh");
 
-    MeshBase& floorMesh = *meshManager.meshes["floorMesh"];
+    MeshBase& floorMesh = meshManager.FromName("floorMesh");
 
     auto& cubeShader = shaderManager.FromName("cubeShader");
 
@@ -199,11 +199,11 @@ void World::CreateMeshes() {
     auto planeMesh = std::make_unique<PlaneMesh>();
 #endif
 
-    meshManager.meshes.emplace("floorMesh", std::move(planeMesh));
+    meshManager.AddMesh("floorMesh", std::move(planeMesh));
     // TODO: use different format
-    meshManager.meshes.emplace("cubeMesh", std::make_unique<FileMesh>("data/cube_irreg.fbx"));
-    meshManager.meshes.emplace("lightMesh", std::move(cubeMesh));
-    meshManager.meshes.emplace("sphereMesh", std::make_unique<SphereMesh>());
+    meshManager.AddMesh("cubeMesh", std::make_unique<FileMesh>("data/cube_irreg.fbx"));
+    meshManager.AddMesh("lightMesh", std::move(cubeMesh));
+    meshManager.AddMesh("sphereMesh", std::make_unique<SphereMesh>());
 }
 
 void World::CreateTextures() {
@@ -235,7 +235,7 @@ void World::CreateLights() {
 }
 
 void World::CreateLightObjects() {
-    MeshBase& lightMesh = *meshManager.meshes["lightMesh"];
+    MeshBase& lightMesh = meshManager.FromName("lightMesh");
 
     auto& lightShader = shaderManager.FromName("lightShader");
 

@@ -1,23 +1,11 @@
 #pragma once
 
-#include "MeshBase.hpp"
-
-#include <memory>
-#include <string>
-#include <unordered_map>
-
-struct MeshManager {
-    std::unordered_map<std::string, std::unique_ptr<MeshBase>> meshes;
-};
-
-// TODO: Move MeshManager to its own file
-
 #include <vector>
 #include <memory>
 
 #include "PerspectiveCamera.hpp"
 #include "CubeObject.hpp"
-#include "MeshBase.hpp"
+#include "MeshManager.hpp"
 #include "Light.hpp"
 #include "TextureManager.hpp"
 
