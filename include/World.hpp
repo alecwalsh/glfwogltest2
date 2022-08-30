@@ -18,6 +18,7 @@ class World {
 
   public:
     std::vector<std::unique_ptr<RenderableObject>> gameObjects;
+    std::vector<Physics::Collider*> physicsObjects;
 
     // TODO: Create LightObject class
     // The white cubes that represent lights
@@ -28,6 +29,8 @@ class World {
     PerspectiveCamera camera{{3.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, 2.5f};
 
     World();
+
+    void PhysicsTick();
 
     // Calls Tick on all GameObjects, LightObjects, and the camera
     void TickAll();

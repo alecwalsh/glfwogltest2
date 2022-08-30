@@ -64,6 +64,10 @@ World::World() {
     camera.SetHeight(window.height);
 }
 
+void World::PhysicsTick() {
+    Physics::ApplyVelocity(physicsObjects);
+}
+
 void World::TickAll() {
     // Call Tick on the camera
     camera.Tick();
@@ -173,6 +177,7 @@ void World::CreateGameObjects() {
     floor->texture_name = "container";
     floor->spec_texture_name = "container_specular";
     floor->SetCollider<Physics::SimplePlaneCollider>();
+    floor->GetCollider().hasGravity = false;
 
     auto floor2 = std::make_unique<CubeObject>(floorMesh, cubeShader, texman);
     floor2->SetScale({10.0f, 10.0f, 1.0f});
@@ -182,6 +187,7 @@ void World::CreateGameObjects() {
     floor2->texture_name = "container";
     floor2->spec_texture_name = "container_specular";
     floor2->SetCollider<Physics::SimplePlaneCollider>();
+    floor2->GetCollider().hasGravity = false;
 
     AddGameObject(std::move(floor));
     AddGameObject(std::move(floor2));
@@ -255,6 +261,10 @@ void World::CreateLightObjects() {
 }
 
 void World::AddGameObject(std::unique_ptr<RenderableObject> object) {
+    if (auto* go2 = dynamic_cast<CubeObject*>(object.get()); go2->HasCollider()) {
+        physicsObjects.push_back(&go2->GetCollider());
+    }
+
     gameObjects.push_back(std::move(object));
 }
 

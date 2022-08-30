@@ -2,36 +2,12 @@
 
 #include "glad/glad.h"
 
-#include "TimeManager.hpp"
-#include "UIManager.hpp"
-
-#include <imgui/imgui.h>
-
 #include <stdexcept>
 
 namespace GameEngine {
 
-static Physics::SimplePlaneCollider floorCollider = {0};
-static Physics::SphereCollider sphere1Collider = {{0, 0, 2.0f}, 1, {}};
-
 void CubeObject::Tick() {
     if (!collider) return;
-
-    Physics::Collider* otherCollider = &floorCollider;
-
-    if (name == "sphere2") {
-        otherCollider = &sphere1Collider;
-
-        uiManager.AddToUI([vel = collider->velocity, pos = collider->position] {
-            ImGui::Text("Velocity %.2f, %.2f, %.2f", vel.x, vel.y, vel.z);
-
-            ImGui::Text("Position: %.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
-        });
-    }
-
-    if (collider->SupportsCollisionWith(*otherCollider)) {
-        collider->ApplyCollision(*otherCollider);
-    }
 
     SetPosition(collider->position);
 }
