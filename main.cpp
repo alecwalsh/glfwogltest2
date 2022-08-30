@@ -1,8 +1,5 @@
 #include "glad/glad.h"
 
-#include <glm/glm.hpp>
-
-#include "ShaderManager.hpp"
 #include "InputManager.hpp"
 #include "ConfigManager.hpp"
 #include "TimeManager.hpp"
@@ -13,8 +10,6 @@
 #include "World.hpp"
 
 #include <filesystem>
-#include <memory>
-#include <vector>
 #include <limits>
 #include <iostream>
 
