@@ -66,6 +66,7 @@ World::World() {
 
 void World::PhysicsTick() {
     Physics::ApplyVelocity(physicsObjects);
+    Physics::ResolveCollisions(physicsObjects);
 }
 
 void World::TickAll() {

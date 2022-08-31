@@ -79,7 +79,7 @@ void PerspectiveCamera::Tick() {
     }
 
     // TODO: This sets collider.position, then SetPosition sets collider.position again, redundantly
-    collider.ApplyCollision(floorCollider);
+    //collider.ApplyCollision(floorCollider);
     SetPosition(collider.position);
 }
 
