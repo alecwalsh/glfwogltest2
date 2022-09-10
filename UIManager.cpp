@@ -104,8 +104,19 @@ void UIManager::Initialize() {
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     #endif
 
-    Window::GetInstance().InitGui();
-    ImGui_ImplOpenGL3_Init(Window::GetInstance().VersionString());
+    auto& window = Window::GetInstance();
+
+    window.InitGui();
+    auto [gl_major_version, gl_minor_version, uses_gles] = window.glVersion;
+
+    if(uses_gles) {
+        assert(gl_major_version == 3); // Only support OpenGLES 3 and up
+        // Dear ImGui doesn't detect the version correctly for 310 es and 320 es, causing a shader compilation failure
+        // Use #version 300 es instead
+        ImGui_ImplOpenGL3_Init("#version 300 es\n");
+    } else {
+        ImGui_ImplOpenGL3_Init(window.VersionString());
+    }
 
     using namespace std::chrono_literals;
     timeManager.AddTimer(Timer::Type::Repeat, 1s, [this] {
