@@ -83,7 +83,8 @@ void Window::Create() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major_version);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, gl_minor_version);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 8);
 
     window = glfwCreateWindow(width, height, "OpenGL", nullptr, nullptr); // Windowed
