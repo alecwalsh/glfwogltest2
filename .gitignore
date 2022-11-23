@@ -6,7 +6,7 @@ build/
 *.kdev4
 
 #CLion
-.idea
+.idea/
 
 .vs/
 
