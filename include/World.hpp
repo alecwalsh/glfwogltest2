@@ -26,7 +26,7 @@ class World {
 
     std::vector<std::unique_ptr<Light>> lights;
 
-    PerspectiveCamera camera{{3.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, 2.5f};
+    PerspectiveCamera camera{{0.0f, 3.0f, 10.0f}, {0.0f, 3.0f, 0.0f}, 2.5f};
 
     World();
 

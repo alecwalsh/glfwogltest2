@@ -132,43 +132,65 @@ void World::CreateGameObjects() {
 
     auto& cubeShader = shaderManager.FromName("cubeShader");
 
-    // Creates a CubeObject
-    auto go1 = std::make_unique<CubeObject>(cubeMesh, cubeShader, texman);
-    go1->SetPosition({0.0f, 25.0f, 0.0f});
-    go1->name = "cube1";
-    go1->SetCollider<Physics::SimpleCubeCollider>();
-
     auto go2 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
-    go2->SetPosition({0, 0, 2.0f});
+    go2->SetPosition({-2, 2, 2.0f});
     go2->name = "sphere1";
     go2->texture_name = "gradient";
     go2->SetCollider<Physics::SphereCollider>();
+    go2->GetCollider().hasGravity = false;
+    go2->GetCollider().name = "sphere1Collider";
 
     auto go3 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
-    go3->SetPosition({0, 50.0f, 2.0f});
+    go3->SetPosition({0, 1.2, 2.0f});
     go3->name = "sphere2";
     go3->texture_name = "gradient";
     go3->SetCollider<Physics::SphereCollider>();
+    go3->GetCollider().hasGravity = false;
+    go3->GetCollider().velocity = glm::vec3{-2.5, 0, 0};
+    go3->GetCollider().name = "sphere2Collider";
 
-    auto go4 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
-    go4->SetPosition({0, 5.0f, 2.0f});
-    go4->name = "sphere3";
-    go4->texture_name = "gradient";
-    go4->SetCollider<Physics::SphereCollider>();
-    go4->GetCollider().velocity = {2, 10, 0};
-
-    auto go5 = std::make_unique<CubeObject>(cubeMesh, cubeShader, texman);
-    go5->SetPosition({5.0f, 5.0f, 0.0f});
-    go5->name = "cube2";
-    go5->SetCollider<Physics::SimpleCubeCollider>();
-
-    im.AddKeyBinding(KEY(L), KeyState::InitialPress, [ptr = go5.get()] { ptr->ModifyPosition({-1, 0, 0}); });
-
-    AddGameObject(std::move(go1));
     AddGameObject(std::move(go2));
     AddGameObject(std::move(go3));
+
+    auto go4 = std::make_unique<CubeObject>(cubeMesh, cubeShader, texman);
+    go4->SetPosition({-2, 4, 2.0f});
+    go4->name = "sphere3";
+    go4->texture_name = "gradient";
+    go4->SetCollider<Physics::SimpleCubeCollider>();
+    go4->GetCollider().hasGravity = false;
+    go4->GetCollider().name = "sphere3Collider";
+
+    auto go5 = std::make_unique<CubeObject>(cubeMesh, cubeShader, texman);
+    go5->SetPosition({0, 4.5, 2.0f});
+    go5->name = "sphere4";
+    go5->texture_name = "gradient";
+    go5->SetCollider<Physics::SimpleCubeCollider>();
+    go5->GetCollider().hasGravity = false;
+    go5->GetCollider().velocity = {-1.5, 0, 0};
+    go5->GetCollider().name = "sphere4Collider";
+
     AddGameObject(std::move(go4));
     AddGameObject(std::move(go5));
+
+    auto go6 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
+    go6->SetPosition({-2, -4, 2.0f});
+    go6->name = "sphere5";
+    go6->texture_name = "gradient";
+    go6->SetCollider<Physics::SphereCollider>();
+    go6->GetCollider().hasGravity = false;
+    go6->GetCollider().name = "sphere3Collider";
+
+    auto go7 = std::make_unique<CubeObject>(sphereMesh, cubeShader, texman);
+    go7->SetPosition({0, -4.5, 2.0f});
+    go7->name = "sphere6";
+    go7->texture_name = "gradient";
+    go7->SetCollider<Physics::SphereCollider>();
+    go7->GetCollider().hasGravity = false;
+    go7->GetCollider().velocity = glm::vec3{-1.5, 0, 0};
+    go7->GetCollider().name = "sphere4Collider";
+
+    AddGameObject(std::move(go6));
+    AddGameObject(std::move(go7));
 
     mat4 floorRotation = glm::rotate(mat4{1.0f}, glm::radians(90.0f), {-1.0f, 0.0f, 0.0f});
     auto floor = std::make_unique<CubeObject>(floorMesh, cubeShader, texman);
@@ -179,19 +201,10 @@ void World::CreateGameObjects() {
     floor->spec_texture_name = "container_specular";
     floor->SetCollider<Physics::SimplePlaneCollider>();
     floor->GetCollider().hasGravity = false;
-
-    auto floor2 = std::make_unique<CubeObject>(floorMesh, cubeShader, texman);
-    floor2->SetScale({10.0f, 10.0f, 1.0f});
-    floor2->SetPosition({0.0f, -10.0f, 0.0f});
-    floor2->rotation = floorRotation;
-    floor2->name = "floor";
-    floor2->texture_name = "container";
-    floor2->spec_texture_name = "container_specular";
-    floor2->SetCollider<Physics::SimplePlaneCollider>();
-    floor2->GetCollider().hasGravity = false;
+    floor->GetCollider().name = "floorCollider";
+    floor->GetCollider().mass = std::numeric_limits<float>::infinity();
 
     AddGameObject(std::move(floor));
-    AddGameObject(std::move(floor2));
 }
 
 void World::CreateMeshes() {
