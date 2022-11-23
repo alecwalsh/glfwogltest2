@@ -1,0 +1,11 @@
+{
+  "name": "glfwogltest2",
+  "version": "0.0.0.1",
+
+  "dependencies": [
+    "glm",
+    "glfw3",
+    "assimp"
+  ],
+  "builtin-baseline": "94ce0dab56f4d8ba6bd631ba59ed682b02d45c46"
+}
