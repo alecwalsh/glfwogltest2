@@ -7,20 +7,16 @@
 #include <imgui/imgui_impl_glfw.h>
 
 #include <unordered_set>
+#include <string_view>
 
-#include <cstring>
-
+#include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
-static char8_t GLVersionString[19] = u8"#version xx0 core\n";
+std::string GLVersionString;
 
 static void SetGLVersionString(GameEngine::GLVersion version) {
-    GLVersionString[9] = u8'0' + version.major;
-    GLVersionString[10] = u8'0' + version.minor;
-    
-    if(version.is_gles) {
-        std::memcpy(GLVersionString + 13, u8"es\n\0", 4);
-    }
+    auto suffix = version.is_gles ? "es" : "core";
+    GLVersionString = fmt::format("#version {}{}0 {}\n", version.major, version.minor, suffix);
 }
 
 static std::unordered_set<std::string_view> GetGLExtensions() {
@@ -140,6 +136,4 @@ void Window::ReleaseMouse() noexcept { glfwSetInputMode(window, GLFW_CURSOR, GLF
 
 void Window::CaptureMouse() noexcept { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
 
-const char* Window::VersionString() const noexcept {
-    return reinterpret_cast<const char*>(GLVersionString);
-}
+const char* Window::VersionString() const noexcept { return GLVersionString.c_str(); }

@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <filesystem>
 
+#include <fmt/core.h>
+
 // TODO: Support creating multiple textures at once
 void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
     // Prepend the directory name to fileName
@@ -15,7 +17,7 @@ void TextureManager::AddTextureFromFile(const char* id, const char* fileName) {
     finalFileName /= fileName;
 
     if (!std::filesystem::exists(finalFileName)) {
-        std::string message = "Texture file " + finalFileName.generic_string() + " does not exist";
+        std::string message = fmt::format("Texture file {} does not exist", finalFileName.generic_string());
         throw std::runtime_error{message};
     }
 
