@@ -7,12 +7,11 @@
 #include <imgui/imgui_impl_glfw.h>
 
 #include <unordered_set>
-#include <string_view>
 
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
-std::string GLVersionString;
+static std::string GLVersionString;
 
 static void SetGLVersionString(GameEngine::GLVersion version) {
     auto suffix = version.is_gles ? "es" : "core";
@@ -136,4 +135,4 @@ void Window::ReleaseMouse() noexcept { glfwSetInputMode(window, GLFW_CURSOR, GLF
 
 void Window::CaptureMouse() noexcept { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
 
-const char* Window::VersionString() const noexcept { return GLVersionString.c_str(); }
+std::string_view Window::VersionString() noexcept { return GLVersionString; }

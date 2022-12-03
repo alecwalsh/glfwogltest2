@@ -115,7 +115,7 @@ void UIManager::Initialize() {
         // Use #version 300 es instead
         ImGui_ImplOpenGL3_Init("#version 300 es\n");
     } else {
-        ImGui_ImplOpenGL3_Init(window.VersionString());
+        ImGui_ImplOpenGL3_Init(window.VersionString().data());
     }
 
     using namespace std::chrono_literals;

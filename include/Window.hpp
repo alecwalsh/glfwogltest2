@@ -3,6 +3,7 @@
 #include "GLVersion.hpp"
 
 #include <stdexcept>
+#include <string_view>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -63,7 +64,7 @@ class Window {
     void InitGui() noexcept;
     
     // Returns a string suitable for including at the beginning of GLSL files
-    const char* VersionString() const noexcept;
+    [[nodiscard]] static std::string_view VersionString() noexcept;
   private:
     Window() = default;
     ~Window();
