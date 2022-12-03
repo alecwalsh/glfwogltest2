@@ -12,6 +12,8 @@ find_package(Threads QUIET REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 add_executable(glfwogltest2 ${SOURCES})
 
@@ -29,7 +31,7 @@ target_compile_features(glfwogltest2 PUBLIC c_std_11 cxx_std_20)
 
 target_include_directories(glfwogltest2 PUBLIC "include" "external")
 
-target_link_libraries(glfwogltest2 PRIVATE ${CMAKE_DL_LIBS} glm::glm glfw assimp::assimp glfwogltest2_physics)
+target_link_libraries(glfwogltest2 PRIVATE ${CMAKE_DL_LIBS} glm::glm glfw assimp::assimp fmt::fmt spdlog::spdlog glfwogltest2_physics)
 
 configure_file(include/version.hpp.in include/version.hpp)
 target_include_directories(glfwogltest2 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/include)

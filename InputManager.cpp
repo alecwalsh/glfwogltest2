@@ -2,7 +2,7 @@
 
 #include "Window.hpp"
 
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 #include <imgui/imgui.h>
 
@@ -10,7 +10,7 @@ void InputManager::KeyCallback([[maybe_unused]] GLFWwindow* window, int key, [[m
     [[maybe_unused]] int mods) noexcept {
     // Don't want to use -1 as an array index
     if (key == GLFW_KEY_UNKNOWN) {
-        std::cerr << "Unknown key pressed" << std::endl;
+        spdlog::warn("Unknown key pressed");
         return;
     }
 

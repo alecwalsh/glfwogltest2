@@ -4,8 +4,10 @@
 
 #include "Window.hpp"
 
-#include <iostream>
 #include <limits>
+#include <stdexcept>
+
+#include <spdlog/spdlog.h>
 
 namespace GameEngine {
 
@@ -36,13 +38,14 @@ RenderableObject::RenderableObject(MeshBase& mesh, ShaderProgram& shaderProgram,
     glEnableVertexAttribArray(texAttrib);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
-    std::cout << "RenderableObject constructor\n";
+    spdlog::info("RenderableObject constructor");
 }
 
 // Copy constructor
 RenderableObject::RenderableObject(const RenderableObject& rhs)
     : GameObject{rhs}, mesh{rhs.mesh}, texman{rhs.texman}, shaderProgram{rhs.shaderProgram} {
-    std::cout << "RenderableObject copy constructor" << std::endl;
+
+    spdlog::info("RenderableObject copy constructor");
 }
 
 // Renders the object
@@ -63,8 +66,7 @@ void RenderableObject::Draw(const Camera& camera) const {
     glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
 
     if (mesh.meshData.vertices.size() > std::numeric_limits<GLsizei>::max()) {
-        std::cerr << "Too many vertices" << std::endl;
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error{"Too many vertices"};
     }
 
     if (mesh.meshData.usesElementArray) {
@@ -96,8 +98,7 @@ void RenderableObject::RenderObject(std::span<const std::unique_ptr<Light>> ligh
     std::size_t numLights = lights.size();
 
     if (numLights < 0 || numLights > std::numeric_limits<GLint>::max()) {
-        std::cerr << "Invalid number of lights" << std::endl;
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error{"Invalid number of lights"};
     }
     glUniform1i(numLightsUniform, static_cast<GLint>(numLights));
 

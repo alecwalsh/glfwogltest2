@@ -6,12 +6,11 @@
 
 #include <imgui/imgui_impl_glfw.h>
 
-#include <cassert>
-#include <iostream>
-
 #include <unordered_set>
 
 #include <cstring>
+
+#include <spdlog/spdlog.h>
 
 static char8_t GLVersionString[19] = u8"#version xx0 core\n";
 
@@ -64,13 +63,9 @@ void Window::Create() {
     SetGLVersionString(glVersion);
 
     glfwSetErrorCallback([](int i, const char* desc) {
-        auto f = std::cout.flags();
-
-        std::cout << "GLFW Error" << std::endl;
-        std::cout << "  Error code: " << std::showbase << std::hex << i << std::endl;
-        std::cout << "  Error description: " << desc << std::endl;
-
-        std::cout.flags(f); // Restore flags after using std::hex
+        spdlog::error("GLFW Error");
+        spdlog::error("  Error code: {:#x}", i);
+        spdlog::error("  Error description: {}", desc);
     });
 
     glfwInit();
@@ -120,8 +115,6 @@ void Window::LoadGL() {
     int load_result = (glVersion.is_gles ? gladLoadGLES2Loader : gladLoadGLLoader)((GLADloadproc)glfwGetProcAddress);
 
     if (load_result == 0) {
-        std::cerr << "Error initializing glad" << std::endl;
-        glfwTerminate();
         throw WindowError{"Error loading OpenGL functions"};
     }
 }

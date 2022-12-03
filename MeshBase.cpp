@@ -2,15 +2,13 @@
 
 #include "glad/glad.h"
 
-#include <iostream>
 #include <limits>
-#include <cstdlib>
+#include <stdexcept>
 
 // Generates buffers and uploads data to graphics card
 void MeshBase::UploadToGPU() {
     if (meshData.vertices.size() > std::numeric_limits<GLsizei>::max()) {
-        std::cerr << "Number of vertices exceeds max GLsizei value" << std::endl;
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error{"Number of vertices exceeds max GLsizei value"};
     }
 
     // Create a Vertex Buffer Object and copy the vertex data to it
@@ -23,8 +21,7 @@ void MeshBase::UploadToGPU() {
 
     if (meshData.usesElementArray) {
         if (meshData.elements.size() > std::numeric_limits<GLsizei>::max()) {
-            std::cerr << "Number of elements exceeds max GLsizei value" << std::endl;
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error{"Number of elements exceeds max GLsizei value"};
         }
 
         // Create an Element Buffer Object and copy the element data to it

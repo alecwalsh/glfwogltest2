@@ -2,11 +2,12 @@
 
 #include "glad/glad.h"
 
-#include <iostream>
 #include <utility>
 #include <stdexcept>
 
 #include <cassert>
+
+#include <spdlog/spdlog.h>
 
 void swap(GLBuffer& b1, GLBuffer& b2) noexcept {
     using std::swap;
@@ -31,7 +32,7 @@ GLBuffer& GLBuffer::operator=(GLBuffer&& b) noexcept {
 
 void GLBuffer::Delete() noexcept {
     if (id != 0) {
-        std::cout << "Deleting buffer " << id << std::endl;
+        spdlog::info("Deleting buffer {}", id);
 
         glDeleteBuffers(1, &id);
         id = 0;
@@ -48,5 +49,5 @@ void GLBuffer::GenBuffer() {
     }
     glGenBuffers(1, &id);
 
-    std::cout << "Created buffer " << id << std::endl;
+    spdlog::info("Created buffer {}", id);
 }

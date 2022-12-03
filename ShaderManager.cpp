@@ -2,15 +2,14 @@
 
 #include "glad/glad.h"
 
-#include <glm/gtc/type_ptr.hpp>
-
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <utility>
 #include <filesystem>
 
 #include <cassert>
+
+#include <spdlog/spdlog.h>
 
 #include "Window.hpp"
 
@@ -68,7 +67,7 @@ std::uint32_t ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderF
     glDetachShader(shaderProgram, vertexShader);
     glDeleteShader(vertexShader);
 
-    std::cout << "Compiled shader program " << shaderProgram << std::endl;
+    spdlog::info("Compiled shader program {}", shaderProgram);
 
     return shaderProgram;
 }
@@ -117,7 +116,7 @@ std::optional<std::string> ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
 
 void ShaderProgram::Delete() noexcept {
     if (shaderProgram != 0) {
-        std::cout << "Deleting shader program " << shaderProgram << std::endl;
+        spdlog::info("Deleting shader program {}", shaderProgram);
 
         glDeleteProgram(shaderProgram);
         shaderProgram = 0;

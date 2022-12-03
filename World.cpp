@@ -22,7 +22,8 @@
 #include <glm/glm.hpp>
 
 #include <functional>
-#include <iostream>
+
+#include <spdlog/spdlog.h>
 
 #define KEY(k) GLFW_KEY_##k
 
@@ -42,14 +43,14 @@ World::World() {
     try {
         CreateShaders();
     } catch (const ShaderError& e) {
-        std::cerr << e.what() << std::endl;
+        spdlog::error("{}", e.what());
         std::exit(EXIT_FAILURE);
     }
 
     try {
         CreateTextures();
     } catch (const std::runtime_error& e) {
-        std::cerr << e.what() << std::endl;
+        spdlog::error("{}", e.what());
         std::exit(EXIT_FAILURE);
     }
 

@@ -10,8 +10,8 @@
 #include "World.hpp"
 
 #include <filesystem>
-#include <limits>
-#include <iostream>
+
+#include <spdlog/spdlog.h>
 
 #include "version.hpp"
 
@@ -30,7 +30,7 @@ int main() {
     try {
         window.Create();
     } catch (const WindowError& e) {
-        std::cerr << e.what() << std::endl;
+        spdlog::error("{}", e.what());
         return EXIT_FAILURE;
     }
 
@@ -63,7 +63,7 @@ int main() {
         fsq.BindFramebuffer();
 
         if (window.hasResized) {
-            std::cout << "Window resized" << std::endl;
+            spdlog::info("Window resized");
 
             world.camera.SetWidth(window.width);
             world.camera.SetHeight(window.height);
