@@ -19,6 +19,9 @@ class Window {
     double lastX;
     double lastY;
 
+    float xScale;
+    float yScale;
+
     GameEngine::GLVersion glVersion;
     
     int width = 0;

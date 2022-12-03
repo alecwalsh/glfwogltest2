@@ -65,6 +65,8 @@ void Window::Create() {
 
     glfwInit();
 
+    glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &xScale, &yScale);
+
     auto [gl_major_version, gl_minor_version, uses_gles] = glVersion;
 
     int gl_api = uses_gles ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API;
