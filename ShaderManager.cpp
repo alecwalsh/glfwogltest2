@@ -9,26 +9,67 @@
 
 #include <cassert>
 
+#include <fmt/core.h>
 #include <spdlog/spdlog.h>
 
 #include "Window.hpp"
 
-ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
-    : shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
+namespace {
+[[nodiscard]] std::optional<std::string> GetCompileErrors(GLuint shader) {
+    GLint compiled;
 
-std::uint32_t ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile) {
-    auto getSource = [](std::filesystem::path shaderFileName) {
-        std::ifstream shaderFile;
-        shaderFile.open(shaderFileName);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+    if (compiled == GL_FALSE) {
+        GLint logLength;
 
-        std::stringstream buffer;
-        buffer << Window::GetInstance().VersionString() << shaderFile.rdbuf();
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+        auto* infoLog = new GLchar[logLength];
+        glGetShaderInfoLog(shader, logLength, &logLength, infoLog);
 
-        return buffer.str();
-    };
+        std::string errorText = infoLog;
 
-    auto v = getSource(vertShaderFile);
-    auto f = getSource(fragShaderFile);
+        delete[] infoLog;
+
+        return errorText;
+    }
+
+    return {};
+}
+
+[[nodiscard]] std::optional<std::string> GetLinkErrors(GLuint shaderProgram) {
+    GLint linked;
+
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
+    if (linked == GL_FALSE) {
+        GLint logLength;
+
+        glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
+        auto* infoLog = new GLchar[logLength];
+        glGetProgramInfoLog(shaderProgram, logLength, &logLength, infoLog);
+
+        std::string errorText = infoLog;
+
+        delete[] infoLog;
+
+        return errorText;
+    }
+
+    return {};
+}
+
+[[nodiscard]] std::string getSourceFromPath(const std::filesystem::path& shaderFileName) {
+    std::ifstream shaderFile;
+    shaderFile.open(shaderFileName);
+
+    std::stringstream buffer;
+    buffer << Window::VersionString() << shaderFile.rdbuf();
+
+    return buffer.str();
+}
+
+[[nodiscard]] std::uint32_t ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile) {
+    auto v = getSourceFromPath(vertShaderFile);
+    auto f = getSourceFromPath(fragShaderFile);
     auto vertexSource = v.c_str();
     auto fragmentSource = f.c_str();
 
@@ -36,16 +77,16 @@ std::uint32_t ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderF
 
     // Create and compile the vertex shader
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexSource, NULL);
+    glShaderSource(vertexShader, 1, &vertexSource, nullptr);
     glCompileShader(vertexShader);
-    
+
     if (auto compileError = GetCompileErrors(vertexShader)) {
         throw ShaderCompileError{vertShaderFile, *compileError};
     }
 
     // Create and compile the fragment shader
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
+    glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
     glCompileShader(fragmentShader);
 
     if (auto compileError = GetCompileErrors(fragmentShader)) {
@@ -56,7 +97,7 @@ std::uint32_t ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderF
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
-    
+
     if (auto linkError = GetLinkErrors(shaderProgram)) {
         throw ShaderLinkError{*linkError};
     }
@@ -71,48 +112,13 @@ std::uint32_t ShaderProgram::ShaderProgramFromFiles(std::string_view vertShaderF
 
     return shaderProgram;
 }
-
-std::optional<std::string> ShaderProgram::GetCompileErrors(GLuint shader) {
-    GLint compiled;
-
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
-    if (compiled == GL_FALSE) {
-        int logLength;
-
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-        GLchar* infoLog = new GLchar[logLength];
-        glGetShaderInfoLog(shader, logLength, &logLength, infoLog);
-
-        std::string errorText = infoLog;
-
-        delete[] infoLog;
-
-        return errorText;
-    }
-
-    return {};
 }
 
-std::optional<std::string> ShaderProgram::GetLinkErrors(GLuint shaderProgram) {
-    GLint linked;
+ShaderCompileError::ShaderCompileError(std::string_view fileName, std::string_view message)
+    : ShaderError{fmt::format("Error compiling shader file \"{}\"\n{}", fileName, message)} {}
 
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
-    if (linked == GL_FALSE) {
-        int logLength;
-
-        glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
-        GLchar* infoLog = new GLchar[logLength];
-        glGetProgramInfoLog(shaderProgram, logLength, &logLength, infoLog);
-
-        std::string errorText = infoLog;
-
-        delete[] infoLog;
-        
-        return errorText;
-    }
-
-    return {};
-}
+ShaderProgram::ShaderProgram(const ShaderIdentifier& id)
+    : shaderProgram{ShaderProgramFromFiles(id.vertShader, id.fragShader)} {}
 
 void ShaderProgram::Delete() noexcept {
     if (shaderProgram != 0) {

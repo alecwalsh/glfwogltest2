@@ -19,8 +19,7 @@ class ShaderError : public std::runtime_error {
 
 class ShaderCompileError : public ShaderError {
   public:
-    ShaderCompileError(std::string_view fileName, std::string_view message)
-        : ShaderError{"Error compiling shader file \"" + std::string{fileName} + "\"\n" + std::string{message}} {}
+    ShaderCompileError(std::string_view fileName, std::string_view message);
 };
 
 class ShaderLinkError : public ShaderError {
@@ -28,8 +27,8 @@ class ShaderLinkError : public ShaderError {
 };
 
 struct ShaderIdentifier {
-    const std::string vertShader;
-    const std::string fragShader;
+    std::string vertShader;
+    std::string fragShader;
 
     friend bool operator==(const ShaderIdentifier&, const ShaderIdentifier&) noexcept = default;
 };
@@ -53,10 +52,6 @@ template <> struct hash<ShaderIdentifier> {
 } // namespace std
 
 class [[nodiscard]] ShaderProgram final {
-    [[nodiscard]] std::uint32_t ShaderProgramFromFiles(std::string_view vertShaderFile, std::string_view fragShaderFile);
-    std::optional<std::string> GetCompileErrors(std::uint32_t shader);
-    std::optional<std::string> GetLinkErrors(std::uint32_t shaderProgram);
-
     friend void swap(ShaderProgram& sp1, ShaderProgram& sp2) noexcept;
 
     [[nodiscard]] ShaderProgram(ShaderProgram&& sp) noexcept;
@@ -71,7 +66,7 @@ class [[nodiscard]] ShaderProgram final {
     // Calls glUseProgram
     void UseProgram() const noexcept;
     
-    [[nodiscard]] ShaderProgram(const ShaderIdentifier& id);
+    [[nodiscard]] explicit ShaderProgram(const ShaderIdentifier& id);
     
     // Copy constructor and assignment are deleted because you can't copy OpenGL objects
     ShaderProgram(const ShaderProgram& sp) = delete;
@@ -90,7 +85,7 @@ class ShaderManager {
 
     // Adds a shader named name using the files specified in id
     // Calling this function multiple times with the same arguments does nothing
-    // Calling this function with an existing name but a different id throws a runtime_exeption
+    // Calling this function with an existing name but a different id throws a runtime_exception
     ShaderProgram& AddShader(std::string_view name, const ShaderIdentifier& id);
 
     [[nodiscard]] static ShaderManager& GetInstance();
