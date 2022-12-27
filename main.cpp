@@ -20,6 +20,8 @@ int main() {
 
     ConfigManager cm{};
 
+    spdlog::set_level(cm.logLevel);
+
     Window& window = Window::GetInstance();
 
     window.width = cm.width;

@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <cstdint>
 
+#include <spdlog/spdlog.h>
+
 class ConfigManager {
   public:
     ConfigManager() = default;
@@ -16,5 +18,7 @@ class ConfigManager {
 
     std::uint16_t width = 800;
     std::uint16_t height = 600;
-    const GameEngine::GLVersion glVersion = {3, 3, false};
+    GameEngine::GLVersion glVersion = {3, 3, false};
+
+    spdlog::level::level_enum logLevel = spdlog::level::info;
 };
