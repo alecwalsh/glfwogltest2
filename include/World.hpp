@@ -9,6 +9,8 @@
 #include "Light.hpp"
 #include "TextureManager.hpp"
 
+#include <Physics/PhysicsWorld.hpp>
+
 namespace GameEngine {
 
 class World {
@@ -19,6 +21,8 @@ class World {
   public:
     std::vector<std::unique_ptr<RenderableObject>> gameObjects;
     std::vector<Physics::Collider*> physicsObjects;
+    Physics::PhysicsWorld physicsWorld;
+    TimeManagerShim timeManagerShim;
 
     // TODO: Create LightObject class
     // The white cubes that represent lights

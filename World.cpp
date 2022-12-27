@@ -18,6 +18,7 @@
 #include "Flashlight.hpp"
 #include "PointLight.hpp"
 #include "SpotLight.hpp"
+#include "TimeManager.hpp"
 
 #include <glm/glm.hpp>
 
@@ -35,7 +36,7 @@ using glm::vec3, glm::mat4;
 
 namespace GameEngine {
 
-World::World() {
+World::World() : timeManagerShim{timeManager.elapsedTime, timeManager.deltaTime} {
     SetupKeyBindings();
 
     CreateMeshes();
@@ -63,12 +64,11 @@ World::World() {
     auto& window = Window::GetInstance();
     camera.SetWidth(window.width);
     camera.SetHeight(window.height);
+
+    physicsWorld.timeManager = &timeManagerShim;
 }
 
-void World::PhysicsTick() {
-    Physics::ApplyVelocity(physicsObjects);
-    Physics::ResolveCollisions(physicsObjects);
-}
+void World::PhysicsTick() { physicsWorld.TickUntil(); }
 
 void World::TickAll() {
     // Call Tick on the camera
@@ -206,6 +206,18 @@ void World::CreateGameObjects() {
     floor->GetCollider().mass = std::numeric_limits<float>::infinity();
 
     AddGameObject(std::move(floor));
+
+    auto go8 = std::make_unique<CubeObject>(cubeMesh, cubeShader, texman);
+    go8->SetPosition({4, 4.5, 3.0f});
+    go8->name = "sphere7";
+    go8->texture_name = "container";
+    go8->SetCollider<Physics::SimpleCubeCollider>();
+    //go8->GetCollider().hasGravity = false;
+    //go8->GetCollider().velocity = glm::vec3{-1.5, 0, 0};
+    go8->GetCollider().name = "sphere7Collider";
+    //go8->GetCollider().restitution = 1;
+
+    AddGameObject(std::move(go8));
 }
 
 void World::CreateMeshes() {
@@ -278,6 +290,7 @@ void World::CreateLightObjects() {
 void World::AddGameObject(std::unique_ptr<RenderableObject> object) {
     if (auto* go2 = dynamic_cast<CubeObject*>(object.get()); go2->HasCollider()) {
         physicsObjects.push_back(&go2->GetCollider());
+        physicsWorld.AddPhysicsObject(&go2->GetCollider());
     }
 
     gameObjects.push_back(std::move(object));
